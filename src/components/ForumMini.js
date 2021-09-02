@@ -66,9 +66,13 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                 </Text>
                 <MarginVertical size={1} />
             </ImageBackground>
-            <View
-                style={[styles.miniContainer, { paddingHorizontal: margin }]}
-            ></View>
+            <View style={[styles.miniContainer, { paddingHorizontal: margin }]}>
+                <Text>
+                    You can start or respond to conversations in areas such as
+                    Information Technology, Science, History,{' '}
+                </Text>
+                <Text>yes? then Join our Forum Today, </Text>
+            </View>
         </View>
     );
 }
