@@ -13,6 +13,7 @@ import FBPIcon from './FBPIcon';
 import FMSIcon from './FMSIcon';
 import ITIcon from './ITIcon';
 import MTDIcon from './MTDIcon';
+import checkColumnMode from '../helperFunctions/checkColumnMode';
 
 function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
     const [loaded] = useFonts({
@@ -20,7 +21,7 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
         Karla_400Regular,
     });
 
-    const columnMode = deviceWidthClass === 'type1' ? true : false;
+    const columnMode = checkColumnMode(deviceWidthClass);
 
     if (!loaded) {
         return <View />;
@@ -136,7 +137,7 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                 <View
                     style={[
                         styles.servicePairContainer,
-                        columnMode && styles.servicePairContainerColumnMode,
+                        columnMode && { flex: 1 },
                         {
                             paddingHorizontal: 30,
                             paddingTop: 30,
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#161B26',
     },
     servicePairContainer: {
-        flex: 1,
+        // flex: 1,
     },
     servicePairContainerColumnMode: {
         flexDirection: 'row',

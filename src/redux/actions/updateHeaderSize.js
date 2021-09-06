@@ -6,13 +6,12 @@ import {
 
 export default function updateHeaderSize() {
     return (dispatch) => {
-        const hpLarger = hp(100) > wp(100);
-        const height = hpLarger ? hp(100) : wp(100);
+        const height = hp(100);
         let headerHeight;
         if (height > 736) {
-            headerHeight = hpLarger ? hp(9) : wp(9);
+            headerHeight = hp(10);
         } else {
-            headerHeight = hpLarger ? hp(10) : wp(10);
+            headerHeight = hp(11);
         }
         dispatch({
             type: UPDATE_HEADER_SIZE,

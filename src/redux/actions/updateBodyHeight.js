@@ -6,9 +6,9 @@ export default function updateBodyHeight() {
         const height = hp(100);
         let bodyHeight;
         if (height > 736) {
-            bodyHeight = hp(91);
-        } else {
             bodyHeight = hp(90);
+        } else {
+            bodyHeight = hp(89);
         }
         dispatch({
             type: UPDATE_BODY_HEIGHT,

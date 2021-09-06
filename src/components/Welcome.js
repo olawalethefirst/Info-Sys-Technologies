@@ -4,7 +4,8 @@ import {
     Text,
     View,
     ImageBackground,
-    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Animated,
 } from 'react-native';
 import { useFonts } from '@expo-google-fonts/poppins';
 import Poppins_700Bold from '@expo-google-fonts/poppins/Poppins_700Bold.ttf';
@@ -17,6 +18,7 @@ import {
 import MarginVertical from './MarginVertical';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import checkColumnMode from '../helperFunctions/checkColumnMode';
 
 /*global require*/
 /*eslint no-undef: "error"*/
@@ -27,8 +29,20 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
         Karla_500Medium,
         Poppins_600SemiBold,
     });
-
-    const columnMode = deviceWidthClass === 'type1' ? true : false;
+    const animatedValue = new Animated.Value(1);
+    const onPressIn = () => {
+        Animated.spring(animatedValue, {
+            toValue: 0.8,
+            useNativeDriver: true,
+        }).start();
+    };
+    const onPressOut = () => {
+        Animated.spring(animatedValue, {
+            toValue: 1,
+            useNativeDriver: true,
+        }).start();
+    };
+    const columnMode = checkColumnMode(deviceWidthClass);
 
     if (!loaded || !fontFactor) {
         return <View style={{ flex: 1 }} />;
@@ -89,26 +103,32 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
                         We strive for nothing but the best.
                     </Text>
                     <MarginVertical size={3} />
-                    <TouchableOpacity
-                        style={[
-                            styles.button,
-                            {
-                                padding: fontFactor * wp(3.5),
-                            },
-                        ]}
-                        onPress={() => console.log('pressed')}
+                    <TouchableWithoutFeedback
+                        style={[styles.buttonContainer]}
+                        onPressIn={onPressIn}
+                        onPressOut={onPressOut}
                     >
-                        <Text
+                        <Animated.View
                             style={[
-                                styles.buttonText,
+                                styles.button,
                                 {
-                                    fontSize: fontFactor * wp(3.85),
+                                    padding: fontFactor * wp(3.5),
+                                    transform: [{ scale: animatedValue }],
                                 },
                             ]}
                         >
-                            Learn more
-                        </Text>
-                    </TouchableOpacity>
+                            <Text
+                                style={[
+                                    styles.buttonText,
+                                    {
+                                        fontSize: fontFactor * wp(3.85),
+                                    },
+                                ]}
+                            >
+                                Learn more
+                            </Text>
+                        </Animated.View>
+                    </TouchableWithoutFeedback>
                     <MarginVertical size={3} />
                 </View>
                 <View
@@ -154,6 +174,9 @@ const styles = StyleSheet.create({
     },
     contentContainer2ColumnMode: {
         flex: 4 / 10,
+    },
+    buttonContainer: {
+        flex: 1,
     },
     button: {
         backgroundColor: '#1A91D7',

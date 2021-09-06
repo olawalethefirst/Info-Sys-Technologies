@@ -1,5 +1,12 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect } from 'react';
+import {
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    Animated,
+    Easing,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
@@ -18,6 +25,16 @@ export default function ServiceTemplate({
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
+    });
+
+    const animatedValue = new Animated.Value(0);
+    useEffect(() => {
+        Animated.timing(animatedValue, {
+            toValue: 0.8,
+            duration: 3000,
+            easing: Easing.bounce,
+            useNativeDriver: true,
+        }).start();
     });
 
     if (!loaded) {
@@ -39,17 +56,18 @@ export default function ServiceTemplate({
             <View style={styles.iconContainer}>{children}</View>
             <MarginVertical size={1.5} />
 
-            <Text
+            <Animated.Text
                 style={[
                     styles.heading,
                     {
                         fontSize: fontFactor * wp(4.6),
                         lineHeight: fontFactor * wp(5.85),
+                        opacity: animatedValue,
                     },
                 ]}
             >
                 {serviceTitle}
-            </Text>
+            </Animated.Text>
             <MarginVertical size={1.5} />
             <Text
                 style={[
@@ -70,6 +88,7 @@ export default function ServiceTemplate({
                     {
                         paddingVertical: fontFactor * wp(3.58),
                         paddingHorizontal: fontFactor * wp(4.55),
+                        marginLeft: -(fontFactor * wp(4.55)),
                     },
                 ]}
             >
@@ -126,7 +145,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Karla_400Regular',
     },
     button: {
-        alignSelf: 'center',
+        alignSelf: 'flex-start',
     },
     buttonText: {
         color: '#fff',

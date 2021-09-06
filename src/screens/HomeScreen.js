@@ -4,6 +4,7 @@ import Welcome from '../components/Welcome';
 import AboutMini from '../components/AboutMini';
 import ServicesMini from '../components/ServicesMini';
 import ForumMini from '../components/ForumMini';
+import ContactMini from '../components/ContactMini';
 
 export default function HomeScreen() {
     return (
@@ -13,6 +14,7 @@ export default function HomeScreen() {
                 <AboutMini />
                 <ServicesMini />
                 <ForumMini />
+                <ContactMini />
             </ScrollView>
         </SafeAreaView>
     );

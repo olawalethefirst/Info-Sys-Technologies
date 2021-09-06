@@ -8,13 +8,14 @@ import { useFonts } from '@expo-google-fonts/poppins';
 import Poppins_600SemiBold from '@expo-google-fonts/poppins/Poppins_600SemiBold.ttf';
 import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 import MarginVertical from './MarginVertical';
+import checkColumnMode from '../helperFunctions/checkColumnMode';
 
 function AboutMini({ bodyHeight, fontFactor, margin, deviceWidthClass }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
     });
-    const columnMode = deviceWidthClass === 'type1' ? true : false;
+    const columnMode = checkColumnMode(deviceWidthClass);
 
     if (!loaded) {
         return <View />;

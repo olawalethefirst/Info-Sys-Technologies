@@ -3,21 +3,26 @@ import Svg, { Defs, LinearGradient, Stop, Path } from 'react-native-svg';
 import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 
-function HeaderLogo({ headerSize, margin }) {
-    const svgHeight = 0.8 * headerSize;
-
+function HeaderLogo({ margin, fontFactor }) {
     return (
-        <View style={[styles.container, { marginLeft: margin }]}>
+        <View
+            style={[
+                styles.container,
+                {
+                    marginLeft: margin,
+                    marginRight: (margin * 2) / fontFactor,
+                },
+            ]}
+        >
             <Svg
                 xmlns="http://www.w3.org/2000/svg"
-                height={svgHeight}
                 shapeRendering="geometricPrecision"
                 textRendering="geometricPrecision"
                 imageRendering="optimizeQuality"
                 fillRule="evenodd"
                 clipRule="evenodd"
                 viewBox="0 0 50000000 7954539"
-                style={styles.svg}
+                style={{ flex: 1 }}
             >
                 <Defs>
                     <LinearGradient
@@ -64,18 +69,14 @@ function HeaderLogo({ headerSize, margin }) {
 }
 
 HeaderLogo.propTypes = {
-    headerSize: PropTypes.number,
     margin: PropTypes.number,
+    fontFactor: PropTypes.number,
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'flex-start',
-    },
-    svg: {
-        aspectRatio: 50000000 / 7954539,
     },
 });
 
