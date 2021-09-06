@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableWithoutFeedback,
+    Animated,
+} from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -13,6 +19,20 @@ function ContactMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
         Poppins_600SemiBold,
         Karla_400Regular,
     });
+    const animatedValue = new Animated.Value(1);
+    console.log(animatedValue);
+    const onPressIn = () => {
+        Animated.spring(animatedValue, {
+            toValue: 1.25,
+            useNativeDriver: true,
+        }).start();
+    };
+    const onPressOut = () => {
+        Animated.spring(animatedValue, {
+            toValue: 1,
+            useNativeDriver: true,
+        }).start();
+    };
 
     if (!loaded) {
         return <View />;
@@ -60,28 +80,33 @@ function ContactMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                     Get in touch with us now.
                 </Text>
             </Text>
-            <MarginVertical size={0.5} />
-            <TouchableOpacity
-                style={[
-                    styles.button,
-                    {
-                        paddingVertical: fontFactor * wp(4),
-                        paddingHorizontal: fontFactor * 2 * wp(4),
-                    },
-                ]}
+            <MarginVertical size={1} />
+            <TouchableWithoutFeedback
+                onPressIn={onPressIn}
+                onPressOut={onPressOut}
             >
-                <Text
+                <Animated.View
                     style={[
-                        styles.buttonText,
+                        styles.button,
                         {
-                            fontSize: fontFactor * wp(4),
-                            lineHeight: fontFactor * wp(5.1),
+                            paddingVertical: fontFactor * wp(3.5),
+                            paddingHorizontal: 2 * fontFactor * wp(3.5),
+                            transform: [{ scale: animatedValue }],
                         },
                     ]}
                 >
-                    Contact Us
-                </Text>
-            </TouchableOpacity>
+                    <Text
+                        style={[
+                            styles.buttonText,
+                            {
+                                fontSize: fontFactor * wp(3.85),
+                            },
+                        ]}
+                    >
+                        Contact Us
+                    </Text>
+                </Animated.View>
+            </TouchableWithoutFeedback>
             <MarginVertical size={2} />
         </View>
     );

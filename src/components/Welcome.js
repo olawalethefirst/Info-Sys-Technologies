@@ -104,7 +104,6 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
                     </Text>
                     <MarginVertical size={3} />
                     <TouchableWithoutFeedback
-                        style={[styles.buttonContainer]}
                         onPressIn={onPressIn}
                         onPressOut={onPressOut}
                     >
@@ -174,9 +173,6 @@ const styles = StyleSheet.create({
     },
     contentContainer2ColumnMode: {
         flex: 4 / 10,
-    },
-    buttonContainer: {
-        flex: 1,
     },
     button: {
         backgroundColor: '#1A91D7',

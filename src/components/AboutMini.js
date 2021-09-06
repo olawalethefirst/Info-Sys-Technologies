@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    TouchableWithoutFeedback,
+    View,
+    Animated,
+} from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import AboutMiniSVG from './AboutMiniSVG';
@@ -15,6 +21,19 @@ function AboutMini({ bodyHeight, fontFactor, margin, deviceWidthClass }) {
         Poppins_600SemiBold,
         Karla_400Regular,
     });
+    const animatedValue = new Animated.Value(1);
+    const onPressIn = () => {
+        Animated.spring(animatedValue, {
+            toValue: 0.8,
+            useNativeDriver: true,
+        }).start();
+    };
+    const onPressOut = () => {
+        Animated.spring(animatedValue, {
+            toValue: 1,
+            useNativeDriver: true,
+        }).start();
+    };
     const columnMode = checkColumnMode(deviceWidthClass);
 
     if (!loaded) {
@@ -75,19 +94,31 @@ function AboutMini({ bodyHeight, fontFactor, margin, deviceWidthClass }) {
                     services.
                 </Text>
                 <MarginVertical size={1} />
-                <TouchableOpacity
-                    style={[styles.button, { padding: fontFactor * wp(3.5) }]}
-                    onPress={() => console.log('pressed')}
+                <TouchableWithoutFeedback
+                    onPressIn={onPressIn}
+                    onPressOut={onPressOut}
                 >
-                    <Text
+                    <Animated.View
                         style={[
-                            styles.buttonText,
-                            { fontSize: fontFactor * wp(3.85) },
+                            styles.button,
+                            {
+                                padding: fontFactor * wp(3.5),
+                                transform: [{ scale: animatedValue }],
+                            },
                         ]}
                     >
-                        Read more
-                    </Text>
-                </TouchableOpacity>
+                        <Text
+                            style={[
+                                styles.buttonText,
+                                {
+                                    fontSize: fontFactor * wp(3.85),
+                                },
+                            ]}
+                        >
+                            Read more
+                        </Text>
+                    </Animated.View>
+                </TouchableWithoutFeedback>
                 <MarginVertical size={2} />
             </View>
         </View>
@@ -132,7 +163,6 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: '#1A91D7',
         alignItems: 'center',
-        // alignSelf: 'center',
     },
     buttonText: {
         color: '#fff',

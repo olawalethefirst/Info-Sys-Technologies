@@ -4,7 +4,8 @@ import {
     ImageBackground,
     StyleSheet,
     Text,
-    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Animated,
     View,
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -27,6 +28,21 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
         Karla_400Regular,
         Karla_500Medium,
     });
+
+    const animatedValue = new Animated.Value(1);
+    const onPressIn = () => {
+        Animated.spring(animatedValue, {
+            toValue: 1.25,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const onPressOut = () => {
+        Animated.spring(animatedValue, {
+            toValue: 1,
+            useNativeDriver: true,
+        }).start();
+    };
 
     if (!loaded) {
         return <View />;
@@ -122,27 +138,33 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                         Join Us Today.
                     </Text>
                     <MarginVertical size={1} />
-                    <TouchableOpacity
-                        style={[
-                            styles.button,
-                            {
-                                paddingVertical: fontFactor * wp(5),
-                                paddingHorizontal: fontFactor * 2 * wp(5),
-                            },
-                        ]}
+                    <TouchableWithoutFeedback
+                        style={[]}
+                        onPressIn={onPressIn}
+                        onPressOut={onPressOut}
                     >
-                        <Text
+                        <Animated.View
                             style={[
-                                styles.buttonText,
+                                styles.button,
                                 {
-                                    fontSize: fontFactor * wp(5),
-                                    lineHeight: fontFactor * wp(6),
+                                    paddingVertical: fontFactor * wp(3.5),
+                                    paddingHorizontal: 2 * fontFactor * wp(3.5),
+                                    transform: [{ scale: animatedValue }],
                                 },
                             ]}
                         >
-                            Join
-                        </Text>
-                    </TouchableOpacity>
+                            <Text
+                                style={[
+                                    styles.buttonText,
+                                    {
+                                        fontSize: fontFactor * wp(3.85),
+                                    },
+                                ]}
+                            >
+                                Join
+                            </Text>
+                        </Animated.View>
+                    </TouchableWithoutFeedback>
                 </View>
             </View>
         </View>
