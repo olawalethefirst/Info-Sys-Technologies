@@ -74,8 +74,8 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                     style={[
                         styles.imageHeading,
                         {
-                            fontSize: fontFactor * wp(8.5),
-                            lineHeight: fontFactor * wp(10.81),
+                            fontSize: fontFactor * wp(9),
+                            lineHeight: fontFactor * wp(11.45),
                             maxWidth: wp(70),
                         },
                     ]}

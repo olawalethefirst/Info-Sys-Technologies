@@ -29,12 +29,20 @@ export default function ServiceTemplate({
 
     const animatedValue = new Animated.Value(0);
     useEffect(() => {
-        Animated.timing(animatedValue, {
-            toValue: 0.8,
-            duration: 3000,
-            easing: Easing.bounce,
-            useNativeDriver: true,
-        }).start();
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(animatedValue, {
+                    toValue: -(fontFactor * wp(0.5)),
+                    useNativeDriver: true,
+                    duration: 400,
+                }),
+                Animated.timing(animatedValue, {
+                    toValue: fontFactor * wp(0.5),
+                    useNativeDriver: true,
+                    duration: 400,
+                }),
+            ])
+        ).start();
     });
 
     if (!loaded) {
@@ -53,7 +61,9 @@ export default function ServiceTemplate({
                 columnMode && {},
             ]}
         >
-            <View style={styles.iconContainer}>{children}</View>
+            <Animated.View style={[styles.iconContainer]}>
+                {children}
+            </Animated.View>
             <MarginVertical size={1.5} />
 
             <Animated.Text
@@ -62,7 +72,6 @@ export default function ServiceTemplate({
                     {
                         fontSize: fontFactor * wp(4.6),
                         lineHeight: fontFactor * wp(5.85),
-                        opacity: animatedValue,
                     },
                 ]}
             >
@@ -102,6 +111,19 @@ export default function ServiceTemplate({
                     ]}
                 >
                     Learn more{'   '}
+                </Text>
+                <Animated.Text
+                    style={[
+                        styles.buttonText,
+                        {
+                            fontSize: fontFactor * wp(3.58),
+                            lineHeight: fontFactor * wp(4.55),
+                        },
+                        {
+                            transform: [{ translateX: animatedValue }],
+                        },
+                    ]}
+                >
                     <Icon
                         name="arrow-long-right"
                         style={{
@@ -109,7 +131,7 @@ export default function ServiceTemplate({
                             lineHeight: fontFactor * wp(4.55),
                         }}
                     />
-                </Text>
+                </Animated.Text>
             </TouchableOpacity>
         </View>
     );
@@ -146,6 +168,7 @@ const styles = StyleSheet.create({
     },
     button: {
         alignSelf: 'flex-start',
+        flexDirection: 'row',
     },
     buttonText: {
         color: '#fff',
