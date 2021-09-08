@@ -20,6 +20,13 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
             width: headerWidth,
             height: effectiveHeaderSize,
             backgroundColor: '#1A91D7',
+            shadowColor: '#161B26',
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.5,
+            shadowRadius: 4,
         },
         container: {
             flex: 1,
@@ -45,6 +52,7 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
                     style={styles.menuIcon}
                     width={menuIconWidth}
                     height={effectiveHeaderSize}
+                    fontFactor={fontFactor}
                 />
             </View>
         </SafeAreaView>

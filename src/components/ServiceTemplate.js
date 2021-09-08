@@ -34,12 +34,12 @@ export default function ServiceTemplate({
                 Animated.timing(animatedValue, {
                     toValue: -(fontFactor * wp(0.5)),
                     useNativeDriver: true,
-                    duration: 400,
+                    duration: 600,
                 }),
                 Animated.timing(animatedValue, {
                     toValue: fontFactor * wp(0.5),
                     useNativeDriver: true,
-                    duration: 400,
+                    duration: 600,
                 }),
             ])
         ).start();
