@@ -8,7 +8,6 @@ import {
     Animated,
     View,
 } from 'react-native';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import MarginVertical from './MarginVertical';
 import { useFonts } from '@expo-google-fonts/poppins';
@@ -19,9 +18,8 @@ import {
     heightPercentageToDP as hp,
     widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import checkColumnMode from '../helperFunctions/checkColumnMode';
 
-function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
+export default function ForumMini({ margin, fontFactor, bodyHeight }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -174,7 +172,6 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
 ForumMini.propTypes = {
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
-    deviceWidthClass: PropTypes.string,
     bodyHeight: PropTypes.number,
 };
 
@@ -211,12 +208,3 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins_600SemiBold',
     },
 });
-
-const mapStateToProps = (state) => ({
-    margin: state.settingsState.margin,
-    fontFactor: state.settingsState.fontFactor,
-    deviceWidthClass: state.settingsState.deviceWidthClass,
-    bodyHeight: state.settingsState.bodyHeight,
-});
-
-export default connect(mapStateToProps)(ForumMini);

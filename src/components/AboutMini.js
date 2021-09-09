@@ -6,7 +6,6 @@ import {
     View,
     Animated,
 } from 'react-native';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import AboutMiniSVG from './AboutMiniSVG';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -16,7 +15,7 @@ import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 import MarginVertical from './MarginVertical';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 
-function AboutMini({ fontFactor, margin, deviceWidthClass }) {
+export default function AboutMini({ fontFactor, margin, deviceWidthClass }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -169,11 +168,3 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins_600SemiBold',
     },
 });
-
-const mapStateToProps = (state) => ({
-    fontFactor: state.settingsState.fontFactor,
-    margin: state.settingsState.margin,
-    deviceWidthClass: state.settingsState.deviceWidthClass,
-});
-
-export default connect(mapStateToProps)(AboutMini);

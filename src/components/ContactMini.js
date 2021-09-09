@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable, Animated } from 'react-native';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ContactSVG from './ContactSVG';
@@ -8,7 +7,7 @@ import MarginVertical from './MarginVertical';
 import { useFonts, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 
-function ContactMini({ margin, fontFactor, bodyHeight }) {
+export default function ContactMini({ margin, fontFactor, bodyHeight }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -106,7 +105,6 @@ function ContactMini({ margin, fontFactor, bodyHeight }) {
 ContactMini.propTypes = {
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
-    // deviceWidthClass: PropTypes.string,
     bodyHeight: PropTypes.number,
 };
 
@@ -134,12 +132,3 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins_600SemiBold',
     },
 });
-
-const mapStateToProps = (state) => ({
-    margin: state.settingsState.margin,
-    fontFactor: state.settingsState.fontFactor,
-    // deviceWidthClass: state.settingsState.deviceWidthClass,
-    bodyHeight: state.settingsState.bodyHeight,
-});
-
-export default connect(mapStateToProps)(ContactMini);

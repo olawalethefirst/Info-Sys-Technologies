@@ -16,14 +16,18 @@ import {
     widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 
 /*global require*/
 /*eslint no-undef: "error"*/
 
-function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
+export default function Welcome({
+    margin,
+    bodyHeight,
+    fontFactor,
+    deviceWidthClass,
+}) {
     const [loaded] = useFonts({
         Poppins_700Bold,
         Karla_500Medium,
@@ -180,12 +184,3 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins_600SemiBold',
     },
 });
-
-const mapStateToProps = (state) => ({
-    margin: state.settingsState.margin,
-    bodyHeight: state.settingsState.bodyHeight,
-    fontFactor: state.settingsState.fontFactor,
-    deviceWidthClass: state.settingsState.deviceWidthClass,
-});
-
-export default connect(mapStateToProps, {})(Welcome);

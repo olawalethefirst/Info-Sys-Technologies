@@ -14,6 +14,7 @@ import updateDeviceWidthClass from '../redux/actions/updateDeviceWidthClass';
 import updateBodyHeight from '../redux/actions/updateBodyHeight';
 import PropTypes from 'prop-types';
 import updateFontFactor from '../redux/actions/updateFontFactor';
+import AboutScreen from '../screens/AboutScreen';
 
 const mainStack = createStackNavigator();
 
@@ -58,6 +59,7 @@ function MainNavigator({
             }}
         >
             <mainStack.Screen name="Home" component={HomeScreen} />
+            <mainStack.Screen name="About" component={AboutScreen} />
         </mainStack.Navigator>
     );
 }

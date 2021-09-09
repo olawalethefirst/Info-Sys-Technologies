@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -15,7 +14,7 @@ import ITIcon from './ITIcon';
 import MTDIcon from './MTDIcon';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 
-function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
+export default function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -159,11 +158,3 @@ const styles = StyleSheet.create({
         fontFamily: 'Karla_400Regular',
     },
 });
-
-const mapStateToProps = (state) => ({
-    margin: state.settingsState.margin,
-    fontFactor: state.settingsState.fontFactor,
-    deviceWidthClass: state.settingsState.deviceWidthClass,
-});
-
-export default connect(mapStateToProps)(ServicesMini);
