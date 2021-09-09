@@ -16,7 +16,7 @@ import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 import MarginVertical from './MarginVertical';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 
-function AboutMini({ bodyHeight, fontFactor, margin, deviceWidthClass }) {
+function AboutMini({ fontFactor, margin, deviceWidthClass }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -43,7 +43,7 @@ function AboutMini({ bodyHeight, fontFactor, margin, deviceWidthClass }) {
     return (
         <View
             style={[
-                { minHeight: bodyHeight, paddingHorizontal: margin },
+                { paddingHorizontal: margin },
                 styles.container,
                 columnMode && styles.containerColumnMode,
             ]}
@@ -54,17 +54,18 @@ function AboutMini({ bodyHeight, fontFactor, margin, deviceWidthClass }) {
                     columnMode && styles.contentContainer1ColumnMode,
                 ]}
             >
-                <MarginVertical size={2} />
+                <MarginVertical size={3} />
                 <AboutMiniSVG width={columnMode ? wp(80) / 2 : wp(80)} />
-                <MarginVertical size={1} />
+                {columnMode && <MarginVertical size={3} />}
             </View>
+            {!columnMode && <MarginVertical />}
             <View
                 style={[
                     styles.contentContainer2,
                     columnMode && styles.contentContainer2ColumnMode,
                 ]}
             >
-                <MarginVertical size={1} />
+                {columnMode && <MarginVertical size={4} />}
                 <Text
                     style={[
                         styles.heading,
@@ -93,7 +94,7 @@ function AboutMini({ bodyHeight, fontFactor, margin, deviceWidthClass }) {
                     accounting and information Technology areas amongst other
                     services.
                 </Text>
-                <MarginVertical size={1} />
+                <MarginVertical size={2} />
                 <TouchableWithoutFeedback
                     onPressIn={onPressIn}
                     onPressOut={onPressOut}
@@ -119,14 +120,13 @@ function AboutMini({ bodyHeight, fontFactor, margin, deviceWidthClass }) {
                         </Text>
                     </Animated.View>
                 </TouchableWithoutFeedback>
-                <MarginVertical size={2} />
+                <MarginVertical size={4} />
             </View>
         </View>
     );
 }
 
 AboutMini.propTypes = {
-    bodyHeight: PropTypes.number,
     fontFactor: PropTypes.number,
     margin: PropTypes.number,
     deviceWidthClass: PropTypes.string,
@@ -171,7 +171,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
-    bodyHeight: state.settingsState.bodyHeight,
     fontFactor: state.settingsState.fontFactor,
     margin: state.settingsState.margin,
     deviceWidthClass: state.settingsState.deviceWidthClass,

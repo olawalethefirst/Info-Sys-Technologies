@@ -15,7 +15,6 @@ import { useFonts } from '@expo-google-fonts/poppins';
 import Poppins_600SemiBold from '@expo-google-fonts/poppins/Poppins_600SemiBold.ttf';
 import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 import Karla_500Medium from '@expo-google-fonts/karla/Karla_500Medium.ttf';
-
 import {
     heightPercentageToDP as hp,
     widthPercentageToDP as wp,
@@ -49,14 +48,7 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
     }
 
     return (
-        <View
-            style={[
-                styles.container,
-                {
-                    minHeight: bodyHeight,
-                },
-            ]}
-        >
+        <View style={[styles.container]}>
             <ImageBackground
                 source={require('../../assets/images/background1.png')}
                 resizeMode="cover"
@@ -65,11 +57,11 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                     styles.imageContainer,
                     {
                         minHeight: bodyHeight / 2,
-                        padding: margin,
+                        paddingHorizontal: margin,
                     },
                 ]}
             >
-                <MarginVertical size={1} />
+                <MarginVertical size={4} />
                 <Text
                     style={[
                         styles.imageHeading,
@@ -82,7 +74,7 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                 >
                     Do you like engaging in discussions?{' '}
                 </Text>
-                <MarginVertical size={1} />
+                <MarginVertical size={2} />
                 <Text
                     style={[
                         styles.imageParagraph,
@@ -96,15 +88,22 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                     Or you simply enjoy reading conversations between random
                     strangers on the internet?
                 </Text>
-                <MarginVertical size={2} />
+                <MarginVertical size={4} />
             </ImageBackground>
-            <View style={[styles.miniContainer, { paddingHorizontal: margin }]}>
+            <View
+                style={[
+                    styles.miniContainer,
+                    { paddingHorizontal: margin, minHeight: bodyHeight / 3 },
+                ]}
+            >
                 <View
                     style={[
                         styles.microContainer,
-                        { padding: 10 / fontFactor },
+                        { paddingHorizontal: 10 / fontFactor },
                     ]}
                 >
+                    <MarginVertical size={2} />
+
                     <Text
                         style={[
                             styles.microContent,
@@ -167,6 +166,7 @@ function ForumMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                     </TouchableWithoutFeedback>
                 </View>
             </View>
+            <MarginVertical size={4} />
         </View>
     );
 }

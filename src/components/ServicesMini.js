@@ -15,7 +15,7 @@ import ITIcon from './ITIcon';
 import MTDIcon from './MTDIcon';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 
-function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
+function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -28,13 +28,8 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
     }
 
     return (
-        <View
-            style={[
-                styles.container,
-                { minHeight: bodyHeight, paddingHorizontal: margin },
-            ]}
-        >
-            <MarginVertical size={3} />
+        <View style={[styles.container, { paddingHorizontal: margin }]}>
+            <MarginVertical size={4} />
             <View style={[]}>
                 <Text
                     style={[
@@ -47,7 +42,7 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                 >
                     Services
                 </Text>
-                <MarginVertical size={0.5} />
+                <MarginVertical />
                 <Text
                     style={[
                         styles.paragraph,
@@ -65,12 +60,7 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
             </View>
             <MarginVertical size={3} />
 
-            <View
-                style={[
-                    styles.servicePairContainer,
-                    columnMode && styles.servicePairContainerColumnMode,
-                ]}
-            >
+            <View style={[columnMode && styles.servicePairContainerColumnMode]}>
                 <ServiceTemplate
                     columnMode={columnMode}
                     fontFactor={fontFactor}
@@ -79,7 +69,7 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                 >
                     <ACIcon />
                 </ServiceTemplate>
-                {!columnMode && <MarginVertical size={3} />}
+                {!columnMode && <MarginVertical size={2} />}
                 {columnMode && <View style={{ flex: 0.1 }} />}
                 <ServiceTemplate
                     columnMode={columnMode}
@@ -90,14 +80,9 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                     <MTDIcon />
                 </ServiceTemplate>
             </View>
-            <MarginVertical size={3} />
+            <MarginVertical size={2} />
 
-            <View
-                style={[
-                    styles.servicePairContainer,
-                    columnMode && styles.servicePairContainerColumnMode,
-                ]}
-            >
+            <View style={[columnMode && styles.servicePairContainerColumnMode]}>
                 <ServiceTemplate
                     columnMode={columnMode}
                     fontFactor={fontFactor}
@@ -106,7 +91,7 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                 >
                     <FBPIcon />
                 </ServiceTemplate>
-                {!columnMode && <MarginVertical size={3} />}
+                {!columnMode && <MarginVertical size={2} />}
                 {columnMode && <View style={{ flex: 0.1 }} />}
                 <ServiceTemplate
                     columnMode={columnMode}
@@ -117,14 +102,9 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                     <FMSIcon />
                 </ServiceTemplate>
             </View>
-            <MarginVertical size={3} />
+            <MarginVertical size={2} />
 
-            <View
-                style={[
-                    styles.servicePairContainer,
-                    columnMode && styles.servicePairContainerColumnMode,
-                ]}
-            >
+            <View style={[columnMode && styles.servicePairContainerColumnMode]}>
                 <ServiceTemplate
                     columnMode={columnMode}
                     fontFactor={fontFactor}
@@ -146,14 +126,13 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass, bodyHeight }) {
                     ]}
                 />
             </View>
-            <MarginVertical size={3} />
+            <MarginVertical size={4} />
         </View>
     );
 }
 
 ServicesMini.propTypes = {
     margin: PropTypes.number,
-    bodyHeight: PropTypes.number,
     fontFactor: PropTypes.number,
     deviceWidthClass: PropTypes.string,
 };
@@ -185,7 +164,6 @@ const mapStateToProps = (state) => ({
     margin: state.settingsState.margin,
     fontFactor: state.settingsState.fontFactor,
     deviceWidthClass: state.settingsState.deviceWidthClass,
-    bodyHeight: state.settingsState.bodyHeight,
 });
 
 export default connect(mapStateToProps)(ServicesMini);

@@ -7,7 +7,7 @@ function AboutMiniSVG({ width }) {
     return (
         <Svg
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="100 0 600 500"
+            viewBox="100 30 600 450"
             width={width}
             style={styles.SVG}
         >
@@ -924,7 +924,7 @@ AboutMiniSVG.propTypes = {
 
 const styles = StyleSheet.create({
     SVG: {
-        aspectRatio: 500 / 500,
+        aspectRatio: 500 / 420,
     },
 });
 

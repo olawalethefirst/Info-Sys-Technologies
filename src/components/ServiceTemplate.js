@@ -5,7 +5,6 @@ import {
     TouchableOpacity,
     View,
     Animated,
-    Easing,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -19,7 +18,6 @@ export default function ServiceTemplate({
     columnMode,
     children,
     serviceTitle,
-    serviceBody,
     fontFactor,
 }) {
     const [loaded] = useFonts({
@@ -77,7 +75,7 @@ export default function ServiceTemplate({
             >
                 {serviceTitle}
             </Animated.Text>
-            <MarginVertical size={1.5} />
+            <MarginVertical size={1} />
             <Text
                 style={[
                     styles.paragraph,
@@ -89,7 +87,7 @@ export default function ServiceTemplate({
             >
                 {'Dummy service body paragraph, to be replaced'}
             </Text>
-            <MarginVertical size={1.5} />
+            <MarginVertical size={1} />
 
             <TouchableOpacity
                 style={[

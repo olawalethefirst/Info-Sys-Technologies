@@ -4,7 +4,7 @@ import {
     Text,
     View,
     ImageBackground,
-    TouchableWithoutFeedback,
+    Pressable,
     Animated,
 } from 'react-native';
 import { useFonts } from '@expo-google-fonts/poppins';
@@ -66,7 +66,7 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
                         columnMode && styles.contentContainer1ColumnMode,
                     ]}
                 >
-                    <MarginVertical size={3} />
+                    <MarginVertical size={4} />
                     <Text
                         style={[
                             styles.heading,
@@ -78,7 +78,7 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
                     >
                         Maximizing productivity, one business at a time.
                     </Text>
-                    <MarginVertical size={1.5} />
+                    <MarginVertical size={1} />
                     <Text
                         style={[
                             styles.paragraph,
@@ -102,11 +102,8 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
                     >
                         We strive for nothing but the best.
                     </Text>
-                    <MarginVertical size={3} />
-                    <TouchableWithoutFeedback
-                        onPressIn={onPressIn}
-                        onPressOut={onPressOut}
-                    >
+                    <MarginVertical size={2} />
+                    <Pressable onPressIn={onPressIn} onPressOut={onPressOut}>
                         <Animated.View
                             style={[
                                 styles.button,
@@ -127,8 +124,8 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
                                 Learn more
                             </Text>
                         </Animated.View>
-                    </TouchableWithoutFeedback>
-                    <MarginVertical size={3} />
+                    </Pressable>
+                    <MarginVertical size={4} />
                 </View>
                 <View
                     style={columnMode && styles.contentContainer2ColumnMode}
