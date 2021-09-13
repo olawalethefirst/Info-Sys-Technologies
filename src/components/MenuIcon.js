@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, Pressable, Animated } from 'react-native';
+import { StyleSheet, Pressable, Animated, View } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 import ModalScreen from '../screens/ModalScreen';
 import PropTypes from 'prop-types';

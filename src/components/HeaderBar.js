@@ -27,6 +27,7 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
             },
             shadowOpacity: 0.5,
             shadowRadius: 4,
+            zIndex: 10,
         },
         container: {
             flex: 1,

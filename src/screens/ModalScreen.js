@@ -1,5 +1,12 @@
 import React, { useRef } from 'react';
-import { StyleSheet, View, Pressable, Animated } from 'react-native';
+import {
+    StyleSheet,
+    View,
+    Pressable,
+    Animated,
+    Dimensions,
+    Platform,
+} from 'react-native';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/Feather';
 import Constants from 'expo-constants';
@@ -8,6 +15,7 @@ import { useFonts } from '@expo-google-fonts/poppins';
 import { Poppins_500Medium } from '@expo-google-fonts/poppins';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/core';
 
 export default function ModalScreen({
     visible,
@@ -53,6 +61,15 @@ export default function ModalScreen({
         fontSize: fontFactor * wp(7),
         lineHeight: fontFactor * wp(8.91),
     };
+    const navigation = useNavigation();
+    const deviceWidth = Dimensions.get('window').width;
+    const deviceHeight =
+        Platform.OS === 'ios'
+            ? Dimensions.get('window').height
+            : // eslint-disable-next-line no-undef
+              require('react-native-extra-dimensions-android').get(
+                  'REAL_WINDOW_HEIGHT'
+              );
 
     if (!loaded) {
         return <View />;
@@ -70,6 +87,8 @@ export default function ModalScreen({
             hideModalContentWhileAnimating={true}
             swipeDirection="down"
             onSwipeComplete={closeModal}
+            deviceWidth={deviceWidth}
+            deviceHeight={deviceHeight}
         >
             <View style={[styles.modalContainer]}>
                 <Pressable
@@ -96,6 +115,10 @@ export default function ModalScreen({
                     <Pressable
                         onPressIn={() => onPressNavItemIn(homeAnimatedValue)}
                         onPressOut={() => onPressNavItemOut(homeAnimatedValue)}
+                        onPress={() => {
+                            navigation.navigate('Home');
+                            closeModal();
+                        }}
                         hitSlop={fontFactor * wp(7)}
                     >
                         <Animated.Text
@@ -112,6 +135,10 @@ export default function ModalScreen({
                     <Pressable
                         onPressIn={() => onPressNavItemIn(aboutAnimatedValue)}
                         onPressOut={() => onPressNavItemOut(aboutAnimatedValue)}
+                        onPress={() => {
+                            navigation.navigate('About');
+                            closeModal();
+                        }}
                         hitSlop={fontFactor * wp(7)}
                     >
                         <Animated.Text
@@ -132,6 +159,10 @@ export default function ModalScreen({
                         onPressOut={() =>
                             onPressNavItemOut(servicesAnimatedValue)
                         }
+                        onPress={() => {
+                            navigation.navigate('About');
+                            closeModal();
+                        }}
                         hitSlop={fontFactor * wp(7)}
                     >
                         <Animated.Text

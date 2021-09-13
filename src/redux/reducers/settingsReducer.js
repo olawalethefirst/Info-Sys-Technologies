@@ -17,6 +17,7 @@ const initialState = {
     deviceWidthClass: null,
     bodyHeight: null,
     fontFactor: null,
+    modalEnabled: false,
 };
 
 export default function settingsReducer(state = initialState, action) {

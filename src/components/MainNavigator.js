@@ -1,10 +1,10 @@
+/* eslint-disable react/prop-types */
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 // import { StyleSheet, Text, View } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 // import { initializeFirebase } from '../redux/actions/firebaseActions';
 import { connect } from 'react-redux';
-import { useWindowDimensions } from 'react-native';
 import HeaderBar from './HeaderBar';
 import updateHeaderSize from '../redux/actions/updateHeaderSize';
 import updateMargin from '../redux/actions/updateMargin';
@@ -15,6 +15,7 @@ import updateBodyHeight from '../redux/actions/updateBodyHeight';
 import PropTypes from 'prop-types';
 import updateFontFactor from '../redux/actions/updateFontFactor';
 import AboutScreen from '../screens/AboutScreen';
+import { getHeaderTitle } from '@react-navigation/stack/node_modules/@react-navigation/elements';
 
 const mainStack = createStackNavigator();
 
@@ -31,19 +32,14 @@ function MainNavigator({
     fontFactor,
     updateFontFactor,
 }) {
-    const { height, width } = useWindowDimensions();
-
-    // console.log('deviceWidthClass', deviceWidthClass);
-    // console.log('fontFactor', fontFactor);
-
     useEffect(() => {
         updateHeaderSize();
         updateMargin();
         updateAssetsStatus();
-        updateDeviceWidthClass(width);
+        updateDeviceWidthClass();
         updateBodyHeight();
-        updateFontFactor(width);
-    }, [height, width]);
+        updateFontFactor();
+    }, []);
 
     //To-Do: Disable rerendering on change of height and width - treat each component independently
 
@@ -55,7 +51,11 @@ function MainNavigator({
         <mainStack.Navigator
             initialRouteName="Home"
             screenOptions={{
-                header: () => <HeaderBar />,
+                // eslint-disable-next-line react/display-name
+                header: ({ route, options }) => {
+                    const title = getHeaderTitle(options, route.name);
+                    return <HeaderBar title={title} />;
+                },
             }}
         >
             <mainStack.Screen name="Home" component={HomeScreen} />
