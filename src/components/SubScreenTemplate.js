@@ -1,15 +1,30 @@
 import React, { useRef } from 'react';
-import { StyleSheet, Animated, Text, View } from 'react-native';
+import {
+    StyleSheet,
+    Animated,
+    Text,
+    View,
+    ImageBackground,
+} from 'react-native';
 import { connect } from 'react-redux';
-// import diff
+import { useFonts, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import Constants from 'expo-constants';
+import PropTypes from 'prop-types';
 
 function SubScreenTemplate({
     margin,
-    bodyHeight,
+    // bodyHeight,
     fontFactor,
-    deviceWidthClass,
+    // deviceWidthClass,
     headerSize,
+    heading,
+    sectionComponents,
+    scrollRef,
 }) {
+    const [loaded] = useFonts({
+        Poppins_600SemiBold,
+    });
     const scrollY = useRef(new Animated.Value(0));
     const handleScroll = Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY.current } } }],
@@ -26,48 +41,87 @@ function SubScreenTemplate({
         }
     );
 
+    const AnimatedImageBackground =
+        Animated.createAnimatedComponent(ImageBackground);
+    const { statusBarHeight } = Constants;
+
+    if (!loaded) {
+        return <View style={{ flex: 1 }} />;
+    }
     return (
         <View style={styles.container}>
-            <Animated.ScrollView
-                scrollEnabled={false}
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: headerSize,
-                    backgroundColor: 'tomato',
-                    transform: [
-                        {
-                            translateY,
-                        },
-                    ],
-                }}
+            <AnimatedImageBackground
+                //eslint-disable-next-line no-undef
+                source={require('../../assets/images/background2.png')}
+                resizeMode="cover"
+                style={[
+                    styles.header,
+                    {
+                        paddingHorizontal: margin,
+                        minHeight: headerSize - statusBarHeight,
+                        transform: [
+                            {
+                                translateY,
+                            },
+                        ],
+                    },
+                ]}
             >
-                <Text>A sticky Header</Text>
-            </Animated.ScrollView>
+                <Text
+                    style={[
+                        styles.headerText,
+                        {
+                            fontSize: fontFactor * wp(8.5),
+                            lineHeight: fontFactor * wp(10.81),
+                        },
+                    ]}
+                >
+                    {heading}
+                </Text>
+            </AnimatedImageBackground>
             <Animated.FlatList
-                // ref={headerRef}
                 style={{ zIndex: -1 }}
                 scrollEventThrottle={16}
                 onScroll={handleScroll}
-                contentContainerStyle={{ paddingTop: headerSize }}
-                data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-                keyExtractor={(index, item) => index + item + ' '}
+                contentContainerStyle={{
+                    paddingTop: headerSize - statusBarHeight,
+                }}
+                data={sectionComponents}
+                keyExtractor={(item, index) => 'keyExtractor' + index}
                 bounces={false}
-                renderItem={({ item, index }) => (
-                    <View style={{ height: 200 }}>
-                        <Text>A sticky Header - {index}</Text>
-                    </View>
-                )}
+                renderItem={({ item }) => item.data}
+                ref={scrollRef}
             />
         </View>
     );
 }
 
+SubScreenTemplate.propTypes = {
+    margin: PropTypes.number,
+    bodyHeight: PropTypes.number,
+    fontFactor: PropTypes.number,
+    deviceWidthClass: PropTypes.string,
+    headerSize: PropTypes.number,
+    heading: PropTypes.string,
+    sectionComponents: PropTypes.array,
+    scrollRef: PropTypes.object,
+};
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    header: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#161B26',
+        justifyContent: 'center',
+    },
+    headerText: {
+        color: '#fff',
+        fontFamily: 'Poppins_600SemiBold',
     },
 });
 

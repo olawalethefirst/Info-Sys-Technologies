@@ -84,8 +84,12 @@ export default function ServiceTemplate({
                         lineHeight: fontFactor * wp(5.85),
                     },
                 ]}
+                numberOfLines={3}
+                ellipsizeMode="tail"
             >
-                {'Dummy service body paragraph, to be replaced'}
+                {
+                    'Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replacedDummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced'
+                }
             </Text>
             <MarginVertical size={1} />
 

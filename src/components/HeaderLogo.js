@@ -11,7 +11,7 @@ function HeaderLogo({ margin, fontFactor }) {
                 styles.container,
                 {
                     marginLeft: margin,
-                    marginRight: (margin * 2) / fontFactor,
+                    marginRight: (margin * 4) / fontFactor,
                 },
             ]}
         >

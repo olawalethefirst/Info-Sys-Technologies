@@ -3,7 +3,7 @@ import { UPDATE_MARGIN } from './actionTypes';
 
 const updateMargin = () => ({
     type: UPDATE_MARGIN,
-    payload: wp(6),
+    payload: wp(4),
 });
 
 export default updateMargin;

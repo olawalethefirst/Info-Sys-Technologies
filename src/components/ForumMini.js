@@ -19,7 +19,7 @@ import {
     widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-export default function ForumMini({ margin, fontFactor, bodyHeight }) {
+function ForumMini({ margin, fontFactor, bodyHeight }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -42,7 +42,7 @@ export default function ForumMini({ margin, fontFactor, bodyHeight }) {
     };
 
     if (!loaded) {
-        return <View />;
+        return null;
     }
 
     return (
@@ -174,6 +174,8 @@ ForumMini.propTypes = {
     fontFactor: PropTypes.number,
     bodyHeight: PropTypes.number,
 };
+
+export default React.memo(ForumMini);
 
 const styles = StyleSheet.create({
     container: {},

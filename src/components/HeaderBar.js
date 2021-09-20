@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView } from 'react-native';
+import { View, SafeAreaView, StatusBar, Platform } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
 import HeaderLogo from './HeaderLogo';
@@ -13,21 +13,24 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
     const menuIconWidth = headerSize - statusBarHeight / 2;
     const headerLogoWidth = headerWidth - menuIconWidth;
     const effectiveHeaderSize = headerSize - statusBarHeight;
-
     const styles = {
-        headerBar: {
-            marginTop: statusBarHeight,
+        headerWithStatusBar: {
+            paddingTop: Platform.OS === 'ios' ? statusBarHeight : 0,
             width: headerWidth,
-            height: effectiveHeaderSize,
-            backgroundColor: '#1A91D7',
+            height: Platform.OS === 'ios' ? headerSize : effectiveHeaderSize,
+            backgroundColor: '#1a85c5',
             shadowColor: '#161B26',
             shadowOffset: {
                 width: 0,
                 height: 2,
             },
-            shadowOpacity: 0.5,
-            shadowRadius: 4,
+            shadowOpacity: 0.7,
+            shadowRadius: 3,
             zIndex: 10,
+        },
+        headerBar: {
+            flex: 1,
+            backgroundColor: '#1A91D7',
         },
         container: {
             flex: 1,
@@ -42,21 +45,34 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
     };
 
     return (
-        <SafeAreaView style={[styles.headerBar]}>
-            <View style={styles.container}>
-                <HeaderLogo
-                    style={styles.headerLogo}
-                    fontFactor={fontFactor}
-                    margin={margin}
+        <View style={[styles.headerWithStatusBar]}>
+            <View style={[styles.headerBar]}>
+                <StatusBar
+                    backgroundColor="#1A91D7"
+                    animated={true}
+                    barStyle={
+                        Platform.OS === 'ios'
+                            ? 'light-content'
+                            : 'light-content'
+                    }
+                    // hidden={true}
+                    style={{ height: 200 }}
                 />
-                <MenuIcon
-                    style={styles.menuIcon}
-                    width={menuIconWidth}
-                    height={effectiveHeaderSize}
-                    fontFactor={fontFactor}
-                />
+                <View style={styles.container}>
+                    <HeaderLogo
+                        style={styles.headerLogo}
+                        fontFactor={fontFactor}
+                        margin={margin}
+                    />
+                    <MenuIcon
+                        style={styles.menuIcon}
+                        width={menuIconWidth}
+                        height={effectiveHeaderSize}
+                        fontFactor={fontFactor}
+                    />
+                </View>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 

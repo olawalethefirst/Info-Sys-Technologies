@@ -15,7 +15,7 @@ import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 import MarginVertical from './MarginVertical';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 
-export default function AboutMini({ fontFactor, margin, deviceWidthClass }) {
+function AboutMini({ fontFactor, margin, deviceWidthClass }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -36,7 +36,7 @@ export default function AboutMini({ fontFactor, margin, deviceWidthClass }) {
     const columnMode = checkColumnMode(deviceWidthClass);
 
     if (!loaded) {
-        return <View />;
+        return null;
     }
 
     return (
@@ -88,9 +88,9 @@ export default function AboutMini({ fontFactor, margin, deviceWidthClass }) {
                 >
                     Info-Sys Technologies was founded in the year 2002 by Mr.
                     G.A Bashiru. The company started as an ICT training
-                    institute, but has expanded its services over the years into
-                    consultations, proffering high quality solutions in
-                    accounting and information Technology areas amongst other
+                    institute, but has since expanded its services over the
+                    years into consultations, proffering high quality solutions
+                    in accounting and information Technology areas amongst other
                     services.
                 </Text>
                 <MarginVertical size={2} />
@@ -130,6 +130,8 @@ AboutMini.propTypes = {
     margin: PropTypes.number,
     deviceWidthClass: PropTypes.string,
 };
+
+export default React.memo(AboutMini);
 
 const styles = StyleSheet.create({
     container: {

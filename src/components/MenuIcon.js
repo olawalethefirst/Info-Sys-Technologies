@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, Pressable, Animated, View } from 'react-native';
+import { StyleSheet, Pressable, Animated, Platform } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 import ModalScreen from '../screens/ModalScreen';
 import PropTypes from 'prop-types';
@@ -23,6 +23,7 @@ export default function MenuIcon({ width, height, fontFactor }) {
     const closeModal = () => {
         setShowModal(false);
     };
+    const isWeb = Platform.OS === 'web';
 
     return (
         <Pressable
@@ -39,13 +40,15 @@ export default function MenuIcon({ width, height, fontFactor }) {
                     },
                 ]}
             >
-                <ModalScreen
-                    visible={showModal}
-                    closeModal={closeModal}
-                    iconWidth={width}
-                    iconHeight={height}
-                    fontFactor={fontFactor}
-                />
+                {!isWeb && (
+                    <ModalScreen
+                        visible={showModal}
+                        closeModal={closeModal}
+                        iconWidth={width}
+                        iconHeight={height}
+                        fontFactor={fontFactor}
+                    />
+                )}
                 <Svg
                     width={svgWidth}
                     viewBox="0 0 200 125"

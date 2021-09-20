@@ -14,7 +14,7 @@ import ITIcon from './ITIcon';
 import MTDIcon from './MTDIcon';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 
-export default function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
+function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -23,7 +23,7 @@ export default function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
     const columnMode = checkColumnMode(deviceWidthClass);
 
     if (!loaded) {
-        return <View />;
+        return null;
     }
 
     return (
@@ -135,6 +135,8 @@ ServicesMini.propTypes = {
     fontFactor: PropTypes.number,
     deviceWidthClass: PropTypes.string,
 };
+
+export default React.memo(ServicesMini);
 
 const styles = StyleSheet.create({
     container: {

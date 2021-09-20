@@ -16,7 +16,9 @@ import { Poppins_500Medium } from '@expo-google-fonts/poppins';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/core';
+import { useSafeAreaFrame } from 'react-native-safe-area-context';
 
+const isWeb = Platform.OS === 'web';
 export default function ModalScreen({
     visible,
     closeModal,
@@ -63,13 +65,7 @@ export default function ModalScreen({
     };
     const navigation = useNavigation();
     const deviceWidth = Dimensions.get('window').width;
-    const deviceHeight =
-        Platform.OS === 'ios'
-            ? Dimensions.get('window').height
-            : // eslint-disable-next-line no-undef
-              require('react-native-extra-dimensions-android').get(
-                  'REAL_WINDOW_HEIGHT'
-              );
+    const deviceHeight = useSafeAreaFrame().height;
 
     if (!loaded) {
         return <View />;
@@ -77,7 +73,7 @@ export default function ModalScreen({
 
     return (
         <Modal
-            style={{ margin: 0 }}
+            style={{ margin: 0, padding: 0 }}
             isVisible={visible}
             animationIn="zoomIn"
             animationOut="zoomOut"
@@ -116,8 +112,8 @@ export default function ModalScreen({
                         onPressIn={() => onPressNavItemIn(homeAnimatedValue)}
                         onPressOut={() => onPressNavItemOut(homeAnimatedValue)}
                         onPress={() => {
+                            !isWeb && closeModal();
                             navigation.navigate('Home');
-                            closeModal();
                         }}
                         hitSlop={fontFactor * wp(7)}
                     >
@@ -136,8 +132,8 @@ export default function ModalScreen({
                         onPressIn={() => onPressNavItemIn(aboutAnimatedValue)}
                         onPressOut={() => onPressNavItemOut(aboutAnimatedValue)}
                         onPress={() => {
+                            !isWeb && closeModal();
                             navigation.navigate('About');
-                            closeModal();
                         }}
                         hitSlop={fontFactor * wp(7)}
                     >
@@ -160,8 +156,8 @@ export default function ModalScreen({
                             onPressNavItemOut(servicesAnimatedValue)
                         }
                         onPress={() => {
+                            !isWeb && closeModal();
                             navigation.navigate('About');
-                            closeModal();
                         }}
                         hitSlop={fontFactor * wp(7)}
                     >
@@ -201,6 +197,10 @@ export default function ModalScreen({
                         onPressOut={() =>
                             onPressNavItemOut(contactAnimatedValue)
                         }
+                        onPress={() => {
+                            !isWeb && closeModal();
+                            navigation.navigate('Contact');
+                        }}
                         hitSlop={fontFactor * wp(7)}
                     >
                         <Animated.Text
@@ -231,19 +231,18 @@ ModalScreen.propTypes = {
     fontFactor: PropTypes.number,
 };
 
-const { statusBarHeight } = Constants;
-
+const statusBarHeight = Constants.statusBarHeight;
+const isIOS = Platform.OS === 'ios';
 const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
         paddingHorizontal: 30,
         backgroundColor: 'rgba(22, 27, 38, .9)',
-        marginTop: statusBarHeight,
         justifyContent: 'center',
     },
     modalCloseIcon: {
         position: 'absolute',
-        top: 0,
+        top: isIOS ? statusBarHeight : 0,
         right: 0,
         alignItems: 'center',
         justifyContent: 'center',

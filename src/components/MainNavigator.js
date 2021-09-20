@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import updateFontFactor from '../redux/actions/updateFontFactor';
 import AboutScreen from '../screens/AboutScreen';
 import { getHeaderTitle } from '@react-navigation/stack/node_modules/@react-navigation/elements';
+import ContactScreen from '../screens/ContactScreen';
 
 const mainStack = createStackNavigator();
 
@@ -43,13 +44,13 @@ function MainNavigator({
 
     //To-Do: Disable rerendering on change of height and width - treat each component independently
 
-    if (!headerSize || !margin) {
+    if (!headerSize || !margin || !assetsLoaded) {
         return <LandingScreen />;
     }
 
     return (
         <mainStack.Navigator
-            initialRouteName="Home"
+            initialRouteName="Contact"
             screenOptions={{
                 // eslint-disable-next-line react/display-name
                 header: ({ route, options }) => {
@@ -60,6 +61,7 @@ function MainNavigator({
         >
             <mainStack.Screen name="Home" component={HomeScreen} />
             <mainStack.Screen name="About" component={AboutScreen} />
+            <mainStack.Screen name="Contact" component={ContactScreen} />
         </mainStack.Navigator>
     );
 }

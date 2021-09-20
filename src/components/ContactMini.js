@@ -7,7 +7,7 @@ import MarginVertical from './MarginVertical';
 import { useFonts, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 
-export default function ContactMini({ margin, fontFactor, bodyHeight }) {
+function ContactMini({ margin, fontFactor, bodyHeight }) {
     const [loaded] = useFonts({
         Poppins_600SemiBold,
         Karla_400Regular,
@@ -28,7 +28,7 @@ export default function ContactMini({ margin, fontFactor, bodyHeight }) {
     };
 
     if (!loaded) {
-        return <View />;
+        return null;
     }
 
     return (
@@ -107,6 +107,8 @@ ContactMini.propTypes = {
     fontFactor: PropTypes.number,
     bodyHeight: PropTypes.number,
 };
+
+export default React.memo(ContactMini);
 
 const styles = StyleSheet.create({
     container: {

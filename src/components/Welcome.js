@@ -22,12 +22,7 @@ import checkColumnMode from '../helperFunctions/checkColumnMode';
 /*global require*/
 /*eslint no-undef: "error"*/
 
-export default function Welcome({
-    margin,
-    bodyHeight,
-    fontFactor,
-    deviceWidthClass,
-}) {
+function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
     const [loaded] = useFonts({
         Poppins_700Bold,
         Karla_500Medium,
@@ -49,7 +44,7 @@ export default function Welcome({
     const columnMode = checkColumnMode(deviceWidthClass);
 
     if (!loaded || !fontFactor) {
-        return <View style={{ flex: 1 }} />;
+        return null;
     }
 
     return (
@@ -145,6 +140,8 @@ Welcome.propTypes = {
     fontFactor: PropTypes.number,
     deviceWidthClass: PropTypes.string,
 };
+
+export default React.memo(Welcome);
 
 const styles = StyleSheet.create({
     container: {
