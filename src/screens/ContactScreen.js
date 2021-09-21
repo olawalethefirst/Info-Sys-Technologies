@@ -4,6 +4,7 @@ import {
     SafeAreaView,
     Text,
     View,
+    Platform,
     KeyboardAvoidingView,
 } from 'react-native';
 import SubScreenTemplate from '../components/SubScreenTemplate';
@@ -12,6 +13,8 @@ import { connect } from 'react-redux';
 import Footer from '../components/Footer';
 import scrollToTop from '../helperFunctions/scrollToTop';
 import Contact from '../components/Contact';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { ScreenStackHeaderSubview } from 'react-native-screens';
 
 function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
     const scrollRef = useRef(null);
@@ -45,9 +48,12 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
     ];
     return (
         <KeyboardAvoidingView
-            behavior="padding"
+            behavior={Platform.select({ ios: 'padding', android: 'height' })}
             style={styles.container}
-            keyboardVerticalOffset={headerSize}
+            keyboardVerticalOffset={Platform.select({
+                ios: headerSize + wp(1),
+                android: headerSize + wp(1),
+            })}
         >
             <SubScreenTemplate
                 sectionComponents={sectionComponents}

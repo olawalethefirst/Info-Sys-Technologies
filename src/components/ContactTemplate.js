@@ -1,23 +1,20 @@
-import React, { useReducer } from 'react';
+import React, { useState, useReducer } from 'react';
 import {
     StyleSheet,
     Text,
     View,
     TextInput,
-    KeyboardAvoidingView,
-    Platform,
+    Keyboard,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import MarginVertical from './MarginVertical';
-import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import {
     Karla_400Regular,
     Karla_500Medium,
     useFonts,
 } from '@expo-google-fonts/karla';
-import { Picker } from '@react-native-picker/picker';
+import ModalSelector from 'react-native-modal-selector';
 
 export default function ContactTemplate({ fontFactor }) {
     const [loaded] = useFonts({
@@ -32,6 +29,8 @@ export default function ContactTemplate({ fontFactor }) {
                 return { ...state, email: action.payload };
             case 'UPDATE_PHONE':
                 return { ...state, phone: action.payload };
+            case 'UPDATE_REFERRAL_CHANNEL':
+                return { ...state, referralChannel: action.payload };
             default:
                 return state;
         }
@@ -40,28 +39,50 @@ export default function ContactTemplate({ fontFactor }) {
         name: '',
         email: '',
         phone: '',
+        referralChannel: null,
     });
-    const { name, email, phone } = state;
-
+    const { name, email, phone, referralChannel } = state;
     const styles2 = {
-        text: {
+        allTexts: {
             fontSize: fontFactor * wp(4.55),
             lineHeight: fontFactor * wp(5.78),
             fontFamily: 'Karla_400Regular',
+        },
+        text: {
             paddingBottom: fontFactor * wp(1),
         },
         input: {
-            padding: wp(1),
+            padding: wp(2),
             borderRadius: wp(3) * fontFactor,
         },
     };
+    let referralChannelIndex = 0;
+    const referralChannelData = [
+        {
+            key: referralChannelIndex++,
+            label: 'Social Media',
+        },
+        {
+            key: referralChannelIndex++,
+            label: 'Referred By Someone',
+        },
+        {
+            key: referralChannelIndex++,
+            label: 'Your Business Card',
+        },
+        {
+            key: referralChannelIndex++,
+            label: 'Other',
+        },
+    ];
 
     if (!loaded) {
         return null;
     }
 
     return (
-        <View
+        <TouchableWithoutFeedback
+            onPress={Keyboard.dismiss}
             style={{
                 flex: 1,
             }}
@@ -105,7 +126,7 @@ export default function ContactTemplate({ fontFactor }) {
                                 value: text,
                             })
                         }
-                        style={[styles.input, styles2.input, styles2.text]}
+                        style={[styles.input, styles2.input, styles2.v]}
                     />
                 </View>
                 <MarginVertical />
@@ -122,7 +143,7 @@ export default function ContactTemplate({ fontFactor }) {
                                 value: text,
                             })
                         }
-                        style={[styles.input, styles2.input, styles2.text]}
+                        style={[styles.input, styles2.input, styles2.allTexts]}
                     />
                 </View>
                 <MarginVertical />
@@ -138,7 +159,7 @@ export default function ContactTemplate({ fontFactor }) {
                                 value: text,
                             })
                         }
-                        style={[styles.input, styles2.input, styles2.text]}
+                        style={[styles.input, styles2.input, styles2.allTexts]}
                     />
                 </View>
                 <MarginVertical />
@@ -146,19 +167,34 @@ export default function ContactTemplate({ fontFactor }) {
                     <Text style={[styles.allTexts, styles2.text]}>
                         How did you hear about us ?
                     </Text>
-                    <TextInput
-                        value={phone}
-                        onChangeText={(text) =>
+                    <ModalSelector
+                        data={referralChannelData}
+                        initValue="Please select an option"
+                        supportedOrientations={['portrait']}
+                        accessible={true}
+                        scrollViewAccessibilityLabel={'Scrollable options'}
+                        cancelButtonAccessibilityLabel={'Cancel Button'}
+                        onChange={(option) =>
                             dispatch({
-                                type: 'UPDATE_PHONE',
-                                value: text,
+                                type: 'UPDATE_REFERRAL_CHANNEL',
+                                payload: option.label,
                             })
                         }
-                        style={[styles.input, styles2.input, styles2.text]}
-                    />
+                    >
+                        <TextInput
+                            style={[
+                                styles.input,
+                                styles2.input,
+                                styles2.allTexts,
+                            ]}
+                            editable={false}
+                            placeholder="Please select an option"
+                            value={referralChannel}
+                        />
+                    </ModalSelector>
                 </View>
             </View>
-        </View>
+        </TouchableWithoutFeedback>
     );
 }
 
