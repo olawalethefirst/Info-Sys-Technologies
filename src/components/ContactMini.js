@@ -16,7 +16,7 @@ function ContactMini({ margin, fontFactor, bodyHeight }) {
     console.log(animatedValue);
     const onPressIn = () => {
         Animated.spring(animatedValue, {
-            toValue: 1.25,
+            toValue: 0.8,
             useNativeDriver: true,
         }).start();
     };
@@ -127,10 +127,11 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: '#1A91D7',
-        alignSelf: 'center',
+        // alignSelf: 'center',
     },
     buttonText: {
         color: '#fff',
         fontFamily: 'Poppins_600SemiBold',
+        textAlign: 'center',
     },
 });

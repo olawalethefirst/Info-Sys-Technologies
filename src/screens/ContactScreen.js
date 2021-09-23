@@ -8,7 +8,6 @@ import {
     KeyboardAvoidingView,
 } from 'react-native';
 import SubScreenTemplate from '../components/SubScreenTemplate';
-import ContactTemplate from '../components/ContactTemplate';
 import { connect } from 'react-redux';
 import Footer from '../components/Footer';
 import scrollToTop from '../helperFunctions/scrollToTop';
@@ -27,9 +26,8 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
                     bodyHeight={bodyHeight}
                     headerSize={headerSize}
                     margin={margin}
-                >
-                    <ContactTemplate fontFactor={fontFactor} />
-                </Contact>
+                    fontFactor={fontFactor}
+                ></Contact>
             ),
         },
         {
@@ -50,10 +48,7 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
         <KeyboardAvoidingView
             behavior={Platform.select({ ios: 'padding', android: 'height' })}
             style={styles.container}
-            keyboardVerticalOffset={Platform.select({
-                ios: headerSize + wp(1),
-                android: headerSize + wp(1),
-            })}
+            keyboardVerticalOffset={headerSize + wp(1)}
         >
             <SubScreenTemplate
                 sectionComponents={sectionComponents}
