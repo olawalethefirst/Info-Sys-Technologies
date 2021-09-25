@@ -14,6 +14,7 @@ import scrollToTop from '../helperFunctions/scrollToTop';
 import Contact from '../components/Contact';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { ScreenStackHeaderSubview } from 'react-native-screens';
+import Constants from 'expo-constants';
 
 function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
     const scrollRef = useRef(null);
@@ -44,11 +45,12 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
             ),
         },
     ];
+
     return (
         <KeyboardAvoidingView
-            behavior={Platform.select({ ios: 'padding', android: 'height' })}
+            behavior={Platform.select({ ios: 'height', android: 'height' })}
             style={styles.container}
-            keyboardVerticalOffset={headerSize + wp(1)}
+            keyboardVerticalOffset={headerSize}
         >
             <SubScreenTemplate
                 sectionComponents={sectionComponents}

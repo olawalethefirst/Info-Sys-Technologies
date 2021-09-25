@@ -91,6 +91,8 @@ function SubScreenTemplate({
                 bounces={false}
                 renderItem={({ item }) => item.data}
                 ref={scrollRef}
+                keyboardDismissMode="on-drag"
+                keyboardShouldPersistTaps="never"
             />
         </View>
     );

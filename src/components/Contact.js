@@ -83,7 +83,7 @@ export default function Contact({
                 <TextInput
                     style={[styles.contactOption, styles2.contactOption]}
                     placeholder="Select Option"
-                    placeholderTextColor="#404040"
+                    placeholderTextColor="#fff"
                     editable={false}
                     value={contactOption}
                 />

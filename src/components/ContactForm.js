@@ -14,18 +14,22 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import {
     Karla_400Regular,
     Karla_500Medium,
+    Karla_600SemiBold,
     useFonts,
 } from '@expo-google-fonts/karla';
 import { Poppins_500Medium } from '@expo-google-fonts/poppins';
 import ModalSelector from 'react-native-modal-selector';
 import DatePickerModal from 'react-native-modal-datetime-picker';
 import InputField from './InputField';
+import validator from 'validator';
+import ContactFormErrorModal from './ContactFormErrorModal';
 
 export default function ContactForm({ fontFactor, hireUs, inquiry }) {
     const [loaded] = useFonts({
         Karla_400Regular,
         Karla_500Medium,
         Poppins_500Medium,
+        Karla_600SemiBold,
     });
     const inputFieldsReducer = (state, action) => {
         switch (action.type) {
@@ -42,7 +46,11 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
             case 'UPDATE_OTHER':
                 return { ...state, other: action.payload };
             case 'UPDATE_PROJECT_DEADLINE':
-                return { ...state, projectDeadline: action.payload };
+                return {
+                    ...state,
+                    projectDeadline: action.payload,
+                    defaultDate: action.payload,
+                };
             case 'TOGGLE_DATE_PICKER':
                 return {
                     ...state,
@@ -54,6 +62,8 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                 return { ...state, inquiryTitle: action.payload };
             case 'UPDATE_INQUIRY_DETAILS':
                 return { ...state, inquiryDetails: action.payload };
+            case 'UPDATE_FORM_ERROR':
+                return { ...state, formError: action.payload };
             default:
                 return state;
         }
@@ -66,10 +76,12 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
         budget: '',
         other: '',
         datePickerVisible: false,
-        projectDeadline: new Date(),
+        projectDeadline: '',
         projectDetails: '',
         inquiryTitle: '',
         inquiryDetails: '',
+        defaultDate: new Date(),
+        formError: null,
     });
     const {
         name,
@@ -83,16 +95,13 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
         projectDetails,
         inquiryTitle,
         inquiryDetails,
+        defaultDate,
+        formError,
     } = state;
-
     const styles2 = {
-        allTexts: {
+        baseFontSize: {
             fontSize: fontFactor * wp(4.55),
             lineHeight: fontFactor * wp(5.78),
-            fontFamily: 'Karla_400Regular',
-        },
-        text: {
-            paddingBottom: fontFactor * wp(1),
         },
         input: {
             padding: fontFactor * wp(2),
@@ -101,8 +110,6 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
         subParagraph: {
             fontSize: fontFactor * wp(3.64),
             lineHeight: fontFactor * wp(4.62),
-            color: '#f8b526',
-            fontFamily: 'Poppins_500Medium',
         },
         singleLineInput: {
             minHeight: fontFactor * wp(10),
@@ -150,6 +157,59 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
             payload: date,
         });
     };
+    const buttonRef = useRef(null);
+    const buttonDisabled = !hireUs && !inquiry;
+    const validateForm = () => {
+        let errorArray = [
+            {
+                field: 'Email',
+                error: !validator.isEmail(validator.trim(email)),
+            },
+            {
+                field: 'Name',
+                error: validator.isEmpty(name, {
+                    ignore_whitespace: true,
+                }),
+            },
+            inquiry
+                ? {
+                      field: 'Inquiry Details',
+                      error: validator.isEmpty(inquiryDetails, {
+                          ignore_whitespace: true,
+                      }),
+                  }
+                : {
+                      field: 'Project Details',
+                      error: validator.isEmpty(projectDetails, {
+                          ignore_whitespace: true,
+                      }),
+                  },
+        ];
+        errorArray = errorArray.filter((el) => el.error);
+        if (errorArray.length > 0) {
+            return errorArray;
+        } else return null;
+    };
+    const handleSubmit = () => {
+        const error = validateForm();
+        if (error) {
+            dispatch({
+                type: 'UPDATE_FORM_ERROR',
+                payload: error,
+            });
+        } else {
+            dispatch({
+                type: 'UPDATE_FORM_ERROR',
+                payload: null,
+            });
+        }
+    };
+    const clearError = () => {
+        dispatch({
+            type: 'UPDATE_FORM_ERROR',
+            payload: null,
+        });
+    };
 
     if (!loaded) {
         return null;
@@ -170,8 +230,8 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                     >
                         <Text
                             style={[
-                                styles.allTexts,
-                                styles.heading,
+                                styles.whiteText,
+                                styles.karla500Font,
                                 {
                                     fontSize: fontFactor * wp(5.5),
                                     lineHeight: fontFactor * wp(7),
@@ -191,7 +251,11 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                             fieldValue: name,
                             actionType: 'UPDATE_NAME',
                         }}
-                        label="Your Name"
+                        textData={{
+                            label: 'Your Name',
+                            subParagraph: 'e.g Olawale Bashiru',
+                            important: true,
+                        }}
                     />
                     <MarginVertical />
 
@@ -202,7 +266,11 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                             actionType: 'UPDATE_EMAIL',
                         }}
                         fontFactor={fontFactor}
-                        label="E-mail Address"
+                        textData={{
+                            label: 'E-mail Address',
+                            subParagraph: 'e.g olawalebashiru@gmail.com',
+                            important: true,
+                        }}
                     />
 
                     <MarginVertical />
@@ -213,13 +281,17 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                             actionType: 'UPDATE_PHONE',
                         }}
                         fontFactor={fontFactor}
-                        label="Contact Number"
+                        textData={{
+                            label: 'Contact Number',
+                            subParagraph: 'Mobile number or skype ID',
+                        }}
                     />
                     <MarginVertical />
                     <View>
-                        <Text style={[styles.allTexts, styles2.text]}>
+                        <Text style={[styles.whiteText]}>
                             How did you hear about us?
                         </Text>
+                        <MarginVertical size={0.2} />
                         <ModalSelector
                             data={referralChannelData}
                             supportedOrientations={['portrait']}
@@ -243,7 +315,8 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                                 style={[
                                     styles.input,
                                     styles2.input,
-                                    styles2.allTexts,
+                                    styles.karla400Font,
+                                    styles2.baseFontSize,
                                     styles2.singleLineInput,
                                 ]}
                                 editable={false}
@@ -262,7 +335,11 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                                     actionType: 'UPDATE_OTHER',
                                 }}
                                 fontFactor={fontFactor}
-                                label="Please state"
+                                textData={{
+                                    label: 'Please state',
+                                    subParagraph:
+                                        'Please specify how you learnt about us',
+                                }}
                             />
                             <MarginVertical />
                         </View>
@@ -282,8 +359,8 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                         >
                             <Text
                                 style={[
-                                    styles.allTexts,
-                                    styles.heading,
+                                    styles.whiteText,
+                                    styles.karla500Font,
                                     {
                                         fontSize: fontFactor * wp(5.5),
                                         lineHeight: fontFactor * wp(7),
@@ -301,29 +378,48 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                                 fieldValue: budget,
                                 actionType: 'UPDATE_BUDGET',
                             }}
+                            textData={{
+                                label: 'Your Budget',
+                                subParagraph: 'e.g \u20A6500,000 or $1,000',
+                            }}
                             fontFactor={fontFactor}
-                            label="Your Budget"
                         />
 
                         <MarginVertical />
                         <View>
-                            <Text style={[styles.allTexts, styles2.text]}>
+                            <Text style={[styles.whiteText]}>
                                 Project Deadline
                             </Text>
+                            <MarginVertical size={0.2} />
                             <Pressable onPress={toggleDatePickerModal}>
                                 <View pointerEvents="none">
                                     <TextInput
                                         editable={false}
-                                        value={projectDeadline.toDateString()}
+                                        value={
+                                            projectDeadline
+                                                ? projectDeadline.toDateString()
+                                                : projectDeadline
+                                        }
+                                        placeholder="Choose date"
                                         style={[
                                             styles.input,
                                             styles2.input,
-                                            styles2.allTexts,
+                                            styles.karla400Font,
+                                            styles2.baseFontSize,
                                         ]}
                                     />
                                 </View>
                             </Pressable>
-
+                            <MarginVertical size={0.2} />
+                            <Text
+                                style={[
+                                    styles2.subParagraph,
+                                    styles.blueText,
+                                    styles.karla400Font,
+                                ]}
+                            >
+                                Please specify in days, weeks or months
+                            </Text>
                             <DatePickerModal
                                 isVisible={datePickerVisible}
                                 mode="date"
@@ -333,7 +429,7 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                                 textColor="white"
                                 themeVariant="dark"
                                 isDarkModeEnabled
-                                date={projectDeadline}
+                                date={defaultDate}
                                 minimumDate={new Date()}
                             />
                         </View>
@@ -345,9 +441,15 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                                 actionType: 'UPDATE_PROJECT_DETAILS',
                             }}
                             fontFactor={fontFactor}
-                            label="Project Details"
                             megaSize
+                            textData={{
+                                label: 'Project Details',
+                                subParagraph:
+                                    "Please tell me about what you'll like to achieve, provide as much information as relavant",
+                                important: true,
+                            }}
                         />
+                        <MarginVertical />
                     </View>
                 )}
                 {inquiry && (
@@ -363,8 +465,8 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                         >
                             <Text
                                 style={[
-                                    styles.allTexts,
-                                    styles.heading,
+                                    styles.whiteText,
+                                    styles.karla500Font,
                                     {
                                         fontSize: fontFactor * wp(5.5),
                                         lineHeight: fontFactor * wp(7),
@@ -383,7 +485,11 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                                 actionType: 'UPDATE_INQUIRY_TITLE',
                             }}
                             fontFactor={fontFactor}
-                            label="Inquiry Title"
+                            textData={{
+                                label: 'Inquiry Title',
+                                subParagraph:
+                                    'Please specify in few words, what inquiry is about',
+                            }}
                         />
                         <MarginVertical />
                         <InputField
@@ -393,25 +499,53 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                                 actionType: 'UPDATE_INQUIRY_DETAILS',
                             }}
                             fontFactor={fontFactor}
-                            label="Inquiry Details"
+                            textData={{
+                                label: 'Inquiry Details',
+                                subParagraph:
+                                    'Please provide more detailed information on inquiry',
+                                important: true,
+                            }}
                             megaSize
                         />
+                        <MarginVertical />
                     </View>
                 )}
-                <MarginVertical />
                 <View>
-                    <Text style={[styles2.subParagraph]}>
+                    <Text
+                        style={[
+                            styles2.subParagraph,
+                            styles.yellowFontColor,
+                            styles.karla500Font,
+                        ]}
+                    >
                         You should get a reply within 24 hours.
                     </Text>
                     <MarginVertical />
                     <Pressable
-                        disabled={true}
+                        ref={buttonRef}
+                        disabled={buttonDisabled}
                         style={[styles.button, styles2.button]}
+                        onPress={
+                            // () => {}
+                            handleSubmit
+                        }
                     >
-                        <Text style={[styles.buttonText, styles2.buttonText]}>
+                        <Text
+                            style={[
+                                styles.buttonText,
+                                styles.poppins600Font,
+                                styles2.buttonText,
+                                styles.whiteText,
+                                buttonDisabled && styles.buttonDisabled,
+                            ]}
+                        >
                             Submit
                         </Text>
                     </Pressable>
+                    <ContactFormErrorModal
+                        isVisible={formError ? true : false}
+                        formError={formError}
+                    />
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -419,21 +553,33 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
 }
 
 const styles = StyleSheet.create({
-    allTexts: {
+    whiteText: {
         color: '#fff',
     },
     input: {
         backgroundColor: '#fff',
         color: 'black',
     },
-    heading: {
-        fontFamily: 'Karla_500Medium',
-    },
     button: {
         backgroundColor: '#1A91D7',
     },
     buttonText: {
         textAlign: 'center',
-        color: '#fff',
+    },
+    poppins600Font: {
+        fontFamily: 'Karla_600SemiBold',
+    },
+    buttonDisabled: {
+        opacity: 0.5,
+    },
+    karla500Font: {
+        fontFamily: 'Poppins_500Medium',
+    },
+    blueText: {
+        color: '#1A91D7',
+    },
+    yellowFontColor: { color: '#f8b526' },
+    karla400Font: {
+        fontFamily: 'Karla_400Regular',
     },
 });
