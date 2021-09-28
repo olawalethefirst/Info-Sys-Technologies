@@ -2,11 +2,6 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput } from 'react-native';
 import Constants from 'expo-constants';
 import MarginVertical from './MarginVertical';
-import {
-    Poppins_500Medium,
-    Poppins_600SemiBold,
-    useFonts,
-} from '@expo-google-fonts/poppins';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ModalSelector from 'react-native-modal-selector';
 import ContactForm from '../components/ContactForm';
@@ -18,10 +13,6 @@ export default function Contact({
     fontFactor,
 }) {
     const { statusBarHeight } = Constants;
-    const [loaded] = useFonts({
-        Poppins_500Medium,
-        Poppins_600SemiBold,
-    });
     const styles2 = {
         paragraph: {
             fontSize: fontFactor * wp(4.55),
@@ -48,10 +39,6 @@ export default function Contact({
             label: 'Inquiry',
         },
     ];
-
-    if (!loaded) {
-        return null;
-    }
 
     return (
         <View
@@ -92,6 +79,7 @@ export default function Contact({
                 fontFactor={fontFactor}
                 hireUs={contactOption === 'Hire Us'}
                 inquiry={contactOption === 'Inquiry'}
+                margin={margin}
             />
         </View>
     );

@@ -11,7 +11,6 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
-import { useFonts, Karla_400Regular } from '@expo-google-fonts/karla';
 
 function Footer({
     headerSize,
@@ -35,14 +34,7 @@ function Footer({
             useNativeDriver: true,
         }).start();
     };
-    const [loaded] = useFonts({
-        Karla_400Regular,
-    });
     const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-    if (!loaded) {
-        return null;
-    }
 
     return (
         <View

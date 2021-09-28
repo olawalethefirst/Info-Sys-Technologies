@@ -10,22 +10,12 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import MarginVertical from './MarginVertical';
-import { useFonts } from '@expo-google-fonts/poppins';
-import Poppins_600SemiBold from '@expo-google-fonts/poppins/Poppins_600SemiBold.ttf';
-import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
-import Karla_500Medium from '@expo-google-fonts/karla/Karla_500Medium.ttf';
 import {
     heightPercentageToDP as hp,
     widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
 function ForumMini({ margin, fontFactor, bodyHeight }) {
-    const [loaded] = useFonts({
-        Poppins_600SemiBold,
-        Karla_400Regular,
-        Karla_500Medium,
-    });
-
     const animatedValue = new Animated.Value(1);
     const onPressIn = () => {
         Animated.spring(animatedValue, {
@@ -40,10 +30,6 @@ function ForumMini({ margin, fontFactor, bodyHeight }) {
             useNativeDriver: true,
         }).start();
     };
-
-    if (!loaded) {
-        return null;
-    }
 
     return (
         <View style={[styles.container]}>

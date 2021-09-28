@@ -3,28 +3,27 @@ import { StyleSheet, Text, View } from 'react-native';
 import PropTypes from 'prop-types';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useFonts } from '@expo-google-fonts/poppins';
-import Poppins_600SemiBold from '@expo-google-fonts/poppins/Poppins_600SemiBold.ttf';
-import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 import ServiceTemplate from './ServiceTemplate';
-import ACIcon from './ACIcon';
+import CAIcon from './CAIcon';
 import FBPIcon from './FBPIcon';
-import FMSIcon from './FMSIcon';
+import ASFMIcon from './ASFMIcon';
 import ITIcon from './ITIcon';
 import MTDIcon from './MTDIcon';
+import FAMIcon from './FAMIcon';
+import ICCAIcon from './ICCAIcon';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
+import {
+    generalInformationTechnologyConsulting,
+    accountingSoftwareAndFinancialManagementSystem,
+    internalControlAndComplianceAudit,
+    fixedAssetsManagement,
+    feasibilityAndBusinessPlanning,
+    technologyAndManagementDevelopmentTraining,
+    cloudAccounting,
+} from '../serviceDetails';
 
 function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
-    const [loaded] = useFonts({
-        Poppins_600SemiBold,
-        Karla_400Regular,
-    });
-
     const columnMode = checkColumnMode(deviceWidthClass);
-
-    if (!loaded) {
-        return null;
-    }
 
     return (
         <View style={[styles.container, { paddingHorizontal: margin }]}>
@@ -63,18 +62,18 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
                 <ServiceTemplate
                     columnMode={columnMode}
                     fontFactor={fontFactor}
-                    serviceTitle={`Accounting\nConsultation`}
-                    serviceBody=""
+                    serviceTitle={`Cloud Accounting`}
+                    serviceBody={cloudAccounting}
                 >
-                    <ACIcon />
+                    <CAIcon />
                 </ServiceTemplate>
                 {!columnMode && <MarginVertical size={2} />}
                 {columnMode && <View style={{ flex: 0.1 }} />}
                 <ServiceTemplate
                     columnMode={columnMode}
                     fontFactor={fontFactor}
-                    serviceTitle={`Management Training\n& Development`}
-                    serviceBody=""
+                    serviceTitle={`Technology & Management\nDevelopment Training`}
+                    serviceBody={technologyAndManagementDevelopmentTraining}
                 >
                     <MTDIcon />
                 </ServiceTemplate>
@@ -86,7 +85,7 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
                     columnMode={columnMode}
                     fontFactor={fontFactor}
                     serviceTitle={`Feasibility &\nBusiness Planning`}
-                    serviceBody=""
+                    serviceBody={feasibilityAndBusinessPlanning}
                 >
                     <FBPIcon />
                 </ServiceTemplate>
@@ -95,10 +94,10 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
                 <ServiceTemplate
                     columnMode={columnMode}
                     fontFactor={fontFactor}
-                    serviceTitle={`Financial Management\nSoftware Consultation`}
-                    serviceBody=""
+                    serviceTitle={`Accounting Software &\nFinancial Management`}
+                    serviceBody={accountingSoftwareAndFinancialManagementSystem}
                 >
-                    <FMSIcon />
+                    <ASFMIcon />
                 </ServiceTemplate>
             </View>
             <MarginVertical size={2} />
@@ -107,8 +106,30 @@ function ServicesMini({ margin, fontFactor, deviceWidthClass }) {
                 <ServiceTemplate
                     columnMode={columnMode}
                     fontFactor={fontFactor}
-                    serviceTitle={`Information Technology\n& Business Consultation`}
-                    serviceBody=""
+                    serviceTitle={`Fixed Assets \nManagement (FAM)`}
+                    serviceBody={fixedAssetsManagement}
+                >
+                    <FAMIcon />
+                </ServiceTemplate>
+                {!columnMode && <MarginVertical size={2} />}
+                {columnMode && <View style={{ flex: 0.1 }} />}
+                <ServiceTemplate
+                    columnMode={columnMode}
+                    fontFactor={fontFactor}
+                    serviceTitle={`Internal Control &\nCompliance Audit`}
+                    serviceBody={internalControlAndComplianceAudit}
+                >
+                    <ICCAIcon />
+                </ServiceTemplate>
+            </View>
+            <MarginVertical size={2} />
+
+            <View style={[columnMode && styles.servicePairContainerColumnMode]}>
+                <ServiceTemplate
+                    columnMode={columnMode}
+                    fontFactor={fontFactor}
+                    serviceTitle={`General Information\nTechnology Consulting`}
+                    serviceBody={generalInformationTechnologyConsulting}
                 >
                     <ITIcon />
                 </ServiceTemplate>

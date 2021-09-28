@@ -9,17 +9,10 @@ import {
 import PropTypes from 'prop-types';
 import AboutMiniSVG from './AboutMiniSVG';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useFonts } from '@expo-google-fonts/poppins';
-import Poppins_600SemiBold from '@expo-google-fonts/poppins/Poppins_600SemiBold.ttf';
-import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 import MarginVertical from './MarginVertical';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 
 function AboutMini({ fontFactor, margin, deviceWidthClass }) {
-    const [loaded] = useFonts({
-        Poppins_600SemiBold,
-        Karla_400Regular,
-    });
     const animatedValue = new Animated.Value(1);
     const onPressIn = () => {
         Animated.spring(animatedValue, {
@@ -34,10 +27,6 @@ function AboutMini({ fontFactor, margin, deviceWidthClass }) {
         }).start();
     };
     const columnMode = checkColumnMode(deviceWidthClass);
-
-    if (!loaded) {
-        return null;
-    }
 
     return (
         <View

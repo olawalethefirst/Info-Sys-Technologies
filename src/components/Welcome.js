@@ -7,14 +7,7 @@ import {
     Pressable,
     Animated,
 } from 'react-native';
-import { useFonts } from '@expo-google-fonts/poppins';
-import Poppins_700Bold from '@expo-google-fonts/poppins/Poppins_700Bold.ttf';
-import Poppins_600SemiBold from '@expo-google-fonts/poppins/Poppins_600SemiBold.ttf';
-import Karla_500Medium from '@expo-google-fonts/karla/Karla_500Medium.ttf';
-import {
-    // heightPercentageToDP as hp,
-    widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import PropTypes from 'prop-types';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
@@ -23,11 +16,6 @@ import checkColumnMode from '../helperFunctions/checkColumnMode';
 /*eslint no-undef: "error"*/
 
 function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
-    const [loaded] = useFonts({
-        Poppins_700Bold,
-        Karla_500Medium,
-        Poppins_600SemiBold,
-    });
     const animatedValue = new Animated.Value(1);
     const onPressIn = () => {
         Animated.spring(animatedValue, {
@@ -43,12 +31,15 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
     };
     const columnMode = checkColumnMode(deviceWidthClass);
 
-    if (!loaded || !fontFactor) {
-        return null;
-    }
-
     return (
-        <View style={[styles.container, { minHeight: bodyHeight }]}>
+        <View
+            style={[
+                styles.container,
+                {
+                    minHeight: bodyHeight,
+                },
+            ]}
+        >
             <ImageBackground
                 source={require('../../assets/images/background.png')}
                 resizeMode="cover"
@@ -145,9 +136,9 @@ export default React.memo(Welcome);
 
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
         margin: 0,
         padding: 0,
+        backgroundColor: '#161B26',
     },
     image: {
         flex: 1,

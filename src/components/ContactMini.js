@@ -4,14 +4,8 @@ import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ContactSVG from './ContactSVG';
 import MarginVertical from './MarginVertical';
-import { useFonts, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
-import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 
 function ContactMini({ margin, fontFactor, bodyHeight }) {
-    const [loaded] = useFonts({
-        Poppins_600SemiBold,
-        Karla_400Regular,
-    });
     const animatedValue = new Animated.Value(1);
     console.log(animatedValue);
     const onPressIn = () => {
@@ -26,10 +20,6 @@ function ContactMini({ margin, fontFactor, bodyHeight }) {
             useNativeDriver: true,
         }).start();
     };
-
-    if (!loaded) {
-        return null;
-    }
 
     return (
         <View

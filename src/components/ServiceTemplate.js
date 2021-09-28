@@ -9,9 +9,6 @@ import {
 import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
-import { useFonts } from '@expo-google-fonts/poppins';
-import Poppins_600SemiBold from '@expo-google-fonts/poppins/Poppins_600SemiBold.ttf';
-import Karla_400Regular from '@expo-google-fonts/karla/Karla_400Regular.ttf';
 import Icon from 'react-native-vector-icons/Entypo';
 
 export default function ServiceTemplate({
@@ -19,12 +16,8 @@ export default function ServiceTemplate({
     children,
     serviceTitle,
     fontFactor,
+    serviceBody,
 }) {
-    const [loaded] = useFonts({
-        Poppins_600SemiBold,
-        Karla_400Regular,
-    });
-
     const animatedValue = new Animated.Value(0);
     useEffect(() => {
         Animated.loop(
@@ -42,10 +35,6 @@ export default function ServiceTemplate({
             ])
         ).start();
     });
-
-    if (!loaded) {
-        return <View style={{ flex: 1 }} />;
-    }
 
     return (
         <View
@@ -87,9 +76,7 @@ export default function ServiceTemplate({
                 numberOfLines={3}
                 ellipsizeMode="tail"
             >
-                {
-                    'Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replacedDummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced Dummy service body paragraph, to be replaced'
-                }
+                {serviceBody}
             </Text>
             <MarginVertical size={1} />
 
@@ -158,7 +145,7 @@ const styles = StyleSheet.create({
         width: 45,
         backgroundColor: '#1A91D7',
         borderRadius: 45 / 2,
-        padding: 10,
+        padding: '4%',
     },
     heading: {
         color: '#fff',

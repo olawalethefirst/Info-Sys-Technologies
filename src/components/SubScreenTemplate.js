@@ -7,7 +7,6 @@ import {
     ImageBackground,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { useFonts, Poppins_600SemiBold } from '@expo-google-fonts/poppins';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
@@ -22,9 +21,6 @@ function SubScreenTemplate({
     sectionComponents,
     scrollRef,
 }) {
-    const [loaded] = useFonts({
-        Poppins_600SemiBold,
-    });
     const scrollY = useRef(new Animated.Value(0));
     const handleScroll = Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY.current } } }],
@@ -45,9 +41,6 @@ function SubScreenTemplate({
         Animated.createAnimatedComponent(ImageBackground);
     const { statusBarHeight } = Constants;
 
-    if (!loaded) {
-        return <View style={{ flex: 1 }} />;
-    }
     return (
         <View style={styles.container}>
             <AnimatedImageBackground

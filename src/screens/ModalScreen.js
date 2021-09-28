@@ -11,8 +11,6 @@ import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/Feather';
 import Constants from 'expo-constants';
 import MarginVertical from '../components/MarginVertical';
-import { useFonts } from '@expo-google-fonts/poppins';
-import { Poppins_500Medium } from '@expo-google-fonts/poppins';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/core';
@@ -26,9 +24,6 @@ export default function ModalScreen({
     iconHeight,
     fontFactor,
 }) {
-    const [loaded] = useFonts({
-        Poppins_500Medium,
-    });
     const animatedValue = useRef(new Animated.Value(1)).current;
     const onPressIn = () => {
         Animated.spring(animatedValue, {
@@ -66,10 +61,6 @@ export default function ModalScreen({
     const navigation = useNavigation();
     const deviceWidth = Dimensions.get('window').width;
     const deviceHeight = useSafeAreaFrame().height;
-
-    if (!loaded) {
-        return <View />;
-    }
 
     return (
         <Modal

@@ -1,21 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, Platform } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useFonts, Karla_400Regular } from '@expo-google-fonts/karla';
-import Poppins_600SemiBold from '@expo-google-fonts/poppins/Poppins_600SemiBold.ttf';
 import MarginVertical from './MarginVertical';
 import PropTypes from 'prop-types';
 
 function Objectives({ fontFactor, margin, columnMode }) {
-    const [loaded] = useFonts({
-        Karla_400Regular,
-        Poppins_600SemiBold,
-    });
     const isWeb = Platform.OS === 'web';
-
-    if (!loaded) {
-        return null;
-    }
 
     return (
         <View

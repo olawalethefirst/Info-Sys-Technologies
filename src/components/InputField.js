@@ -8,6 +8,9 @@ export default function InputField({
     textData: { label, subParagraph, important },
     megaSize,
     fontFactor,
+    onBlur,
+    onFocus,
+    fieldError,
 }) {
     const styles2 = {
         baseFontSize: {
@@ -51,6 +54,8 @@ export default function InputField({
                 scrollEnabled={
                     megaSize ? Platform.select({ ios: false }) : null
                 }
+                onBlur={important ? onBlur : null}
+                onFocus={important ? onFocus : null}
                 textAlignVertical={megaSize && 'top'}
                 value={fieldValue}
                 onChangeText={(text) =>
@@ -69,15 +74,18 @@ export default function InputField({
                 ]}
             />
             <MarginVertical size={0.2} />
-            <Text
-                style={[
-                    styles.blueText,
-                    styles.karla400Font,
-                    styles2.subParagraph,
-                ]}
-            >
-                {subParagraph}
-            </Text>
+            {
+                <Text
+                    style={[
+                        !fieldError && styles.blueText,
+                        styles.karla400Font,
+                        styles2.subParagraph,
+                        fieldError && { color: 'red' },
+                    ]}
+                >
+                    {fieldError ? fieldError.message : subParagraph}
+                </Text>
+            }
         </View>
     );
 }

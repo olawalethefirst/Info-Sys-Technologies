@@ -11,26 +11,12 @@ import {
 } from 'react-native';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import {
-    Karla_400Regular,
-    Karla_500Medium,
-    Karla_600SemiBold,
-    useFonts,
-} from '@expo-google-fonts/karla';
-import { Poppins_500Medium } from '@expo-google-fonts/poppins';
 import ModalSelector from 'react-native-modal-selector';
 import DatePickerModal from 'react-native-modal-datetime-picker';
 import InputField from './InputField';
 import validator from 'validator';
-import ContactFormErrorModal from './ContactFormErrorModal';
 
-export default function ContactForm({ fontFactor, hireUs, inquiry }) {
-    const [loaded] = useFonts({
-        Karla_400Regular,
-        Karla_500Medium,
-        Poppins_500Medium,
-        Karla_600SemiBold,
-    });
+export default function ContactForm({ fontFactor, hireUs, inquiry, margin }) {
     const inputFieldsReducer = (state, action) => {
         switch (action.type) {
             case 'UPDATE_NAME':
@@ -64,6 +50,40 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                 return { ...state, inquiryDetails: action.payload };
             case 'UPDATE_FORM_ERROR':
                 return { ...state, formError: action.payload };
+            case 'UPDATE_NAME_FIELD_ERROR':
+                return {
+                    ...state,
+                    nameFieldError: action.payload
+                        ? {
+                              message: 'Please fill field',
+                          }
+                        : null,
+                };
+            case 'UPDATE_EMAIL_FIELD_ERROR':
+                return {
+                    ...state,
+                    emailFieldError: action.payload
+                        ? {
+                              message: state.email
+                                  ? 'Invalid Email'
+                                  : 'Please fill field',
+                          }
+                        : null,
+                };
+            case 'UPDATE_INQUIRY_DETAILS_FIELD_ERROR':
+                return {
+                    ...state,
+                    inquiryDetailsFieldError: action.payload
+                        ? { message: 'Please fill field' }
+                        : null,
+                };
+            case 'UPDATE_PROJECT_DETAILS_FIELD_ERROR':
+                return {
+                    ...state,
+                    projectDetailsFieldError: action.payload
+                        ? { message: 'Please fill field' }
+                        : null,
+                };
             default:
                 return state;
         }
@@ -81,7 +101,11 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
         inquiryTitle: '',
         inquiryDetails: '',
         defaultDate: new Date(),
-        formError: null,
+        formError: '',
+        nameFieldError: null,
+        emailFieldError: null,
+        inquiryDetailsFieldError: null,
+        projectDetailsFieldError: null,
     });
     const {
         name,
@@ -97,6 +121,10 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
         inquiryDetails,
         defaultDate,
         formError,
+        nameFieldError,
+        emailFieldError,
+        inquiryDetailsFieldError,
+        projectDetailsFieldError,
     } = state;
     const styles2 = {
         baseFontSize: {
@@ -159,61 +187,134 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
     };
     const buttonRef = useRef(null);
     const buttonDisabled = !hireUs && !inquiry;
+    const validateField = (field) => {
+        switch (field) {
+            case 'email':
+                return !validator.isEmail(validator.trim(email));
+            case 'name':
+                return validator.isEmpty(name, {
+                    ignore_whitespace: true,
+                });
+            case 'inquiryDetails':
+                return validator.isEmpty(inquiryDetails, {
+                    ignore_whitespace: true,
+                });
+            case 'projectDetails':
+                return validator.isEmpty(projectDetails, {
+                    ignore_whitespace: true,
+                });
+            default:
+                return;
+        }
+    };
+    const updateFieldError = (field) => {
+        switch (field) {
+            case 'name':
+                return dispatch({
+                    type: 'UPDATE_NAME_FIELD_ERROR',
+                    payload: validateField(field),
+                });
+            case 'email':
+                return dispatch({
+                    type: 'UPDATE_EMAIL_FIELD_ERROR',
+                    payload: validateField(field),
+                });
+            case 'inquiryDetails':
+                return dispatch({
+                    type: 'UPDATE_INQUIRY_DETAILS_FIELD_ERROR',
+                    payload: validateField(field),
+                });
+            case 'projectDetails':
+                return dispatch({
+                    type: 'UPDATE_PROJECT_DETAILS_FIELD_ERROR',
+                    payload: validateField(field),
+                });
+            default:
+                return;
+        }
+    };
+    const clearFieldError = (field) => {
+        switch (field) {
+            case 'name':
+                return dispatch({
+                    type: 'UPDATE_NAME_FIELD_ERROR',
+                    payload: null,
+                });
+            case 'email':
+                return dispatch({
+                    type: 'UPDATE_EMAIL_FIELD_ERROR',
+                    payload: null,
+                });
+            case 'inquiryDetails':
+                return dispatch({
+                    type: 'UPDATE_INQUIRY_DETAILS_FIELD_ERROR',
+                    payload: null,
+                });
+            case 'projectDetails':
+                return dispatch({
+                    type: 'UPDATE_PROJECT_DETAILS_FIELD_ERROR',
+                    payload: null,
+                });
+            default:
+                return;
+        }
+    };
     const validateForm = () => {
         let errorArray = [
             {
                 field: 'Email',
-                error: !validator.isEmail(validator.trim(email)),
+                error: validateField('email'),
             },
             {
                 field: 'Name',
-                error: validator.isEmpty(name, {
-                    ignore_whitespace: true,
-                }),
+                error: validateField('name'),
             },
             inquiry
                 ? {
                       field: 'Inquiry Details',
-                      error: validator.isEmpty(inquiryDetails, {
-                          ignore_whitespace: true,
-                      }),
+                      error: validateField('inquiryDetails'),
                   }
                 : {
                       field: 'Project Details',
-                      error: validator.isEmpty(projectDetails, {
-                          ignore_whitespace: true,
-                      }),
+                      error: validateField('projectDetails'),
                   },
         ];
         errorArray = errorArray.filter((el) => el.error);
         if (errorArray.length > 0) {
-            return errorArray;
-        } else return null;
+            const arrayLength = errorArray.length;
+            const errorReducer = (sum, cur, ind) => {
+                if (ind === arrayLength - 1) {
+                    return sum + ' ' + cur.field;
+                } else {
+                    return sum + ' ' + cur.field + ',';
+                }
+            };
+            const formError = errorArray.reduce(errorReducer, '');
+            return formError;
+        } else return '';
     };
-    const handleSubmit = () => {
-        const error = validateForm();
-        if (error) {
-            dispatch({
-                type: 'UPDATE_FORM_ERROR',
-                payload: error,
-            });
-        } else {
-            dispatch({
-                type: 'UPDATE_FORM_ERROR',
-                payload: null,
-            });
-        }
-    };
-    const clearError = () => {
+    const clearFormError = () => {
         dispatch({
             type: 'UPDATE_FORM_ERROR',
             payload: null,
         });
     };
+    const handleSubmit = () => {
+        const formError = validateForm();
+        if (formError) {
+            dispatch({
+                type: 'UPDATE_FORM_ERROR',
+                payload: formError,
+            });
+        } else {
+            clearFormError();
+        }
+    };
 
-    if (!loaded) {
-        return null;
-    }
+    console.log('error', nameFieldError);
+
+    //clear formError onFocus of any field
+    //test if changing contactOption type clears error text
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -231,7 +332,7 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                         <Text
                             style={[
                                 styles.whiteText,
-                                styles.karla500Font,
+                                styles.poppins500Font,
                                 {
                                     fontSize: fontFactor * wp(5.5),
                                     lineHeight: fontFactor * wp(7),
@@ -256,6 +357,12 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                             subParagraph: 'e.g Olawale Bashiru',
                             important: true,
                         }}
+                        onBlur={() => updateFieldError('name')}
+                        onFocus={() => {
+                            formError && clearFormError();
+                            clearFieldError('name');
+                        }}
+                        fieldError={nameFieldError}
                     />
                     <MarginVertical />
 
@@ -271,6 +378,12 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                             subParagraph: 'e.g olawalebashiru@gmail.com',
                             important: true,
                         }}
+                        onBlur={() => updateFieldError('email')}
+                        onFocus={() => {
+                            formError && clearFormError();
+                            clearFieldError('email');
+                        }}
+                        fieldError={emailFieldError}
                     />
 
                     <MarginVertical />
@@ -360,7 +473,7 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                             <Text
                                 style={[
                                     styles.whiteText,
-                                    styles.karla500Font,
+                                    styles.poppins500Font,
                                     {
                                         fontSize: fontFactor * wp(5.5),
                                         lineHeight: fontFactor * wp(7),
@@ -448,6 +561,12 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                                     "Please tell me about what you'll like to achieve, provide as much information as relavant",
                                 important: true,
                             }}
+                            onBlur={() => updateFieldError('projectDetails')}
+                            onFocus={() => {
+                                formError && clearFormError();
+                                clearFieldError('projectDetails');
+                            }}
+                            fieldError={projectDetailsFieldError}
                         />
                         <MarginVertical />
                     </View>
@@ -466,7 +585,7 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                             <Text
                                 style={[
                                     styles.whiteText,
-                                    styles.karla500Font,
+                                    styles.poppins500Font,
                                     {
                                         fontSize: fontFactor * wp(5.5),
                                         lineHeight: fontFactor * wp(7),
@@ -506,34 +625,51 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                                 important: true,
                             }}
                             megaSize
+                            onBlur={() => updateFieldError('inquiryDetails')}
+                            onFocus={() => {
+                                formError && clearFormError();
+                                clearFieldError('inquiryDetails');
+                            }}
+                            fieldError={inquiryDetailsFieldError}
                         />
                         <MarginVertical />
                     </View>
                 )}
                 <View>
-                    <Text
-                        style={[
-                            styles2.subParagraph,
-                            styles.yellowFontColor,
-                            styles.karla500Font,
-                        ]}
-                    >
-                        You should get a reply within 24 hours.
-                    </Text>
+                    {formError ? (
+                        <Text
+                            style={[
+                                styles2.subParagraph,
+                                styles.poppins500Font,
+                                styles.whiteText,
+                            ]}
+                        >
+                            Error in{' '}
+                            <Text style={styles.redText}>{formError}</Text>{' '}
+                            field(s)
+                        </Text>
+                    ) : (
+                        <Text
+                            style={[
+                                styles2.subParagraph,
+                                styles.yellowFontColor,
+                                styles.poppins500Font,
+                            ]}
+                        >
+                            You should get a reply within 24 hours .
+                        </Text>
+                    )}
                     <MarginVertical />
                     <Pressable
                         ref={buttonRef}
                         disabled={buttonDisabled}
                         style={[styles.button, styles2.button]}
-                        onPress={
-                            // () => {}
-                            handleSubmit
-                        }
+                        onPress={handleSubmit}
                     >
                         <Text
                             style={[
                                 styles.buttonText,
-                                styles.poppins600Font,
+                                styles.karla600Font,
                                 styles2.buttonText,
                                 styles.whiteText,
                                 buttonDisabled && styles.buttonDisabled,
@@ -542,10 +678,6 @@ export default function ContactForm({ fontFactor, hireUs, inquiry }) {
                             Submit
                         </Text>
                     </Pressable>
-                    <ContactFormErrorModal
-                        isVisible={formError ? true : false}
-                        formError={formError}
-                    />
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -566,13 +698,13 @@ const styles = StyleSheet.create({
     buttonText: {
         textAlign: 'center',
     },
-    poppins600Font: {
+    karla600Font: {
         fontFamily: 'Karla_600SemiBold',
     },
     buttonDisabled: {
         opacity: 0.5,
     },
-    karla500Font: {
+    poppins500Font: {
         fontFamily: 'Poppins_500Medium',
     },
     blueText: {
@@ -581,5 +713,8 @@ const styles = StyleSheet.create({
     yellowFontColor: { color: '#f8b526' },
     karla400Font: {
         fontFamily: 'Karla_400Regular',
+    },
+    redText: {
+        color: 'red',
     },
 });

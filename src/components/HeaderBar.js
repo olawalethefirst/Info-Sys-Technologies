@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, SafeAreaView, StatusBar, Platform } from 'react-native';
+import { View, StatusBar, Platform } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
 import HeaderLogo from './HeaderLogo';
@@ -15,7 +15,7 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
     const effectiveHeaderSize = headerSize - statusBarHeight;
     const styles = {
         headerWithStatusBar: {
-            paddingTop: Platform.OS === 'ios' ? statusBarHeight : 0,
+            paddingTop: Platform.OS === 'ios' ? statusBarHeight : null,
             width: headerWidth,
             height: Platform.OS === 'ios' ? headerSize : effectiveHeaderSize,
             backgroundColor: '#1a85c5',

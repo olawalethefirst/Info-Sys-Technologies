@@ -2,7 +2,7 @@ import * as React from 'react';
 import Svg, { Path } from 'react-native-svg';
 import { StyleSheet } from 'react-native';
 
-function FBPIcon() {
+function FAMIcon() {
     return (
         <Svg
             viewBox="0 0 526 513"
@@ -64,4 +64,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default FBPIcon;
+export default FAMIcon;

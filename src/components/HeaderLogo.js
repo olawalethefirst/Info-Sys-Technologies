@@ -4,7 +4,6 @@ import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 
 function HeaderLogo({ margin, fontFactor }) {
-    console.log(fontFactor);
     return (
         <View
             style={[
