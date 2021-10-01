@@ -8,6 +8,7 @@ import HeaderBar from './HeaderBar';
 import AboutScreen from '../screens/AboutScreen';
 import { getHeaderTitle } from '@react-navigation/stack/node_modules/@react-navigation/elements';
 import ContactScreen from '../screens/ContactScreen';
+import ServicesScreen from '../screens/ServicesScreen';
 
 const mainStack = createStackNavigator();
 
@@ -26,6 +27,7 @@ export default function MainNavigator() {
             <mainStack.Screen name="Home" component={HomeScreen} />
             <mainStack.Screen name="About" component={AboutScreen} />
             <mainStack.Screen name="Contact" component={ContactScreen} />
+            <mainStack.Screen name="Services" component={ServicesScreen} />
         </mainStack.Navigator>
     );
 }

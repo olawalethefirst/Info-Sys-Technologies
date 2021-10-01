@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
     StyleSheet,
     Animated,
@@ -10,6 +10,8 @@ import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
+import updateScrollViewOffset from '../redux/actions/updateScrollViewOffset';
+import { useDispatch } from 'react-redux';
 
 function SubScreenTemplate({
     margin,
@@ -20,11 +22,20 @@ function SubScreenTemplate({
     heading,
     sectionComponents,
     scrollRef,
+    updateScrollViewOffset,
 }) {
+    let holder = useRef(0);
+    let final = useRef(0);
     const scrollY = useRef(new Animated.Value(0));
+    const dispatch = useDispatch();
     const handleScroll = Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY.current } } }],
-        { useNativeDriver: true }
+        {
+            useNativeDriver: true,
+            listener: (e) => {
+                updateScrollViewOffset(e.nativeEvent.contentOffset.y);
+            },
+        }
     );
     const scrollYClamped = Animated.diffClamp(scrollY.current, 0, headerSize);
     const translateY = scrollYClamped.interpolate(
@@ -43,42 +54,46 @@ function SubScreenTemplate({
 
     return (
         <View style={styles.container}>
-            <AnimatedImageBackground
-                //eslint-disable-next-line no-undef
-                source={require('../../assets/images/background2.png')}
-                resizeMode="cover"
-                style={[
-                    styles.header,
-                    {
-                        paddingHorizontal: margin,
-                        minHeight: headerSize - statusBarHeight,
-                        transform: [
-                            {
-                                translateY,
-                            },
-                        ],
-                    },
-                ]}
-            >
-                <Text
+            {heading && (
+                <AnimatedImageBackground
+                    //eslint-disable-next-line no-undef
+                    source={require('../../assets/images/background2.png')}
+                    resizeMode="cover"
                     style={[
-                        styles.headerText,
+                        styles.header,
                         {
-                            fontSize: fontFactor * wp(8.5),
-                            lineHeight: fontFactor * wp(10.81),
+                            paddingHorizontal: margin,
+                            minHeight: headerSize - statusBarHeight,
+                            transform: [
+                                {
+                                    translateY,
+                                },
+                            ],
                         },
                     ]}
                 >
-                    {heading}
-                </Text>
-            </AnimatedImageBackground>
+                    <Text
+                        style={[
+                            styles.headerText,
+                            {
+                                fontSize: fontFactor * wp(8.5),
+                                lineHeight: fontFactor * wp(10.81),
+                            },
+                        ]}
+                    >
+                        {heading}
+                    </Text>
+                </AnimatedImageBackground>
+            )}
             <Animated.FlatList
                 style={{ zIndex: -1 }}
                 scrollEventThrottle={16}
                 onScroll={handleScroll}
-                contentContainerStyle={{
-                    paddingTop: headerSize - statusBarHeight,
-                }}
+                contentContainerStyle={
+                    heading && {
+                        paddingTop: headerSize - statusBarHeight,
+                    }
+                }
                 data={sectionComponents}
                 keyExtractor={(item, index) => 'keyExtractor' + index}
                 bounces={false}
@@ -127,4 +142,6 @@ const mapStateToProps = (state) => ({
     deviceWidthClass: state.settingsState.deviceWidthClass,
 });
 
-export default connect(mapStateToProps)(SubScreenTemplate);
+export default connect(mapStateToProps, { updateScrollViewOffset })(
+    SubScreenTemplate
+);

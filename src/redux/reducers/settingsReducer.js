@@ -6,6 +6,7 @@ import {
     UPDATE_DEVICE_WIDTH_CLASS,
     UPDATE_BODY_HEIGHT,
     UPDATE_FONT_FACTOR,
+    UPDATE_SCROLL_POSITION,
 } from '../actions/actionTypes';
 
 //Initial States
@@ -18,6 +19,7 @@ const initialState = {
     bodyHeight: null,
     fontFactor: null,
     modalEnabled: false,
+    scrollViewOffset: 0,
 };
 
 export default function settingsReducer(state = initialState, action) {
@@ -57,6 +59,10 @@ export default function settingsReducer(state = initialState, action) {
                 ...state,
                 fontFactor: action.payload,
             };
+        case UPDATE_SCROLL_POSITION:
+            return { ...state, scrollViewOffset: action.payload };
+        case 'RANDOM':
+            return { ...state, randomData: true };
         default:
             return state;
     }

@@ -71,7 +71,7 @@ function Footer({
                 }}
             />
             <AnimatedPressable
-                hitSlop={15}
+                hitSlop={wp(4)}
                 onPressIn={onPressIn}
                 onPressOut={onPressOut}
                 onPress={() => scrollToTop(scrollRef)}

@@ -6,12 +6,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ModalSelector from 'react-native-modal-selector';
 import ContactForm from '../components/ContactForm';
 
-export default function Contact({
-    bodyHeight,
-    headerSize,
-    margin,
-    fontFactor,
-}) {
+function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
     const { statusBarHeight } = Constants;
     const styles2 = {
         paragraph: {
@@ -45,7 +40,7 @@ export default function Contact({
             style={[
                 styles.container,
                 {
-                    minHeight: bodyHeight - 2 * headerSize + statusBarHeight,
+                    minHeight: bodyHeight - headerSize + statusBarHeight,
                     paddingHorizontal: margin,
                 },
             ]}
@@ -97,3 +92,5 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins_600SemiBold',
     },
 });
+
+export default React.memo(Contact);

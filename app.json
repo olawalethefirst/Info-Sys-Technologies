@@ -42,6 +42,7 @@
         "androidStatusBar": {
             "hidden": true,
             "backgroundColor": "#1A91D7"
-        }
+        },
+        "backgroundColor": "#1A91D7"
     }
 }

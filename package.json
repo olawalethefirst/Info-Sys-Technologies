@@ -33,6 +33,7 @@
         "react-native-modal": "^13.0.0",
         "react-native-modal-datetime-picker": "^11.0.0",
         "react-native-modal-selector": "^2.1.0",
+        "react-native-pager-view": "^5.4.4",
         "react-native-paper": "^4.9.2",
         "react-native-responsive-screen": "^1.4.2",
         "react-native-safe-area-context": "3.2.0",

@@ -148,7 +148,7 @@ export default function ModalScreen({
                         }
                         onPress={() => {
                             !isWeb && closeModal();
-                            navigation.navigate('About');
+                            navigation.navigate('Services');
                         }}
                         hitSlop={fontFactor * wp(7)}
                     >
