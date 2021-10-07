@@ -1,9 +1,10 @@
 import React, { useRef, useCallback } from 'react';
-import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import { connect } from 'react-redux';
 import SubScreenTemplate from '../components/SubScreenTemplate';
 import Footer from '../components/Footer';
 import Services from '../components/Services';
+import PropTypes from 'prop-types';
 
 function ServicesScreen({
     margin,
@@ -28,11 +29,9 @@ function ServicesScreen({
             data: (
                 <Services
                     headerSize={headerSize}
-                    margin={margin}
                     fontFactor={fontFactor}
                     bodyHeight={bodyHeight}
                     pagerRef={pagerRef}
-                    scrollRef={scrollRef}
                     scrollViewOffset={scrollViewOffset}
                 />
             ),
@@ -65,10 +64,17 @@ function ServicesScreen({
     );
 }
 
+ServicesScreen.propTypes = {
+    margin: PropTypes.number,
+    fontFactor: PropTypes.number,
+    headerSize: PropTypes.number,
+    bodyHeight: PropTypes.number,
+    scrollViewOffset: PropTypes.number,
+};
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: '#1A91D7',
     },
 });
 

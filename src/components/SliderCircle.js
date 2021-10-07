@@ -1,35 +1,36 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import * as React from 'react';
+import Svg, { Circle } from 'react-native-svg';
+import { StyleSheet, View } from 'react-native';
 
-export default function SliderCircle({ fontFactor, active, size }) {
-    const indicatorSize = wp(4);
-    const indicatorActiveSize = 0.5 * indicatorSize;
-
+export default function SliderCircle({ size, active }) {
     return (
         <View
             style={{
-                width: indicatorSize,
-                height: indicatorSize,
-                borderRadius: indicatorSize / 2,
-                borderColor: 'white',
-                borderWidth: 2,
-                alignItems: 'center',
-                justifyContent: 'center',
+                width: size,
+                height: size,
             }}
         >
-            <View
-                style={{
-                    width: indicatorActiveSize,
-                    height: indicatorActiveSize,
-                    borderRadius: indicatorActiveSize / 2,
-                    // borderColor: 'white',
-                    // // borderWidth: 1,
-                    backgroundColor: '#fff',
-                }}
-            ></View>
+            <Svg
+                viewBox="0 0 60 60"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={styles.SVG}
+            >
+                <Circle
+                    cx={30}
+                    cy={30}
+                    r={27.5}
+                    stroke="#fff"
+                    strokeWidth={5}
+                />
+                {active && <Circle cx={30} cy={30} r={20} fill="#fff" />}
+            </Svg>
         </View>
     );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    SVG: {
+        flex: 1,
+    },
+});

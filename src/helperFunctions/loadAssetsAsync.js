@@ -26,6 +26,12 @@ export default function loadAssetsAsync() {
         require('../../assets/images/image7.png'),
         require('../../assets/images/image8.png'),
         require('../../assets/images/image9.png'),
+        require('../../assets/images/image10.png'),
+        require('../../assets/images/image11.png'),
+        require('../../assets/images/image12.png'),
+        require('../../assets/images/image13.png'),
+        require('../../assets/images/image14.png'),
+        require('../../assets/images/image15.png'),
         require('../../assets/images/transparent-logo.png'),
     ]);
     return Promise.all([...cachedFonts, ...cachedImages]);
