@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     StyleSheet,
     Text,
-    TouchableOpacity,
+    Pressable,
     View,
     Animated,
+    Easing,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
-import Icon from 'react-native-vector-icons/Entypo';
+import RightArrowIcon from './RightArrowIcon';
 
 export default function ServiceTemplate({
     columnMode,
@@ -18,23 +19,71 @@ export default function ServiceTemplate({
     fontFactor,
     serviceBody,
 }) {
-    const animatedValue = new Animated.Value(0);
-    useEffect(() => {
+    const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+    const animatedValue = useRef(new Animated.Value(0)).current;
+    const animatedValue1 = useRef(new Animated.Value(1)).current;
+    const animatedValue2 = useRef(new Animated.Value(1)).current;
+    const animatedValue3 = useRef(new Animated.Value(0)).current;
+
+    const indefiniteSpring = useRef(
         Animated.loop(
             Animated.sequence([
                 Animated.timing(animatedValue, {
-                    toValue: -(fontFactor * wp(0.5)),
+                    toValue: 4,
+                    duration: 250,
                     useNativeDriver: true,
-                    duration: 600,
+                    easing: Easing.in,
                 }),
                 Animated.timing(animatedValue, {
-                    toValue: fontFactor * wp(0.5),
+                    toValue: 0,
+                    duration: 250,
                     useNativeDriver: true,
-                    duration: 600,
+                    easing: Easing.in,
                 }),
             ])
-        ).start();
+        )
+    ).current;
+    const onPressIn = useRef(
+        Animated.parallel([
+            Animated.spring(animatedValue1, {
+                toValue: 0.6,
+                useNativeDriver: true,
+            }),
+            Animated.timing(animatedValue2, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }),
+            Animated.timing(animatedValue3, {
+                toValue: 0.7,
+                duration: 300,
+                useNativeDriver: true,
+            }),
+        ])
+    ).current;
+    const onPressOut = useRef(
+        Animated.parallel([
+            Animated.spring(animatedValue1, {
+                toValue: 1,
+                useNativeDriver: true,
+            }),
+            Animated.timing(animatedValue2, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }),
+            Animated.timing(animatedValue3, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }),
+        ])
+    ).current;
+
+    useEffect(() => {
+        indefiniteSpring.start();
     });
+    console.log(animatedValue2);
 
     return (
         <View
@@ -53,7 +102,7 @@ export default function ServiceTemplate({
             </Animated.View>
             <MarginVertical size={1.5} />
 
-            <Animated.Text
+            <Text
                 style={[
                     styles.heading,
                     {
@@ -63,7 +112,7 @@ export default function ServiceTemplate({
                 ]}
             >
                 {serviceTitle}
-            </Animated.Text>
+            </Text>
             <MarginVertical size={1} />
             <Text
                 style={[
@@ -80,13 +129,17 @@ export default function ServiceTemplate({
             </Text>
             <MarginVertical size={1} />
 
-            <TouchableOpacity
+            <AnimatedPressable
+                hitSlop={wp(2)}
+                onPressIn={() => onPressIn.start()}
+                onPressOut={() => onPressOut.start()}
                 style={[
                     styles.button,
                     {
                         paddingVertical: fontFactor * wp(3.58),
                         paddingHorizontal: fontFactor * wp(4.55),
                         marginLeft: -(fontFactor * wp(4.55)),
+                        opacity: animatedValue1,
                     },
                 ]}
             >
@@ -101,27 +154,40 @@ export default function ServiceTemplate({
                 >
                     Learn more{'   '}
                 </Text>
-                <Animated.Text
+                <Animated.View
                     style={[
                         styles.buttonText,
                         {
-                            fontSize: fontFactor * wp(3.58),
-                            lineHeight: fontFactor * wp(4.55),
+                            height: fontFactor * wp(2.6),
+                            width: (fontFactor * wp(2.6) * 330) / 180,
+                            alignSelf: 'center',
                         },
                         {
-                            transform: [{ translateX: animatedValue }],
+                            opacity: animatedValue3,
                         },
                     ]}
                 >
-                    <Icon
-                        name="arrow-long-right"
-                        style={{
-                            fontSize: fontFactor * wp(3.58),
-                            lineHeight: fontFactor * wp(4.55),
-                        }}
-                    />
-                </Animated.Text>
-            </TouchableOpacity>
+                    <RightArrowIcon />
+                </Animated.View>
+                <Animated.View
+                    style={[
+                        styles.buttonText,
+                        {
+                            height: fontFactor * wp(2.6),
+                            width: (fontFactor * wp(2.6) * 330) / 180,
+                            alignSelf: 'center',
+                            position: 'relative',
+                            left: -(fontFactor * wp(2.6) * 330) / 180,
+                        },
+                        {
+                            transform: [{ translateX: animatedValue }],
+                            opacity: animatedValue2,
+                        },
+                    ]}
+                >
+                    <RightArrowIcon />
+                </Animated.View>
+            </AnimatedPressable>
         </View>
     );
 }

@@ -1,37 +1,91 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    ImageBackground,
+    Animated,
+    Dimensions,
+} from 'react-native';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import DancingDownArrow from './DancingDownArrow';
 
-export default function ServicesIntro({ fontFactor, margin }) {
+function ServicesIntro({
+    fontFactor,
+    arrowWidth,
+    menuIconWidth,
+    contentContainerWidth,
+}) {
     const styles2 = {
         baseFont: {
-            fontSize: fontFactor * wp(7),
-            // lineHeight: fontFactor * wp(6.36),
+            fontSize: fontFactor * wp(5),
+            lineHeight: fontFactor * wp(6.36),
+        },
+        heading: {
+            fontSize: fontFactor * wp(8.5),
+            lineHeight: fontFactor * wp(10.81),
+        },
+        iconContainer: {
+            position: 'absolute',
+            width: arrowWidth,
+            height: (arrowWidth * 125) / 42,
+            right: (menuIconWidth - arrowWidth) / 2,
+            bottom: wp(4),
+            opacity: 0.8,
+        },
+        contentContainer: {
+            width: contentContainerWidth,
+            alignSelf: 'center',
         },
     };
 
     return (
-        <View style={{ flex: 1, padding: margin, backgroundColor: '#161B26' }}>
-            <MarginVertical size={2} />
-            <Text
-                style={[
-                    styles.karla500Font,
-                    styles2.baseFont,
-                    styles.whiteText,
-                    styles.textWidth,
-                ]}
+        <View style={{ flex: 1, backgroundColor: '#161B26' }}>
+            <ImageBackground
+                source={require('../../assets/images/image8.png')}
+                style={{ flex: 1 }}
+                resizeMode="cover"
             >
-                From Financial Management solutions, to Information Technology
-                services, Management Training to Feasibility planning or
-                Accounting Services; We execute every project brilliantly.
-            </Text>
+                <View style={[styles2.contentContainer]}>
+                    <MarginVertical size={4} />
+                    <Text
+                        style={[
+                            styles.poppins600Font,
+                            styles.whiteText,
+                            styles2.heading,
+                        ]}
+                    >
+                        Services
+                    </Text>
+                    <MarginVertical />
+                    <Text
+                        style={[
+                            styles.karla400Font,
+                            styles2.baseFont,
+                            styles.whiteText,
+                        ]}
+                    >
+                        From proffering innovative solutions to implementing
+                        unique structures, Investigating problems to Planning
+                        your businesses, or other forms of services we render;
+                        We execute every project brilliantly.
+                    </Text>
+                    <MarginVertical size={2} />
+                </View>
+                {/* <DancingDownArrow
+                    arrowWidth={arrowWidth}
+                    menuIconWidth={menuIconWidth}
+                /> */}
+            </ImageBackground>
         </View>
     );
 }
 
+export default React.memo(ServicesIntro);
+
 const styles = StyleSheet.create({
-    karla500Font: {
+    karla400Font: {
         fontFamily: 'Karla_400Regular',
     },
     whiteText: {
@@ -39,5 +93,8 @@ const styles = StyleSheet.create({
     },
     textWidth: {
         width: '80%',
+    },
+    poppins600Font: {
+        fontFamily: 'Poppins_600SemiBold',
     },
 });

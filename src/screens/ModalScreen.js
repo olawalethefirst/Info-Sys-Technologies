@@ -8,13 +8,12 @@ import {
     Platform,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import Icon from 'react-native-vector-icons/Feather';
-import Constants from 'expo-constants';
 import MarginVertical from '../components/MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/core';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
+import ModalCloseIcon from '../components/ModalCloseIcon';
 
 const isWeb = Platform.OS === 'web';
 export default function ModalScreen({
@@ -24,19 +23,6 @@ export default function ModalScreen({
     iconHeight,
     fontFactor,
 }) {
-    const animatedValue = useRef(new Animated.Value(1)).current;
-    const onPressIn = () => {
-        Animated.spring(animatedValue, {
-            toValue: 1.2,
-            useNativeDriver: true,
-        }).start();
-    };
-    const onPressOut = () => {
-        Animated.spring(animatedValue, {
-            toValue: 1,
-            useNativeDriver: true,
-        }).start();
-    };
     const onPressNavItemIn = (animatedValue) => {
         Animated.spring(animatedValue, {
             toValue: 1.2,
@@ -78,26 +64,11 @@ export default function ModalScreen({
             deviceHeight={deviceHeight}
         >
             <View style={[styles.modalContainer]}>
-                <Pressable
-                    style={[
-                        styles.modalCloseIcon,
-                        {
-                            width: iconWidth,
-                            height: iconHeight,
-                        },
-                    ]}
-                    onPressIn={onPressIn}
-                    onPressOut={onPressOut}
-                    onPress={closeModal}
-                >
-                    <Animated.Text
-                        style={{
-                            transform: [{ scale: animatedValue }],
-                        }}
-                    >
-                        <Icon name="x" color="#fff" size={0.4 * iconWidth} />
-                    </Animated.Text>
-                </Pressable>
+                <ModalCloseIcon
+                    closeModal={closeModal}
+                    iconWidth={iconWidth}
+                    iconHeight={iconHeight}
+                />
                 <View style={styles.navContainer}>
                     <Pressable
                         onPressIn={() => onPressNavItemIn(homeAnimatedValue)}
@@ -222,20 +193,11 @@ ModalScreen.propTypes = {
     fontFactor: PropTypes.number,
 };
 
-const statusBarHeight = Constants.statusBarHeight;
-const isIOS = Platform.OS === 'ios';
 const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
         paddingHorizontal: 30,
         backgroundColor: 'rgba(22, 27, 38, .9)',
-        justifyContent: 'center',
-    },
-    modalCloseIcon: {
-        position: 'absolute',
-        top: isIOS ? statusBarHeight : 0,
-        right: 0,
-        alignItems: 'center',
         justifyContent: 'center',
     },
     navContainer: {

@@ -43,6 +43,7 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
             flex: headerSize,
         },
     };
+    console.log('menuIconWidth', menuIconWidth);
 
     return (
         <View style={[styles.headerWithStatusBar]}>

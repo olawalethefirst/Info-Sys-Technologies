@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import SubScreenTemplate from '../components/SubScreenTemplate';
 import Footer from '../components/Footer';
 import Services from '../components/Services';
-import ServicesGallery from '../components/ServicesGallery';
 
 function ServicesScreen({
     margin,
