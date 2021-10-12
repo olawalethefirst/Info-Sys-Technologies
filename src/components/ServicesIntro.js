@@ -1,22 +1,10 @@
 import React from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-    ImageBackground,
-    Animated,
-    Dimensions,
-} from 'react-native';
+import { StyleSheet, Text, View, ImageBackground } from 'react-native';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import DancingDownArrow from './DancingDownArrow';
+import PropTypes from 'prop-types';
 
-function ServicesIntro({
-    fontFactor,
-    arrowWidth,
-    menuIconWidth,
-    contentContainerWidth,
-}) {
+function ServicesIntro({ fontFactor, contentContainerWidth }) {
     const styles2 = {
         baseFont: {
             fontSize: fontFactor * wp(5),
@@ -26,14 +14,6 @@ function ServicesIntro({
             fontSize: fontFactor * wp(8.5),
             lineHeight: fontFactor * wp(10.81),
         },
-        iconContainer: {
-            position: 'absolute',
-            width: arrowWidth,
-            height: (arrowWidth * 125) / 42,
-            right: (menuIconWidth - arrowWidth) / 2,
-            bottom: wp(4),
-            opacity: 0.8,
-        },
         contentContainer: {
             width: contentContainerWidth,
             alignSelf: 'center',
@@ -41,10 +21,11 @@ function ServicesIntro({
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#161B26' }}>
+        <View style={[styles.container, { backgroundColor: '#161B26' }]}>
             <ImageBackground
+                // eslint-disable-next-line no-undef
                 source={require('../../assets/images/image8.png')}
-                style={{ flex: 1 }}
+                style={styles.container}
                 resizeMode="cover"
             >
                 <View style={[styles2.contentContainer]}>
@@ -73,26 +54,28 @@ function ServicesIntro({
                     </Text>
                     <MarginVertical size={2} />
                 </View>
-                {/* <DancingDownArrow
-                    arrowWidth={arrowWidth}
-                    menuIconWidth={menuIconWidth}
-                /> */}
             </ImageBackground>
         </View>
     );
 }
 
+ServicesIntro.propTypes = {
+    fontFactor: PropTypes.number,
+    contentContainerWidth: PropTypes.number,
+};
+
 export default React.memo(ServicesIntro);
 
 const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+        height: '100%',
+    },
     karla400Font: {
         fontFamily: 'Karla_400Regular',
     },
     whiteText: {
         color: '#fff',
-    },
-    textWidth: {
-        width: '80%',
     },
     poppins600Font: {
         fontFamily: 'Poppins_600SemiBold',

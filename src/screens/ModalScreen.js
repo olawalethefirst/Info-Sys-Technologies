@@ -141,6 +141,10 @@ export default function ModalScreen({
                     <Pressable
                         onPressIn={() => onPressNavItemIn(forumAnimatedValue)}
                         onPressOut={() => onPressNavItemOut(forumAnimatedValue)}
+                        onPress={() => {
+                            !isWeb && closeModal();
+                            navigation.navigate('Forum');
+                        }}
                         hitSlop={fontFactor * wp(7)}
                     >
                         <Animated.Text

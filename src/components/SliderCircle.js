@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Svg, { Circle } from 'react-native-svg';
 import { StyleSheet, View } from 'react-native';
+import PropTypes from 'prop-types';
 
 export default function SliderCircle({ size, active }) {
     return (
@@ -28,6 +29,11 @@ export default function SliderCircle({ size, active }) {
         </View>
     );
 }
+
+SliderCircle.propTypes = {
+    size: PropTypes.number,
+    active: PropTypes.bool,
+};
 
 const styles = StyleSheet.create({
     SVG: {

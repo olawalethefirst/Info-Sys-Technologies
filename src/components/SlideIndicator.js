@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Animated } from 'react-native';
+import { Animated } from 'react-native';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import SliderCircle from './SliderCircle';
 import MarginVertical from './MarginVertical';
+import PropTypes from 'prop-types';
 
 export default function SlideIndicator({
     size,
@@ -41,4 +42,9 @@ export default function SlideIndicator({
     );
 }
 
-const styles = StyleSheet.create({});
+SlideIndicator.propTypes = {
+    size: PropTypes.number,
+    menuIconWidth: PropTypes.number,
+    activeSlide: PropTypes.number,
+    animatedValue: PropTypes.object,
+};

@@ -7,6 +7,7 @@ import {
     UPDATE_BODY_HEIGHT,
     UPDATE_FONT_FACTOR,
     UPDATE_SCROLL_POSITION,
+    UPDATE_USER_STATE,
 } from '../actions/actionTypes';
 
 //Initial States
@@ -20,6 +21,7 @@ const initialState = {
     fontFactor: null,
     modalEnabled: false,
     scrollViewOffset: 0,
+    user: null,
 };
 
 export default function settingsReducer(state = initialState, action) {
@@ -61,8 +63,8 @@ export default function settingsReducer(state = initialState, action) {
             };
         case UPDATE_SCROLL_POSITION:
             return { ...state, scrollViewOffset: action.payload };
-        case 'RANDOM':
-            return { ...state, randomData: true };
+        case UPDATE_USER_STATE:
+            return { ...state, user: action.payload };
         default:
             return state;
     }

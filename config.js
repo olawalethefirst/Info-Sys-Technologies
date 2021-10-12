@@ -17,4 +17,5 @@ const FIREBASE_CONFIG = {
     appId,
     measurementId,
 };
-export default { FIREBASE_CONFIG };
+
+export default FIREBASE_CONFIG;

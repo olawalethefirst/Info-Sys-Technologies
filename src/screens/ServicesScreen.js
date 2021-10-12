@@ -29,9 +29,11 @@ function ServicesScreen({
             data: (
                 <Services
                     headerSize={headerSize}
+                    margin={margin}
                     fontFactor={fontFactor}
                     bodyHeight={bodyHeight}
                     pagerRef={pagerRef}
+                    scrollRef={scrollRef}
                     scrollViewOffset={scrollViewOffset}
                 />
             ),
@@ -75,6 +77,7 @@ ServicesScreen.propTypes = {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        // backgroundColor: '#1A91D7',
     },
 });
 

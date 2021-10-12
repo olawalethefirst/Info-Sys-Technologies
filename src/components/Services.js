@@ -73,7 +73,6 @@ function Services({
                     updatePage(position)
                 }
                 overScrollMode="never"
-                // transitionStyle="scroll"
             >
                 <View collapsable={false}>
                     <ServicesIntro
