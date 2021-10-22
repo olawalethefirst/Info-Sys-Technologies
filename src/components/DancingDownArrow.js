@@ -67,7 +67,7 @@ export default class DancingDownArrow extends PureComponent {
         return (
             <AnimatedPressable
                 onPress={scrollToNextPage}
-                hitSlop={wp(2.2)}
+                hitSlop={wp(2)}
                 style={[
                     styles.iconContainer,
                     styles2.iconContainer,
@@ -87,7 +87,6 @@ DancingDownArrow.propTypes = {
     arrowWidth: PropTypes.number,
     menuIconWidth: PropTypes.number,
     scrollToNextPage: PropTypes.func,
-    animatedValue: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

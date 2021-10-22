@@ -19,13 +19,16 @@
         "babel-plugin-dotenv-import": "^2.2.0",
         "eslint": "^7.32.0",
         "expo": "~42.0.1",
+        "expo-application": "^3.2.0",
         "expo-asset": "^8.3.3",
         "expo-auth-session": "~3.3.1",
         "expo-constants": "~11.0.1",
         "expo-font": "~9.2.1",
+        "expo-google-sign-in": "~9.2.1",
         "expo-random": "~11.2.0",
         "expo-splash-screen": "~0.11.2",
         "expo-status-bar": "~1.0.4",
+        "expo-web-browser": "~9.2.0",
         "firebase": "8.2.3",
         "prop-types": "^15.7.2",
         "react": "16.13.1",
@@ -55,7 +58,8 @@
         "eslint-plugin-import": "^2.24.2",
         "eslint-plugin-node": "^11.1.0",
         "eslint-plugin-promise": "^5.1.0",
-        "eslint-plugin-react": "^7.24.0"
+        "eslint-plugin-react": "^7.24.0",
+        "eslint-plugin-react-hooks": "^4.2.0"
     },
     "private": true
 }

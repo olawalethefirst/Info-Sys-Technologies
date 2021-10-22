@@ -6,6 +6,7 @@ import {
     messagingSenderId,
     appId,
     measurementId,
+    googleClientID,
 } from '@env';
 
 const FIREBASE_CONFIG = {
@@ -18,4 +19,7 @@ const FIREBASE_CONFIG = {
     measurementId,
 };
 
+const clientId = { googleClientID };
+
 export default FIREBASE_CONFIG;
+export { clientId };

@@ -12,9 +12,10 @@ import {
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
+import DancingDownArrow from './DancingDownArrow';
 import Modal from 'react-native-modal';
+import Constants from 'expo-constants';
 import ModalCloseIcon from './ModalCloseIcon';
-import PropTypes from 'prop-types';
 
 function ServicesTemplate({
     headerSize,
@@ -24,9 +25,9 @@ function ServicesTemplate({
     menuIconWidth,
     menuIconHeight,
     fontFactor,
+    arrowWidth,
     contentContainerWidth,
-    fadeIn,
-    fadeOut,
+    lastComponent,
 }) {
     const styles2 = {
         heading: {
@@ -36,6 +37,14 @@ function ServicesTemplate({
         baseFont: {
             fontSize: fontFactor * wp(5),
             lineHeight: fontFactor * wp(6.36),
+        },
+        iconContainer: {
+            position: 'absolute',
+            width: arrowWidth,
+            height: (arrowWidth * 125) / 42,
+            right: (menuIconWidth - arrowWidth) / 2,
+            bottom: wp(4),
+            opacity: 0.8,
         },
         contentContainer: {
             width: contentContainerWidth,
@@ -65,12 +74,11 @@ function ServicesTemplate({
     const [modalOpen, setModalOpen] = useState(false);
     const toggleModal = () => {
         setModalOpen((state) => {
-            state
-                ? Animated.parallel([animateIn.start(), fadeIn.start()])
-                : Animated.parallel([animateOut.start(), fadeOut.start()]);
+            state ? animateIn.start() : animateOut.start();
             return !state;
         });
     };
+    console.log(modalOpen);
 
     return (
         <View style={[styles.container, {}]}>
@@ -125,6 +133,12 @@ function ServicesTemplate({
                             </Text>
                         </Pressable>
                     </View>
+                    {/* {!lastComponent && (
+                        <DancingDownArrow
+                            arrowWidth={arrowWidth}
+                            menuIconWidth={menuIconWidth}
+                        />
+                    )} */}
                 </Animated.View>
             </ImageBackground>
             <Modal
@@ -177,26 +191,38 @@ function ServicesTemplate({
                             >
                                 {details}
                             </Text>
+                            <MarginVertical size={2} />
                         </View>
                     </ScrollView>
                 </View>
             </Modal>
+            {/* <ScrollView
+                        contentContainerStyle={[
+                            styles.container,
+                            { padding: margin },
+                            styles.justifyFontVerticalCenter,
+                            styles.darkBackground,
+                        ]}
+                    >
+                        <MarginVertical size={2} />
+                        <View style={{ width: '90%', alignSelf: 'center' }}>
+                            <Text
+                                style={[
+                                    styles.karla400Font,
+                                    styles2.baseFont,
+                                    styles.whiteText,
+                                    styles.alignTextCenter,
+                                ]}
+                            >
+                                {details}
+                            </Text>
+                        </View>
+
+                        <MarginVertical size={2} />
+                    </ScrollView> */}
         </View>
     );
 }
-
-ServicesTemplate.propTypes = {
-    headerSize: PropTypes.number,
-    url: PropTypes.number,
-    title: PropTypes.string,
-    details: PropTypes.string,
-    menuIconWidth: PropTypes.number,
-    menuIconHeight: PropTypes.number,
-    fontFactor: PropTypes.number,
-    contentContainerWidth: PropTypes.number,
-    fadeIn: PropTypes.object,
-    fadeOut: PropTypes.object,
-};
 
 export default React.memo(ServicesTemplate);
 
@@ -213,6 +239,18 @@ const styles = StyleSheet.create({
     },
     karla400Font: {
         fontFamily: 'Karla_400Regular',
+    },
+    justifyFontVerticalCenter: {
+        justifyContent: 'center',
+    },
+    darkBackground: {
+        backgroundColor: '#161B26',
+    },
+    justifyText: {
+        textAlign: 'justify',
+    },
+    alignTextCenter: {
+        alignSelf: 'center',
     },
     lightBlueText: {
         color: '#1CB8F3',

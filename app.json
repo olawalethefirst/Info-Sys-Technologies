@@ -10,6 +10,7 @@
             "resizeMode": "contain",
             "backgroundColor": "#1A91D7"
         },
+        "scheme": "com.technologies.infosys",
         "updates": {
             "fallbackToCacheTimeout": 0
         },
@@ -17,7 +18,13 @@
         "ios": {
             "supportsTablet": true,
             "bundleIdentifier": "com.technologies.infosys",
-            "buildNumber": "1.0.0"
+            "buildNumber": "1.0.0",
+            "googleServicesFile": "./GoogleService-Info.plist",
+            "config": {
+                "googleSignIn": {
+                    "reservedClientId": "com.googleusercontent.apps.173918698726-qo9peoeeleqdg53j6mf0ftvd247r9gh0"
+                }
+            }
         },
         "android": {
             "adaptiveIcon": {
@@ -34,7 +41,8 @@
                 "xhdpi": "./assets/images/splash-mdpi.png",
                 "xxhdpi": "./assets/images/splash-mdpi.png",
                 "xxxhdpi": "./assets/images/splash-mdpi.png"
-            }
+            },
+            "googleServicesFile": "./google-services.json"
         },
         "web": {
             "favicon": "./assets/images/favicon.png"
