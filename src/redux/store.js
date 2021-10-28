@@ -7,9 +7,10 @@ import thunk from 'redux-thunk';
 const persistConfig = {
     key: 'root',
     storage,
+    blacklist: ['forumState'],
 };
 
 const persistedReducer = persistReducer(persistConfig, mainReducer);
 
-export const store = createStore(persistedReducer, applyMiddleware(thunk));
+export const store = createStore(persistedReducer, {}, applyMiddleware(thunk));
 export const persistor = persistStore(store);

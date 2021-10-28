@@ -1,5 +1,4 @@
 import {
-    INITIALIZED_FIREBASE,
     UPDATE_HEADER_SIZE,
     UPDATE_MARGIN,
     ASSETS_LOADED,
@@ -7,12 +6,10 @@ import {
     UPDATE_BODY_HEIGHT,
     UPDATE_FONT_FACTOR,
     UPDATE_SCROLL_POSITION,
-    UPDATE_USER_STATE,
 } from '../actions/actionTypes';
 
 //Initial States
 const initialState = {
-    firebaseLoaded: false,
     headerSize: null,
     margin: null,
     assetsLoaded: null,
@@ -21,16 +18,10 @@ const initialState = {
     fontFactor: null,
     modalEnabled: false,
     scrollViewOffset: 0,
-    user: null,
 };
 
 export default function settingsReducer(state = initialState, action) {
     switch (action.type) {
-        case INITIALIZED_FIREBASE:
-            return {
-                ...state,
-                firebaseLoaded: true,
-            };
         case UPDATE_HEADER_SIZE:
             return {
                 ...state,
@@ -63,8 +54,6 @@ export default function settingsReducer(state = initialState, action) {
             };
         case UPDATE_SCROLL_POSITION:
             return { ...state, scrollViewOffset: action.payload };
-        case UPDATE_USER_STATE:
-            return { ...state, user: action.payload };
         default:
             return state;
     }

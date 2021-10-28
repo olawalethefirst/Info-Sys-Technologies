@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useRef, useState } from 'react';
 import { SafeAreaView, View, Dimensions, Animated } from 'react-native';
-import Constants from 'expo-constants';
 import PagerView from 'react-native-pager-view';
 import ServicesIntro from './ServicesIntro';
 import ServicesTemplate from './ServicesTemplate';
@@ -25,12 +24,9 @@ function Services({
     pagerRef,
     scrollViewOffset,
 }) {
-    const { statusBarHeight } = Constants;
-    const menuIconWidth = headerSize - statusBarHeight / 2;
-    const menuIconHeight = headerSize - statusBarHeight;
-    const arrowWidth = 0.25 * menuIconWidth;
+    const arrowWidth = 0.25 * headerSize;
     const { width } = Dimensions.get('window');
-    const contentContainerWidth = width - 2 * menuIconWidth;
+    const contentContainerWidth = width - 2 * headerSize;
     const [page, setPage] = useState(0);
     const updatePage = (page) => {
         setPage(page);
@@ -78,7 +74,7 @@ function Services({
                     <ServicesIntro
                         fontFactor={fontFactor}
                         arrowWidth={arrowWidth}
-                        menuIconWidth={menuIconWidth}
+                        menuIconWidth={headerSize}
                         contentContainerWidth={contentContainerWidth}
                     />
                 </View>
@@ -90,8 +86,8 @@ function Services({
                         url={require('../../assets/images/image9.png')}
                         fontFactor={fontFactor}
                         arrowWidth={arrowWidth}
-                        menuIconWidth={menuIconWidth}
-                        menuIconHeight={menuIconHeight}
+                        menuIconWidth={headerSize}
+                        menuIconHeight={headerSize}
                         contentContainerWidth={contentContainerWidth}
                         fadeIn={fadeIn}
                         fadeOut={fadeOut}
@@ -105,8 +101,8 @@ function Services({
                         url={require('../../assets/images/image10.png')}
                         fontFactor={fontFactor}
                         arrowWidth={arrowWidth}
-                        menuIconWidth={menuIconWidth}
-                        menuIconHeight={menuIconHeight}
+                        menuIconWidth={headerSize}
+                        menuIconHeight={headerSize}
                         contentContainerWidth={contentContainerWidth}
                         fadeIn={fadeIn}
                         fadeOut={fadeOut}
@@ -120,8 +116,8 @@ function Services({
                         url={require('../../assets/images/image11.png')}
                         fontFactor={fontFactor}
                         arrowWidth={arrowWidth}
-                        menuIconWidth={menuIconWidth}
-                        menuIconHeight={menuIconHeight}
+                        menuIconWidth={headerSize}
+                        menuIconHeight={headerSize}
                         contentContainerWidth={contentContainerWidth}
                         fadeIn={fadeIn}
                         fadeOut={fadeOut}
@@ -135,8 +131,8 @@ function Services({
                         url={require('../../assets/images/image12.png')}
                         fontFactor={fontFactor}
                         arrowWidth={arrowWidth}
-                        menuIconWidth={menuIconWidth}
-                        menuIconHeight={menuIconHeight}
+                        menuIconWidth={headerSize}
+                        menuIconHeight={headerSize}
                         contentContainerWidth={contentContainerWidth}
                         fadeIn={fadeIn}
                         fadeOut={fadeOut}
@@ -150,8 +146,8 @@ function Services({
                         url={require('../../assets/images/image13.png')}
                         fontFactor={fontFactor}
                         arrowWidth={arrowWidth}
-                        menuIconWidth={menuIconWidth}
-                        menuIconHeight={menuIconHeight}
+                        menuIconWidth={headerSize}
+                        menuIconHeight={headerSize}
                         contentContainerWidth={contentContainerWidth}
                         fadeIn={fadeIn}
                         fadeOut={fadeOut}
@@ -165,8 +161,8 @@ function Services({
                         url={require('../../assets/images/image14.png')}
                         fontFactor={fontFactor}
                         arrowWidth={arrowWidth}
-                        menuIconWidth={menuIconWidth}
-                        menuIconHeight={menuIconHeight}
+                        menuIconWidth={headerSize}
+                        menuIconHeight={headerSize}
                         contentContainerWidth={contentContainerWidth}
                         fadeIn={fadeIn}
                         fadeOut={fadeOut}
@@ -180,8 +176,8 @@ function Services({
                         url={require('../../assets/images/image15.png')}
                         fontFactor={fontFactor}
                         arrowWidth={arrowWidth}
-                        menuIconWidth={menuIconWidth}
-                        menuIconHeight={menuIconHeight}
+                        menuIconWidth={headerSize}
+                        menuIconHeight={headerSize}
                         contentContainerWidth={contentContainerWidth}
                         fadeIn={fadeIn}
                         fadeOut={fadeOut}
@@ -191,14 +187,14 @@ function Services({
             {page !== 7 && (
                 <DancingDownArrow
                     arrowWidth={arrowWidth}
-                    menuIconWidth={menuIconHeight}
+                    menuIconWidth={headerSize}
                     animatedValue={animatedValue}
                     scrollToNextPage={scrollToNextPage}
                 />
             )}
             <SlideIndicator
                 size={0.6 * arrowWidth}
-                menuIconWidth={menuIconHeight}
+                menuIconWidth={headerSize}
                 activeSlide={page}
                 animatedValue={animatedValue}
             />

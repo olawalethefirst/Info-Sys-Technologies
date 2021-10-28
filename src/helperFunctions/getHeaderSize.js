@@ -1,10 +1,12 @@
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import Constants from 'expo-constants';
 
 export default function getHeaderSize() {
-    const height = hp(100);
+    const { statusBarHeight } = Constants;
+    const height = hp(100) - statusBarHeight;
     if (height > 736) {
-        return hp(10);
+        return 0.1 * height;
     } else {
-        return hp(11);
+        return 0.09 * height;
     }
 }

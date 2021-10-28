@@ -48,8 +48,8 @@
             "favicon": "./assets/images/favicon.png"
         },
         "androidStatusBar": {
-            "hidden": true,
-            "backgroundColor": "#1A91D7"
+            "backgroundColor": "#1A91D7",
+            "translucent": false
         },
         "backgroundColor": "#1A91D7"
     }

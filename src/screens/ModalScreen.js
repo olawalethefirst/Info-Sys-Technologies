@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/core';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
 import ModalCloseIcon from '../components/ModalCloseIcon';
+import Constants from 'expo-constants';
 
 const isWeb = Platform.OS === 'web';
 export default function ModalScreen({
@@ -47,15 +48,21 @@ export default function ModalScreen({
     const navigation = useNavigation();
     const deviceWidth = Dimensions.get('window').width;
     const deviceHeight = useSafeAreaFrame().height;
+    const { statusBarHeight } = Constants;
 
     return (
         <Modal
-            style={{ margin: 0, padding: 0 }}
+            style={{
+                marginHorizontal: 0,
+                marginBottom: 0,
+                marginTop: statusBarHeight,
+                padding: 0,
+            }}
             isVisible={visible}
             animationIn="zoomIn"
             animationOut="zoomOut"
             onBackButtonPress={closeModal}
-            coverScreen
+            // coverScreen
             useNativeDriver={true}
             hideModalContentWhileAnimating={true}
             swipeDirection="down"
