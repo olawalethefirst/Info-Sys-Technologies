@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import {
     StyleSheet,
     Animated,
@@ -11,11 +11,10 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
 import updateScrollViewOffset from '../redux/actions/updateScrollViewOffset';
-import { useDispatch } from 'react-redux';
 
 function SubScreenTemplate({
     margin,
-    // bodyHeight,
+
     fontFactor,
     // deviceWidthClass,
     headerSize,
@@ -24,16 +23,14 @@ function SubScreenTemplate({
     scrollRef,
     updateScrollViewOffset,
 }) {
-    let holder = useRef(0);
-    let final = useRef(0);
     const scrollY = useRef(new Animated.Value(0));
-    const dispatch = useDispatch();
     const handleScroll = Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY.current } } }],
         {
             useNativeDriver: true,
             listener: (e) => {
-                updateScrollViewOffset(e.nativeEvent.contentOffset.y);
+                !heading &&
+                    updateScrollViewOffset(e.nativeEvent.contentOffset.y);
             },
         }
     );
@@ -63,7 +60,7 @@ function SubScreenTemplate({
                         styles.header,
                         {
                             paddingHorizontal: margin,
-                            minHeight: headerSize - statusBarHeight,
+                            minHeight: headerSize,
                             transform: [
                                 {
                                     translateY,
@@ -91,13 +88,13 @@ function SubScreenTemplate({
                 onScroll={handleScroll}
                 contentContainerStyle={
                     heading && {
-                        paddingTop: headerSize - statusBarHeight,
+                        paddingTop: headerSize,
                     }
                 }
                 data={sectionComponents}
-                keyExtractor={(item, index) => 'keyExtractor' + index}
                 bounces={false}
                 renderItem={({ item }) => item.data}
+                keyExtractor={(item, index) => 'keyExtractor' + index}
                 ref={scrollRef}
                 keyboardDismissMode="on-drag"
                 keyboardShouldPersistTaps="never"
@@ -108,18 +105,21 @@ function SubScreenTemplate({
 
 SubScreenTemplate.propTypes = {
     margin: PropTypes.number,
-    bodyHeight: PropTypes.number,
     fontFactor: PropTypes.number,
     deviceWidthClass: PropTypes.string,
     headerSize: PropTypes.number,
     heading: PropTypes.string,
     sectionComponents: PropTypes.array,
     scrollRef: PropTypes.object,
+    updateScrollViewOffset: PropTypes.func,
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        margin: 0,
+        padding: 0,
+        // backgroundColor: '#161B26',
     },
     header: {
         position: 'absolute',
@@ -137,7 +137,6 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => ({
     margin: state.settingsState.margin,
-    bodyHeight: state.settingsState.bodyHeight,
     fontFactor: state.settingsState.fontFactor,
     deviceWidthClass: state.settingsState.deviceWidthClass,
 });

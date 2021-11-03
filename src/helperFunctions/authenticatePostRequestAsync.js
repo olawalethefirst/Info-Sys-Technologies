@@ -6,7 +6,7 @@ const authenticatePostRequestAsync = () => {
         if (
             result.successful &&
             result.exists &&
-            Date.now() - result.data.createdAt.toMillis() >= 1000 * 60
+            Date.now() - result.data.createdAt.toMillis() >= 1000 * 5
         ) {
             // if false, check passed, return success and allow new post creation
             return { successful: true, error: false };

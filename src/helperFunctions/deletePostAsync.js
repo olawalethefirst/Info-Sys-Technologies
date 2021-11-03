@@ -1,7 +1,7 @@
 import { firebase } from './initializeFirebase';
 
-const deletePostAsync = (postRef) => {
-    return firebase.firestore().doc(postRef).delete();
+const deletePostAsync = (postID) => {
+    return firebase.firestore().doc(`posts/${postID}`).delete();
 };
 
 export default deletePostAsync;

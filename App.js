@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/redux/store';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import MainNavigator from './src/components/MainNavigator';
+import MainNavigator from './src/navigators/MainNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import loadAssetsAsync from './src/helperFunctions/loadAssetsAsync';
 import * as SplashScreen from 'expo-splash-screen';
@@ -54,6 +54,7 @@ function PreApp() {
             }
         }
         prepare();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [margin, headerSize]);
 
     if (!appIsReady) {

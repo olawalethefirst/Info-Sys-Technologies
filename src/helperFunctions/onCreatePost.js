@@ -4,7 +4,7 @@ import resetActiveForumAction from '../redux/actions/resetActiveForumAction';
 import makeQueryablePromise from './makeQueryablePromise';
 import createPostAsync from './createPostAsync';
 
-const onCreateNewPost = (postID, category, title, body) => {
+const onCreatePost = (postID, category, title, body) => {
     store.dispatch(updateActiveForumAction({ type: 'createPost' }));
     const postRef = `/posts/${postID}`;
     store.dispatch(updateActiveForumAction({ postRef }));
@@ -40,4 +40,4 @@ const onCreateNewPost = (postID, category, title, body) => {
     );
 };
 
-export default onCreateNewPost;
+export default onCreatePost;

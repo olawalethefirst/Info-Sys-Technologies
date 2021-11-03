@@ -3,6 +3,8 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import authWithCredentialAsync from '../helperFunctions/authWithCredentialAsync';
 import createCredential from '../helperFunctions/createCredential';
+import { useDispatch } from 'react-redux';
+import updateNewUser from '../redux/actions/updateNewUser';
 
 export default function useGoogleAuth(native) {
     //Universal States
@@ -11,6 +13,7 @@ export default function useGoogleAuth(native) {
     const [credential, setCredential] = useState(null);
     const [authorized, setAuthorized] = useState(false);
     const [error, setError] = useState('');
+    const dispatch = useDispatch();
     const firebaseNetworkError =
         'A network error (such as timeout, interrupted connection or unreachable host) has occurred.';
 
@@ -33,7 +36,8 @@ export default function useGoogleAuth(native) {
         setError('');
         setActivityIndicator(true);
         authWithCredentialAsync(credential)
-            .then(() => {
+            .then((res) => {
+                dispatch(updateNewUser(res.additionalUserInfo.isNewUser));
                 setAuthorized(true);
                 deactivateModal();
             })
@@ -48,7 +52,8 @@ export default function useGoogleAuth(native) {
     };
     const syncGoogleAuthWithFirebaseAsync = (credential) => {
         authWithCredentialAsync(credential)
-            .then(() => {
+            .then((res) => {
+                dispatch(updateNewUser(res.additionalUserInfo.isNewUser));
                 setAuthorized(true);
                 deactivateModal();
             })

@@ -1,12 +1,13 @@
 import { firebase } from '../helperFunctions/initializeFirebase';
 
-const createPostAsync = (postRef, category, title, body) => {
-    return firebase.firestore().doc(postRef).set({
-        postOwner: firebase.auth().currentUser.uid,
-        category,
+const createPostAsync = (postID, category, title, body) => {
+    return firebase.firestore().doc(`/posts/${postID}/`).set({
+        owner: firebase.auth().currentUser.uid,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        title: title,
-        body: body,
+        title,
+        body,
+        category,
+        edited: false,
     });
 };
 

@@ -1,20 +1,20 @@
 /* eslint-disable no-undef */
 import React, { useRef, useState } from 'react';
 import { SafeAreaView, View, Dimensions, Animated } from 'react-native';
-import PagerView from 'react-native-pager-view';
-import ServicesIntro from './ServicesIntro';
-import ServicesTemplate from './ServicesTemplate';
-import {
-    generalInformationTechnologyConsulting,
-    accountingSoftwareAndFinancialManagementSystem,
-    internalControlAndComplianceAudit,
-    fixedAssetsManagement,
-    feasibilityAndBusinessPlanning,
-    technologyAndManagementDevelopmentTraining,
-    cloudAccounting,
-} from '../serviceDetails';
-import DancingDownArrow from './DancingDownArrow';
-import SlideIndicator from './SlideIndicator';
+// import PagerView from 'react-native-pager-view';
+// import ServicesIntro from './ServicesIntro';
+// import ServicesTemplate from './ServicesTemplate';
+// import {
+//     generalInformationTechnologyConsulting,
+//     accountingSoftwareAndFinancialManagementSystem,
+//     internalControlAndComplianceAudit,
+//     fixedAssetsManagement,
+//     feasibilityAndBusinessPlanning,
+//     technologyAndManagementDevelopmentTraining,
+//     cloudAccounting,
+// } from '../serviceDetails';
+// import DancingDownArrow from './DancingDownArrow';
+// import SlideIndicator from './SlideIndicator';
 import PropTypes from 'prop-types';
 
 function Services({
@@ -59,7 +59,7 @@ function Services({
                 },
             ]}
         >
-            <PagerView
+            {/* <PagerView
                 style={{ flex: 1 }}
                 initialPage={0}
                 orientation="vertical"
@@ -197,7 +197,7 @@ function Services({
                 menuIconWidth={headerSize}
                 activeSlide={page}
                 animatedValue={animatedValue}
-            />
+            /> */}
         </SafeAreaView>
     );
 }

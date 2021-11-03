@@ -1,27 +1,17 @@
 import React, { useRef } from 'react';
-import {
-    StyleSheet,
-    SafeAreaView,
-    Text,
-    View,
-    Platform,
-    KeyboardAvoidingView,
-} from 'react-native';
+import { StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import SubScreenTemplate from '../components/SubScreenTemplate';
 import { connect } from 'react-redux';
 import Footer from '../components/Footer';
 import scrollToTop from '../helperFunctions/scrollToTop';
 import Contact from '../components/Contact';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { ScreenStackHeaderSubview } from 'react-native-screens';
-import Constants from 'expo-constants';
 
 function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
     const scrollRef = useRef(null);
 
     const sectionComponents = [
         {
-            key: 0,
+            key: '0',
             data: (
                 <Contact
                     bodyHeight={bodyHeight}
@@ -32,7 +22,7 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
             ),
         },
         {
-            key: 1,
+            key: '1',
             data: (
                 <Footer
                     headerSize={headerSize}

@@ -25,14 +25,16 @@ export default function ModalScreen({
     fontFactor,
 }) {
     const onPressNavItemIn = (animatedValue) => {
-        Animated.spring(animatedValue, {
+        Animated.timing(animatedValue, {
             toValue: 1.2,
+            duration: 150,
             useNativeDriver: true,
         }).start();
     };
     const onPressNavItemOut = (animatedValue) => {
-        Animated.spring(animatedValue, {
+        Animated.timing(animatedValue, {
             toValue: 1,
+            duration: 150,
             useNativeDriver: true,
         }).start();
     };
@@ -55,7 +57,10 @@ export default function ModalScreen({
             style={{
                 marginHorizontal: 0,
                 marginBottom: 0,
-                marginTop: statusBarHeight,
+                marginTop: Platform.select({
+                    ios: statusBarHeight,
+                    android: 0,
+                }),
                 padding: 0,
             }}
             isVisible={visible}
@@ -150,7 +155,7 @@ export default function ModalScreen({
                         onPressOut={() => onPressNavItemOut(forumAnimatedValue)}
                         onPress={() => {
                             !isWeb && closeModal();
-                            navigation.navigate('Forum');
+                            navigation.navigate('ForumStack');
                         }}
                         hitSlop={fontFactor * wp(7)}
                     >

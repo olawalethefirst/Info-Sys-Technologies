@@ -25,7 +25,7 @@ function ServicesScreen({
     let key = -1;
     const sectionComponents = [
         {
-            key: key++,
+            key: String(key++),
             data: (
                 <Services
                     headerSize={headerSize}
@@ -39,7 +39,7 @@ function ServicesScreen({
             ),
         },
         {
-            key: key++,
+            key: String(key++),
             data: (
                 <Footer
                     headerSize={headerSize}

@@ -21,7 +21,7 @@ function AboutScreen({
     const scrollRef = useRef(null);
     const sectionComponents = [
         {
-            key: 0,
+            key: '0',
             data: (
                 <BriefHistory
                     fontFactor={fontFactor}
@@ -32,7 +32,7 @@ function AboutScreen({
             ),
         },
         {
-            key: 1,
+            key: '1',
             data: (
                 <VisionAndMission
                     fontFactor={fontFactor}
@@ -43,7 +43,7 @@ function AboutScreen({
             ),
         },
         {
-            key: 2,
+            key: '2',
             data: (
                 <Objectives
                     fontFactor={fontFactor}
@@ -54,7 +54,7 @@ function AboutScreen({
             ),
         },
         {
-            key: 3,
+            key: '3',
             data: (
                 <Delivery
                     fontFactor={fontFactor}
@@ -65,7 +65,7 @@ function AboutScreen({
             ),
         },
         {
-            key: 4,
+            key: '4',
             data: (
                 <Footer
                     fontFactor={fontFactor}
@@ -82,7 +82,6 @@ function AboutScreen({
         <SafeAreaView style={styles.container}>
             <SubScreenTemplate
                 margin={margin}
-                bodyHeight={bodyHeight}
                 fontFactor={fontFactor}
                 deviceWidthClass={deviceWidthClass}
                 headerSize={headerSize}

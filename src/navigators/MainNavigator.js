@@ -4,12 +4,12 @@ import React from 'react';
 // import { StyleSheet, Text, View } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 // import { initializeFirebase } from '../redux/actions/firebaseActions';
-import HeaderBar from './HeaderBar';
+import HeaderBar from '../components/HeaderBar';
 import AboutScreen from '../screens/AboutScreen';
 import { getHeaderTitle } from '@react-navigation/stack/node_modules/@react-navigation/elements';
 import ContactScreen from '../screens/ContactScreen';
 import ServicesScreen from '../screens/ServicesScreen';
-import ForumScreen from '../screens/ForumScreen';
+import ForumNavigator from './ForumNavigator';
 
 const mainStack = createStackNavigator();
 
@@ -29,7 +29,7 @@ export default function MainNavigator() {
             <mainStack.Screen name="About" component={AboutScreen} />
             <mainStack.Screen name="Contact" component={ContactScreen} />
             <mainStack.Screen name="Services" component={ServicesScreen} />
-            <mainStack.Screen name="Forum" component={ForumScreen} />
+            <mainStack.Screen name="ForumStack" component={ForumNavigator} />
         </mainStack.Navigator>
     );
 }

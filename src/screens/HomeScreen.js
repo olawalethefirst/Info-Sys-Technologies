@@ -23,7 +23,7 @@ function HomeScreen({
     const renderItem = ({ item }) => item.data;
     const sectionComponents = [
         {
-            key: 0,
+            key: '0',
             data: (
                 <Welcome
                     margin={margin}
@@ -34,7 +34,7 @@ function HomeScreen({
             ),
         },
         {
-            key: 1,
+            key: '1',
             data: (
                 <AboutMini
                     fontFactor={fontFactor}
@@ -44,7 +44,7 @@ function HomeScreen({
             ),
         },
         {
-            key: 2,
+            key: '2',
             data: (
                 <ServicesMini
                     margin={margin}
@@ -54,7 +54,7 @@ function HomeScreen({
             ),
         },
         {
-            key: 3,
+            key: '3',
             data: (
                 <ForumMini
                     margin={margin}
@@ -64,7 +64,7 @@ function HomeScreen({
             ),
         },
         {
-            key: 4,
+            key: '4',
             data: (
                 <ContactMini
                     margin={margin}
@@ -74,7 +74,7 @@ function HomeScreen({
             ),
         },
         {
-            key: 5,
+            key: '5',
             data: (
                 <Footer
                     fontFactor={fontFactor}
@@ -87,7 +87,7 @@ function HomeScreen({
             ),
         },
         {
-            key: 6,
+            key: '6',
             data: <ModalScreen />,
         },
     ];
