@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, SafeAreaView, Button } from 'react-native';
 import SubScreenTemplate from '../components/SubScreenTemplate';
 import Forum from '../components/Forum';
 import Footer from '../components/Footer';
@@ -8,6 +8,7 @@ import { firebase } from '../helperFunctions/initializeFirebase';
 import { connect } from 'react-redux';
 import updateUser from '../redux/actions/updateUser';
 import scrollToTop from '../helperFunctions/scrollToTop';
+import NewPost from '../components/NewPost';
 
 // import { LogBox } from 'react-native';
 // LogBox.ignoreAllLogs();
@@ -50,14 +51,21 @@ function ForumScreen({ user, margin, fontFactor, headerSize, bodyHeight }) {
     ];
 
     return (
-        <SubScreenTemplate
-            margin={margin}
-            fontFactor={fontFactor}
-            headerSize={headerSize}
-            heading="Forum"
-            sectionComponents={sectionComponents}
-            scrollRef={scrollRef}
-        />
+        <SafeAreaView style={{ flex: 1 }}>
+            <SubScreenTemplate
+                margin={margin}
+                fontFactor={fontFactor}
+                headerSize={headerSize}
+                heading="Forum"
+                sectionComponents={sectionComponents}
+                scrollRef={scrollRef}
+            />
+            <NewPost
+                margin={margin}
+                headerSize={headerSize}
+                fontFactor={fontFactor}
+            />
+        </SafeAreaView>
     );
 }
 

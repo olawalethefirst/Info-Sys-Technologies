@@ -48,9 +48,8 @@ const PostMini = ({ fontFactor, title, timeStamp, likes }) => {
                         height: wp(25) * fontFactor,
                         backgroundColor: animatedValue.interpolate({
                             inputRange: [0, 1],
-                            outputRange: ['#f7f7f7', '#1CB8F3'],
+                            outputRange: ['#f7f7f7', '#1A91D7'],
                         }),
-                        borderRadius: wp(3.75) * fontFactor,
                         borderWidth: wp(0.1) * fontFactor,
                         padding: wp(3) * fontFactor,
                     },
@@ -61,7 +60,6 @@ const PostMini = ({ fontFactor, title, timeStamp, likes }) => {
                         styles.iconContainer,
                         {
                             padding: wp(2.5) * fontFactor,
-                            borderRadius: wp(3.3) * fontFactor,
                             ...platformSpecificPostIconWidth,
                         },
                     ]}

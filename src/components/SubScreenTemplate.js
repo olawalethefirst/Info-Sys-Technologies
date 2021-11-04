@@ -8,15 +8,12 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
 import updateScrollViewOffset from '../redux/actions/updateScrollViewOffset';
 
 function SubScreenTemplate({
     margin,
-
     fontFactor,
-    // deviceWidthClass,
     headerSize,
     heading,
     sectionComponents,
@@ -47,7 +44,6 @@ function SubScreenTemplate({
 
     const AnimatedImageBackground =
         Animated.createAnimatedComponent(ImageBackground);
-    const { statusBarHeight } = Constants;
 
     return (
         <View style={styles.container}>
@@ -97,7 +93,7 @@ function SubScreenTemplate({
                 keyExtractor={(item, index) => 'keyExtractor' + index}
                 ref={scrollRef}
                 keyboardDismissMode="on-drag"
-                keyboardShouldPersistTaps="never"
+                keyboardShouldPersistTaps="handled"
             />
         </View>
     );

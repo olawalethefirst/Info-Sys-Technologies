@@ -18,10 +18,11 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
             shadowColor: '#161B26',
             shadowOffset: {
                 width: 0,
-                height: 2,
+                height: wp(0.5) * fontFactor,
             },
-            shadowOpacity: 0.7,
-            shadowRadius: 3,
+            shadowOpacity: 0.5,
+            shadowRadius: wp(0.5) * fontFactor,
+            elevation: wp(2) * fontFactor,
             zIndex: 10,
         },
         headerBar: {
