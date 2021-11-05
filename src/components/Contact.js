@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Platform } from 'react-native';
 import Constants from 'expo-constants';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ModalSelector from 'react-native-modal-selector';
 import ContactForm from '../components/ContactForm';
+import PropTypes from 'prop-types';
 
 function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
     const { statusBarHeight } = Constants;
@@ -57,7 +58,13 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
                 scrollViewAccessibilityLabel={'Scrollable options'}
                 cancelButtonAccessibilityLabel={'Cancel Button'}
                 onChange={(option) => setContactOption(option.label)}
-                overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
+                overlayStyle={{
+                    backgroundColor: 'rgba(0,0,0,0.9)',
+                    marginTop: Platform.select({
+                        ios: statusBarHeight,
+                        android: 0,
+                    }),
+                }}
                 backdropPressToClose={true}
                 optionTextStyle={{ color: 'black' }}
                 cancelTextStyle={{ color: 'red' }}
@@ -72,13 +79,18 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
             </ModalSelector>
             <ContactForm
                 fontFactor={fontFactor}
-                hireUs={contactOption === 'Hire Us'}
-                inquiry={contactOption === 'Inquiry'}
-                margin={margin}
+                contactOption={contactOption}
             />
         </View>
     );
 }
+
+Contact.propTypes = {
+    bodyHeight: PropTypes.number,
+    headerSize: PropTypes.number,
+    margin: PropTypes.number,
+    fontFactor: PropTypes.number,
+};
 
 const styles = StyleSheet.create({
     container: {

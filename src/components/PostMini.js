@@ -40,7 +40,11 @@ const PostMini = ({ fontFactor, title, timeStamp, likes }) => {
     });
 
     return (
-        <Pressable onPressIn={onPressIn} onPressOut={onPressOut}>
+        <Pressable
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
+            style={{ marginBottom: fontFactor * wp(5) }}
+        >
             <Animated.View
                 style={[
                     styles.postContainer,

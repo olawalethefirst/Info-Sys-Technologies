@@ -8,7 +8,7 @@ import { firebase } from '../helperFunctions/initializeFirebase';
 import { connect } from 'react-redux';
 import updateUser from '../redux/actions/updateUser';
 import scrollToTop from '../helperFunctions/scrollToTop';
-import NewPost from '../components/NewPost';
+import AddPost from '../components/AddPost';
 
 // import { LogBox } from 'react-native';
 // LogBox.ignoreAllLogs();
@@ -16,12 +16,23 @@ import NewPost from '../components/NewPost';
 const isStandaloneApp =
     Constants.appOwnership !== 'expo' && Constants.appOwnership !== 'guest';
 
-function ForumScreen({ user, margin, fontFactor, headerSize, bodyHeight }) {
+function ForumScreen({
+    user,
+    margin,
+    fontFactor,
+    headerSize,
+    bodyHeight,
+    deviceWidthClass,
+}) {
     useEffect(() => {
         firebase.auth().onAuthStateChanged((user) => {
             updateUser(user);
         });
     });
+    const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
+    const toggleModal = () => {
+        setCreatePostModalVisible((prevState) => !prevState);
+    };
 
     const scrollRef = useRef(null);
     const sectionComponents = [
@@ -32,6 +43,10 @@ function ForumScreen({ user, margin, fontFactor, headerSize, bodyHeight }) {
                     bodyHeight={bodyHeight}
                     margin={margin}
                     fontFactor={fontFactor}
+                    headerSize={headerSize}
+                    deviceWidthClass={deviceWidthClass}
+                    createPostModalVisible={createPostModalVisible}
+                    toggleModal={toggleModal}
                 />
             ),
         },
@@ -60,10 +75,11 @@ function ForumScreen({ user, margin, fontFactor, headerSize, bodyHeight }) {
                 sectionComponents={sectionComponents}
                 scrollRef={scrollRef}
             />
-            <NewPost
+            <AddPost
                 margin={margin}
                 headerSize={headerSize}
                 fontFactor={fontFactor}
+                toggleModal={toggleModal}
             />
         </SafeAreaView>
     );
@@ -71,13 +87,20 @@ function ForumScreen({ user, margin, fontFactor, headerSize, bodyHeight }) {
 
 const mapStateToProps = ({
     forumState: { user },
-    settingsState: { margin, fontFactor, headerSize, bodyHeight },
+    settingsState: {
+        margin,
+        fontFactor,
+        headerSize,
+        bodyHeight,
+        deviceWidthClass,
+    },
 }) => ({
     user,
     margin,
     fontFactor,
     headerSize,
     bodyHeight,
+    deviceWidthClass,
 });
 
 export default connect(mapStateToProps, {

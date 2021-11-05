@@ -67,7 +67,6 @@ export default function ModalScreen({
             animationIn="zoomIn"
             animationOut="zoomOut"
             onBackButtonPress={closeModal}
-            // coverScreen
             useNativeDriver={true}
             hideModalContentWhileAnimating={true}
             swipeDirection="down"
@@ -76,11 +75,14 @@ export default function ModalScreen({
             deviceHeight={deviceHeight}
         >
             <View style={[styles.modalContainer]}>
-                <ModalCloseIcon
-                    closeModal={closeModal}
-                    iconWidth={iconWidth}
-                    iconHeight={iconHeight}
-                />
+                <View style={styles.iconContainer}>
+                    <ModalCloseIcon
+                        closeModal={closeModal}
+                        iconWidth={iconWidth}
+                        iconHeight={iconHeight}
+                        color="#ffffff"
+                    />
+                </View>
                 <View style={styles.navContainer}>
                     <Pressable
                         onPressIn={() => onPressNavItemIn(homeAnimatedValue)}
@@ -222,5 +224,10 @@ const styles = StyleSheet.create({
     navText: {
         fontFamily: 'Poppins_500Medium',
         color: '#fff',
+    },
+    iconContainer: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
     },
 });

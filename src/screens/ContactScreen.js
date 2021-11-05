@@ -5,9 +5,13 @@ import { connect } from 'react-redux';
 import Footer from '../components/Footer';
 import scrollToTop from '../helperFunctions/scrollToTop';
 import Contact from '../components/Contact';
+import Constants from 'expo-constants';
+import PropTypes from 'prop-types';
 
 function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
     const scrollRef = useRef(null);
+    const { statusBarHeight } = Constants;
+    console.log(statusBarHeight);
 
     const sectionComponents = [
         {
@@ -38,9 +42,12 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
 
     return (
         <KeyboardAvoidingView
-            behavior={Platform.select({ ios: 'height', android: 'height' })}
+            behavior={Platform.select({ ios: 'padding', android: 'height' })}
             style={styles.container}
-            keyboardVerticalOffset={headerSize}
+            keyboardVerticalOffset={Platform.select({
+                ios: headerSize + statusBarHeight,
+                android: headerSize,
+            })}
         >
             <SubScreenTemplate
                 sectionComponents={sectionComponents}
@@ -60,6 +67,13 @@ const mapStateToProps = (state) => ({
     headerSize: state.settingsState.headerSize,
     bodyHeight: state.settingsState.bodyHeight,
 });
+
+ContactScreen.propTypes = {
+    margin: PropTypes.number,
+    headerSize: PropTypes.number,
+    fontFactor: PropTypes.number,
+    bodyHeight: PropTypes.number,
+};
 
 export default connect(mapStateToProps)(ContactScreen);
 

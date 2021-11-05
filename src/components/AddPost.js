@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Foundation';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 
-const NewPost = ({ margin, headerSize, fontFactor }) => {
+const AddPost = ({ margin, headerSize, fontFactor, toggleModal }) => {
     const animatedValue = useRef(new Animated.Value(1)).current;
     const onPressIn = () => {
         Animated.timing(animatedValue, {
@@ -26,11 +26,12 @@ const NewPost = ({ margin, headerSize, fontFactor }) => {
         <Pressable
             onPressIn={onPressIn}
             onPressOut={onPressOut}
+            onPress={toggleModal}
             style={{
                 position: 'absolute',
                 right: margin,
                 bottom: headerSize * 1.25,
-                zIndex: 1000,
+                // zIndex: 1000,
             }}
         >
             <Animated.View
@@ -63,13 +64,14 @@ const NewPost = ({ margin, headerSize, fontFactor }) => {
     );
 };
 
-NewPost.propTypes = {
+AddPost.propTypes = {
     margin: PropTypes.number,
     headerSize: PropTypes.number,
     fontFactor: PropTypes.number,
+    toggleModal: PropTypes.func,
 };
 
-export default NewPost;
+export default AddPost;
 
 const styles = StyleSheet.create({
     container: {

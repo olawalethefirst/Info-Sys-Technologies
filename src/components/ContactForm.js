@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useRef } from 'react';
+import React, { useReducer, useRef } from 'react';
 import {
     StyleSheet,
     Text,
@@ -15,8 +15,10 @@ import ModalSelector from 'react-native-modal-selector';
 import DatePickerModal from 'react-native-modal-datetime-picker';
 import InputField from './InputField';
 import validator from 'validator';
+import Constants from 'expo-constants';
+import PropTypes from 'prop-types';
 
-export default function ContactForm({ fontFactor, hireUs, inquiry, margin }) {
+export default function ContactForm({ fontFactor, contactOption }) {
     const inputFieldsReducer = (state, action) => {
         switch (action.type) {
             case 'UPDATE_NAME':
@@ -310,8 +312,9 @@ export default function ContactForm({ fontFactor, hireUs, inquiry, margin }) {
             clearFormError();
         }
     };
-
-    console.log('error', nameFieldError);
+    const { statusBarHeight } = Constants;
+    const inquiry = contactOption === 'Inquiry';
+    const hireUs = contactOption === 'Hire Us';
 
     //clear formError onFocus of any field
     //test if changing contactOption type clears error text
@@ -419,6 +422,10 @@ export default function ContactForm({ fontFactor, hireUs, inquiry, margin }) {
                             }
                             overlayStyle={{
                                 backgroundColor: 'rgba(0,0,0,0.9)',
+                                marginTop: Platform.select({
+                                    ios: statusBarHeight,
+                                    android: 0,
+                                }),
                             }}
                             optionTextStyle={{ color: 'black' }}
                             cancelTextStyle={{ color: 'red' }}
@@ -683,6 +690,11 @@ export default function ContactForm({ fontFactor, hireUs, inquiry, margin }) {
         </TouchableWithoutFeedback>
     );
 }
+
+ContactForm.propTypes = {
+    fontFactor: PropTypes.number,
+    contactOption: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
     whiteText: {

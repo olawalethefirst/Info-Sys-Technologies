@@ -45,6 +45,7 @@ const SearchPosts = ({ fontFactor }) => {
                 returnKeyType="search"
                 placeholder="Search posts"
                 placeholderTextColor="#808080"
+                underlineColorAndroid="transparent"
                 value={search}
                 onChangeText={(val) => setSearch(val)}
                 style={[

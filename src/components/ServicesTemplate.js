@@ -143,12 +143,15 @@ function ServicesTemplate({
                 }}
             >
                 <View style={{ flex: 1 }}>
-                    <ModalCloseIcon
-                        closeModal={toggleModal}
-                        iconHeight={menuIconHeight}
-                        iconWidth={menuIconWidth}
-                        notFullScreen={true}
-                    />
+                    <View style={styles.iconContainer}>
+                        <ModalCloseIcon
+                            closeModal={toggleModal}
+                            iconHeight={menuIconHeight}
+                            iconWidth={menuIconWidth}
+                            color="#ffffff"
+                        />
+                    </View>
+
                     <ScrollView
                         bounces={false}
                         showsVerticalScrollIndicator={false}
@@ -222,5 +225,10 @@ const styles = StyleSheet.create({
     lightBlueunderline: {
         borderBottomColor: '#1CB8F3',
         alignSelf: 'flex-start',
+    },
+    iconContainer: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
     },
 });
