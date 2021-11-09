@@ -5,6 +5,10 @@ import authWithCredentialAsync from '../helperFunctions/authWithCredentialAsync'
 import createCredential from '../helperFunctions/createCredential';
 import { useDispatch } from 'react-redux';
 import updateNewUser from '../redux/actions/updateNewUser';
+<<<<<<< HEAD
+=======
+import { clientId } from '../../config';
+>>>>>>> fbcec38304... temp commit
 
 export default function useGoogleAuth(native) {
     //Universal States
@@ -69,8 +73,12 @@ export default function useGoogleAuth(native) {
 
     // Expo Approach
     const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+<<<<<<< HEAD
         clientId:
             '173918698726-gb70pgv7tu67ufqrq73if4i3fv3jvjsi.apps.googleusercontent.com',
+=======
+        clientId: clientId.googleClientID,
+>>>>>>> fbcec38304... temp commit
     });
 
     !native &&
