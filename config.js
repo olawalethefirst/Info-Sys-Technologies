@@ -7,7 +7,10 @@ import {
     appId,
     measurementId,
     googleClientID,
+<<<<<<< HEAD
     databaseURL,
+=======
+>>>>>>> fbcec38304... temp commit
 } from '@env';
 
 const FIREBASE_CONFIG = {
@@ -18,7 +21,10 @@ const FIREBASE_CONFIG = {
     messagingSenderId,
     appId,
     measurementId,
+<<<<<<< HEAD
     databaseURL,
+=======
+>>>>>>> fbcec38304... temp commit
 };
 
 const clientId = { googleClientID };

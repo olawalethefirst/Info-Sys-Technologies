@@ -9,7 +9,10 @@ import { connect } from 'react-redux';
 import updateUser from '../redux/actions/updateUser';
 import scrollToTop from '../helperFunctions/scrollToTop';
 import AddPost from '../components/AddPost';
+<<<<<<< HEAD
 
+=======
+>>>>>>> fbcec38304... temp commit
 // import { LogBox } from 'react-native';
 // LogBox.ignoreAllLogs();
 
