@@ -10,12 +10,14 @@ import { getHeaderTitle } from '@react-navigation/stack/node_modules/@react-navi
 import ContactScreen from '../screens/ContactScreen';
 import ServicesScreen from '../screens/ServicesScreen';
 import ForumNavigator from './ForumNavigator';
+import { connect } from 'react-redux';
 
-const mainStack = createStackNavigator();
+const MainStack = createStackNavigator();
 
-export default function MainNavigator() {
+function MainNavigator({ headerSize }) {
+    console.log('store', headerSize);
     return (
-        <mainStack.Navigator
+        <MainStack.Navigator
             initialRouteName="Home"
             screenOptions={{
                 // eslint-disable-next-line react/display-name
@@ -23,13 +25,21 @@ export default function MainNavigator() {
                     const title = getHeaderTitle(options, route.name);
                     return <HeaderBar title={title} />;
                 },
+                // need to set a value
+                headerStyle: { height: headerSize },
+                headerMode: 'float',
             }}
         >
-            <mainStack.Screen name="Home" component={HomeScreen} />
-            <mainStack.Screen name="About" component={AboutScreen} />
-            <mainStack.Screen name="Contact" component={ContactScreen} />
-            <mainStack.Screen name="Services" component={ServicesScreen} />
-            <mainStack.Screen name="ForumStack" component={ForumNavigator} />
-        </mainStack.Navigator>
+            <MainStack.Screen name="Home" component={HomeScreen} />
+            <MainStack.Screen name="About" component={AboutScreen} />
+            <MainStack.Screen name="Contact" component={ContactScreen} />
+            <MainStack.Screen name="Services" component={ServicesScreen} />
+            <MainStack.Screen name="ForumStack" component={ForumNavigator} />
+        </MainStack.Navigator>
     );
 }
+const mapStateToProps = ({ settingsState: { headerSize } }) => ({
+    headerSize,
+});
+
+export default connect(mapStateToProps)(MainNavigator);

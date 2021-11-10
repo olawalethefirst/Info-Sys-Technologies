@@ -1,12 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 
 export default function MarginVertical({ size }) {
     const styles = {
         container: {
-            height: size * hp(2.5),
+            height: size * wp(4.4),
         },
     };
 

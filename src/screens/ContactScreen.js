@@ -42,11 +42,11 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
 
     return (
         <KeyboardAvoidingView
-            behavior={Platform.select({ ios: 'padding', android: 'height' })}
+            behavior={Platform.select({ ios: 'padding', android: null })}
             style={styles.container}
             keyboardVerticalOffset={Platform.select({
                 ios: headerSize + statusBarHeight,
-                android: headerSize,
+                android: null,
             })}
         >
             <SubScreenTemplate

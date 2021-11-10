@@ -33,16 +33,8 @@
             },
             "package": "com.technologies.infosys",
             "versionCode": 1,
-            "splash": {
-                "resizeMode": "native",
-                "backgroundColor": "#1A91D7",
-                "mdpi": "./assets/images/splash-mdpi.png",
-                "hpdi": "./assets/images/splash-mdpi.png",
-                "xhdpi": "./assets/images/splash-mdpi.png",
-                "xxhdpi": "./assets/images/splash-mdpi.png",
-                "xxxhdpi": "./assets/images/splash-mdpi.png"
-            },
-            "googleServicesFile": "./google-services.json"
+            "googleServicesFile": "./google-services.json",
+            "softwareKeyboardLayoutMode": "pan"
         },
         "web": {
             "favicon": "./assets/images/favicon.png"

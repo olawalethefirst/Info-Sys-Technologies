@@ -9,10 +9,6 @@ import { connect } from 'react-redux';
 import updateUser from '../redux/actions/updateUser';
 import scrollToTop from '../helperFunctions/scrollToTop';
 import AddPost from '../components/AddPost';
-<<<<<<< HEAD
-
-=======
->>>>>>> fbcec38304... temp commit
 // import { LogBox } from 'react-native';
 // LogBox.ignoreAllLogs();
 
@@ -77,13 +73,14 @@ function ForumScreen({
                 heading="Forum"
                 sectionComponents={sectionComponents}
                 scrollRef={scrollRef}
-            />
-            <AddPost
-                margin={margin}
-                headerSize={headerSize}
-                fontFactor={fontFactor}
-                toggleModal={toggleModal}
-            />
+            >
+                <AddPost
+                    margin={margin}
+                    headerSize={headerSize}
+                    fontFactor={fontFactor}
+                    toggleModal={toggleModal}
+                />
+            </SubScreenTemplate>
         </SafeAreaView>
     );
 }

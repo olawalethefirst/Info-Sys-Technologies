@@ -19,6 +19,7 @@ function SubScreenTemplate({
     sectionComponents,
     scrollRef,
     updateScrollViewOffset,
+    children,
 }) {
     const scrollY = useRef(new Animated.Value(0));
     const handleScroll = Animated.event(
@@ -78,6 +79,7 @@ function SubScreenTemplate({
                     </Text>
                 </AnimatedImageBackground>
             )}
+            {children}
             <Animated.FlatList
                 style={{ zIndex: -1 }}
                 scrollEventThrottle={16}
@@ -94,6 +96,7 @@ function SubScreenTemplate({
                 ref={scrollRef}
                 keyboardDismissMode="on-drag"
                 keyboardShouldPersistTaps="handled"
+                nestedScrollEnabled
             />
         </View>
     );
@@ -108,6 +111,7 @@ SubScreenTemplate.propTypes = {
     sectionComponents: PropTypes.array,
     scrollRef: PropTypes.object,
     updateScrollViewOffset: PropTypes.func,
+    children: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

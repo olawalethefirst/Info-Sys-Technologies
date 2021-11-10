@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Platform } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TextInput,
+    Platform,
+    ScrollView,
+} from 'react-native';
 import Constants from 'expo-constants';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -37,8 +44,8 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
     ];
 
     return (
-        <View
-            style={[
+        <ScrollView
+            contentContainerStyle={[
                 styles.container,
                 {
                     minHeight: bodyHeight - headerSize + statusBarHeight,
@@ -81,7 +88,7 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
                 fontFactor={fontFactor}
                 contactOption={contactOption}
             />
-        </View>
+        </ScrollView>
     );
 }
 
