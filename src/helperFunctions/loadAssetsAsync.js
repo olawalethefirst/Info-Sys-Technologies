@@ -8,6 +8,7 @@ export default function loadAssetsAsync() {
             Karla_400Regular: require('@expo-google-fonts/karla/Karla_400Regular.ttf'),
             Karla_500Medium: require('@expo-google-fonts/karla/Karla_500Medium.ttf'),
             Karla_600SemiBold: require('@expo-google-fonts/karla/Karla_600SemiBold.ttf'),
+            Poppins_400Regular: require('@expo-google-fonts/poppins/Poppins_400Regular.ttf'),
             Poppins_500Medium: require('@expo-google-fonts/poppins/Poppins_500Medium.ttf'),
             Poppins_600SemiBold: require('@expo-google-fonts/poppins/Poppins_600SemiBold.ttf'),
             Poppins_700Bold: require('@expo-google-fonts/poppins/Poppins_700Bold.ttf'),

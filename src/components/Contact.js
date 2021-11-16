@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-    TextInput,
-    Platform,
-    ScrollView,
-} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Platform } from 'react-native';
 import Constants from 'expo-constants';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -44,8 +37,8 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
     ];
 
     return (
-        <ScrollView
-            contentContainerStyle={[
+        <View
+            style={[
                 styles.container,
                 {
                     minHeight: bodyHeight - headerSize + statusBarHeight,
@@ -73,8 +66,18 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
                     }),
                 }}
                 backdropPressToClose={true}
-                optionTextStyle={{ color: 'black' }}
-                cancelTextStyle={{ color: 'red' }}
+                optionTextStyle={{
+                    color: 'black',
+                    fontSize: fontFactor * wp(4.5),
+                    lineHeight: fontFactor * wp(5.72),
+                    fontFamily: 'Karla_400Regular',
+                }}
+                cancelTextStyle={{
+                    color: 'red',
+                    fontSize: fontFactor * wp(4.5),
+                    lineHeight: fontFactor * wp(5.72),
+                    fontFamily: 'Karla_500Medium',
+                }}
             >
                 <TextInput
                     style={[styles.contactOption, styles2.contactOption]}
@@ -88,7 +91,7 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
                 fontFactor={fontFactor}
                 contactOption={contactOption}
             />
-        </ScrollView>
+        </View>
     );
 }
 

@@ -46,6 +46,7 @@ function ForumScreen({
                     deviceWidthClass={deviceWidthClass}
                     createPostModalVisible={createPostModalVisible}
                     toggleModal={toggleModal}
+                    key="0"
                 />
             ),
         },
@@ -59,6 +60,7 @@ function ForumScreen({
                     fontFactor={fontFactor}
                     scrollToTop={scrollToTop}
                     scrollRef={scrollRef}
+                    key="1"
                 />
             ),
         },

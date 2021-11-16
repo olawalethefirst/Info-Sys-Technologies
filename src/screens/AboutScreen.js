@@ -28,6 +28,7 @@ function AboutScreen({
                     margin={margin}
                     columnMode={columnMode}
                     bodyHeight={bodyHeight}
+                    key="0"
                 />
             ),
         },
@@ -39,6 +40,7 @@ function AboutScreen({
                     margin={margin}
                     columnMode={columnMode}
                     bodyHeight={bodyHeight}
+                    key="1"
                 />
             ),
         },
@@ -50,6 +52,7 @@ function AboutScreen({
                     margin={margin}
                     columnMode={columnMode}
                     bodyHeight={bodyHeight}
+                    key="2"
                 />
             ),
         },
@@ -61,6 +64,7 @@ function AboutScreen({
                     margin={margin}
                     columnMode={columnMode}
                     bodyHeight={bodyHeight}
+                    key="3"
                 />
             ),
         },
@@ -74,6 +78,7 @@ function AboutScreen({
                     darkMode={true}
                     scrollToTop={scrollToTop}
                     scrollRef={scrollRef}
+                    key="4"
                 />
             ),
         },
@@ -88,7 +93,7 @@ function AboutScreen({
                 heading="About Us"
                 sectionComponents={sectionComponents}
                 scrollRef={scrollRef}
-            ></SubScreenTemplate>
+            />
         </SafeAreaView>
     );
 }

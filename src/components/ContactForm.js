@@ -159,6 +159,11 @@ export default function ContactForm({ fontFactor, contactOption }) {
     const referralChannelData = [
         {
             key: referralChannelIndex++,
+            label: 'How did you hear about us',
+            section: true,
+        },
+        {
+            key: referralChannelIndex++,
             label: 'Social Media',
         },
         {
@@ -427,8 +432,23 @@ export default function ContactForm({ fontFactor, contactOption }) {
                                     android: 0,
                                 }),
                             }}
-                            optionTextStyle={{ color: 'black' }}
-                            cancelTextStyle={{ color: 'red' }}
+                            sectionTextStyle={{
+                                fontSize: fontFactor * wp(4.5),
+                                lineHeight: fontFactor * wp(5.72),
+                                fontFamily: 'Karla_500Medium',
+                            }}
+                            optionTextStyle={{
+                                color: 'black',
+                                fontSize: fontFactor * wp(4.5),
+                                lineHeight: fontFactor * wp(5.72),
+                                fontFamily: 'Karla_400Regular',
+                            }}
+                            cancelTextStyle={{
+                                color: 'red',
+                                fontSize: fontFactor * wp(4.5),
+                                lineHeight: fontFactor * wp(5.72),
+                                fontFamily: 'Karla_500Medium',
+                            }}
                             backdropPressToClose={true}
                         >
                             <TextInput

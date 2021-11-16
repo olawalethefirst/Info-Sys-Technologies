@@ -8,7 +8,7 @@ import {
     Animated,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import ComputerHardwareIcon from './ComputerHardwareIcon';
+import ComputerMaintenance from './ComputerMaintenance';
 import Icon from 'react-native-vector-icons/Entypo';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -68,7 +68,7 @@ const PostMini = ({ fontFactor, title, timeStamp, likes }) => {
                         },
                     ]}
                 >
-                    <ComputerHardwareIcon />
+                    <ComputerMaintenance />
                 </View>
                 <View
                     style={[

@@ -22,7 +22,8 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
                     headerSize={headerSize}
                     margin={margin}
                     fontFactor={fontFactor}
-                ></Contact>
+                    key="0"
+                />
             ),
         },
         {
@@ -35,6 +36,7 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
                     fontFactor={fontFactor}
                     scrollToTop={scrollToTop}
                     scrollRef={scrollRef}
+                    key="1"
                 />
             ),
         },

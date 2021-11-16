@@ -20,6 +20,7 @@ function SubScreenTemplate({
     scrollRef,
     updateScrollViewOffset,
     children,
+    bodyHeight,
 }) {
     const scrollY = useRef(new Animated.Value(0));
     const handleScroll = Animated.event(
@@ -47,7 +48,7 @@ function SubScreenTemplate({
         Animated.createAnimatedComponent(ImageBackground);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { height: bodyHeight }]}>
             {heading && (
                 <AnimatedImageBackground
                     //eslint-disable-next-line no-undef
@@ -80,7 +81,7 @@ function SubScreenTemplate({
                 </AnimatedImageBackground>
             )}
             {children}
-            <Animated.FlatList
+            <Animated.ScrollView
                 style={{ zIndex: -1 }}
                 scrollEventThrottle={16}
                 onScroll={handleScroll}
@@ -89,15 +90,16 @@ function SubScreenTemplate({
                         paddingTop: headerSize,
                     }
                 }
-                data={sectionComponents}
                 bounces={false}
-                renderItem={({ item }) => item.data}
-                keyExtractor={(item, index) => 'keyExtractor' + index}
+                // renderItem={({ item }) => item.data}
+                // keyExtractor={(item, index) => 'keyExtractor' + index}
                 ref={scrollRef}
                 keyboardDismissMode="on-drag"
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled
-            />
+            >
+                {sectionComponents.map((x) => x.data)}
+            </Animated.ScrollView>
         </View>
     );
 }
@@ -139,6 +141,7 @@ const mapStateToProps = (state) => ({
     margin: state.settingsState.margin,
     fontFactor: state.settingsState.fontFactor,
     deviceWidthClass: state.settingsState.deviceWidthClass,
+    bodyHeight: state.settingsState.bodyHeight,
 });
 
 export default connect(mapStateToProps, { updateScrollViewOffset })(
