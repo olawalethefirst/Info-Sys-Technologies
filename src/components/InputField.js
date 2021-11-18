@@ -2,15 +2,19 @@ import React from 'react';
 import { TextInput, Text, View, Platform, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
+import { connect } from 'react-redux';
 
-export default function InputField({
-    storeData: { dispatch, fieldValue, actionType },
-    textData: { label, subParagraph, important },
-    megaSize,
-    fontFactor,
+function InputField({
+    onChange,
     onBlur,
-    onFocus,
-    fieldError,
+    value,
+    error,
+    required,
+    megaSize,
+    subParagraph,
+    label,
+    fontFactor,
+    ...props
 }) {
     const styles2 = {
         baseFontSize: {
@@ -44,26 +48,17 @@ export default function InputField({
                 ]}
             >
                 {label}
-                {important && <Text style={styles.redText}> *</Text>}
+                {required && <Text style={styles.redText}> *</Text>}
             </Text>
             <MarginVertical size={0.2} />
             <TextInput
                 autoCapitalize={'none'}
                 autoCorrect={false}
                 multiline={megaSize ? true : false}
-                scrollEnabled={
-                    megaSize ? Platform.select({ ios: false }) : null
-                }
-                onBlur={important ? onBlur : null}
-                onFocus={important ? onFocus : null}
+                onBlur={onBlur}
                 textAlignVertical={megaSize && 'top'}
-                value={fieldValue}
-                onChangeText={(text) =>
-                    dispatch({
-                        type: actionType,
-                        payload: text,
-                    })
-                }
+                value={value}
+                onChangeText={onChange}
                 style={[
                     styles.input,
                     styles2.input,
@@ -72,18 +67,25 @@ export default function InputField({
                     !megaSize && styles2.singleLineInput,
                     megaSize && styles2.multilineInput,
                 ]}
+                {...props}
             />
             <MarginVertical size={0.2} />
             {
                 <Text
                     style={[
-                        !fieldError && styles.blueText,
+                        !error && styles.blueText,
                         styles.karla400Font,
                         styles2.subParagraph,
-                        fieldError && { color: 'red' },
+                        error && { color: 'red' },
                     ]}
                 >
-                    {fieldError ? fieldError.message : subParagraph}
+                    {error &&
+                        `${
+                            error.type === 'required'
+                                ? 'This is important'
+                                : 'Incorrect format'
+                        }`}
+                    {!error && subParagraph}
                 </Text>
             }
         </View>
@@ -111,3 +113,9 @@ const styles = StyleSheet.create({
         color: 'red',
     },
 });
+
+const mapStateToProps = (state) => ({
+    fontFactor: state.settingsState.fontFactor,
+});
+
+export default connect(mapStateToProps)(InputField);

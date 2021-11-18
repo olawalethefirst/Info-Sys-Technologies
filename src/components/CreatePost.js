@@ -34,6 +34,7 @@ const CreatePost = ({
 }) => {
     const { statusBarHeight } = Constants;
     const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+    const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
     const postTitleAnimatedValue = useRef(new Animated.Value(0)).current;
     const postTitleBorder = postTitleAnimatedValue.interpolate({
         inputRange: [0, 1],
@@ -49,6 +50,8 @@ const CreatePost = ({
         inputRange: [0, 1],
         outputRange: ['#808080', '#1A91D7'],
     });
+    const createPostButtonAnimatedValue = useRef(new Animated.Value(1)).current;
+    const cancelButtonAnimatedValue = useRef(new Animated.Value(1)).current;
     const onFocusInput = (animatedValue) => {
         Animated.timing(animatedValue, {
             toValue: 1,
@@ -63,6 +66,20 @@ const CreatePost = ({
             useNativeDriver: false,
         }).start();
     };
+    const onPressInButton = (animatedValue) => {
+        Animated.timing(animatedValue, {
+            toValue: 0.8,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
+    };
+    const onPressOutButton = (animatedValue) => {
+        Animated.timing(animatedValue, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
+    };
     let index = 0;
     const postCategoryData = [
         { key: index++, section: true, label: 'Categories' },
@@ -71,22 +88,29 @@ const CreatePost = ({
         { key: index++, label: 'Accounting' },
         { key: index++, label: 'Networking' },
     ];
+    const defaultValues = {
+        postTitle: newPost ? '' : title,
+        postBody: newPost ? '' : body,
+        postCategory: newPost ? '' : category,
+    };
     const {
         control,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
-        defaultValues: {
-            postTitle: '',
-            postBody: '',
-            postCategory: '',
-        },
+        defaultValues,
     });
+    const onCancel = () => {
+        toggleModal();
+        reset({ postTitle: '', postBody: '', postCategory: '' });
+    };
     const scrollViewRef = useRef(null);
     const modalSelectorRef = useRef(null);
     const [multiLineInputPosition, setMultiLineInputPosition] = useState(null);
+    console.log(defaultValues);
 
     return (
         <Modal
@@ -119,7 +143,7 @@ const CreatePost = ({
             >
                 <View style={{ position: 'absolute', right: 0, top: 0 }}>
                     <ModalCloseIcon
-                        closeModal={toggleModal}
+                        closeModal={onCancel}
                         iconHeight={headerSize}
                         iconWidth={headerSize}
                         color="#000000"
@@ -148,11 +172,14 @@ const CreatePost = ({
                                 keyboardDismissMode={'on-drag'}
                                 ref={scrollViewRef}
                                 bounces={false}
+                                contentContainerStyle={{
+                                    alignItems: 'center',
+                                }}
                             >
                                 <Pressable
                                     onPress={Keyboard.dismiss}
                                     style={{
-                                        maxWidth: `${fontFactor * 100}%`,
+                                        width: `${fontFactor * 100}%`,
                                     }}
                                 >
                                     <View>
@@ -462,7 +489,7 @@ const CreatePost = ({
                                                 >
                                                     <AnimatedTextInput
                                                         multiline
-                                                        placeholder="Test Post Body"
+                                                        placeholder="Post Body"
                                                         placeholderTextColor="#808080"
                                                         autoCapitalize="sentences"
                                                         onBlur={() => {
@@ -551,6 +578,101 @@ const CreatePost = ({
                                             )}
                                             name="postBody"
                                         />
+                                        <MarginVertical size={1.5} />
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                justifyContent: 'space-between',
+                                            }}
+                                        >
+                                            <AnimatedPressable
+                                                onPressIn={() =>
+                                                    onPressInButton(
+                                                        createPostButtonAnimatedValue
+                                                    )
+                                                }
+                                                onPressOut={() =>
+                                                    onPressOutButton(
+                                                        createPostButtonAnimatedValue
+                                                    )
+                                                }
+                                                style={{
+                                                    backgroundColor: '#1A91D7',
+                                                    padding:
+                                                        fontFactor * wp(4.55),
+                                                    width: wp(40),
+                                                    alignItems: 'center',
+                                                    borderColor: '#1A91D7',
+                                                    borderWidth: wp(0.25),
+                                                    transform: [
+                                                        {
+                                                            scale: createPostButtonAnimatedValue,
+                                                        },
+                                                    ],
+                                                }}
+                                            >
+                                                <Text
+                                                    style={{
+                                                        color: 'white',
+                                                        fontFamily:
+                                                            'Poppins_600SemiBold',
+                                                        fontSize:
+                                                            fontFactor *
+                                                            wp(4.55),
+                                                        lineHeight:
+                                                            fontFactor *
+                                                            wp(5.78),
+                                                    }}
+                                                >
+                                                    {newPost
+                                                        ? 'Create Post'
+                                                        : 'Update Post'}
+                                                </Text>
+                                            </AnimatedPressable>
+                                            <AnimatedPressable
+                                                onPressIn={() =>
+                                                    onPressInButton(
+                                                        cancelButtonAnimatedValue
+                                                    )
+                                                }
+                                                onPressOut={() =>
+                                                    onPressOutButton(
+                                                        cancelButtonAnimatedValue
+                                                    )
+                                                }
+                                                onPress={onCancel}
+                                                style={{
+                                                    backgroundColor: '#ffffff',
+                                                    padding:
+                                                        fontFactor * wp(4.55),
+                                                    width: wp(40),
+                                                    alignItems: 'center',
+                                                    borderColor: '#1A91D7',
+                                                    borderWidth: wp(0.25),
+                                                    transform: [
+                                                        {
+                                                            scale: cancelButtonAnimatedValue,
+                                                        },
+                                                    ],
+                                                }}
+                                            >
+                                                <Text
+                                                    style={{
+                                                        color: '#1A91D7',
+                                                        fontFamily:
+                                                            'Poppins_600SemiBold',
+                                                        fontSize:
+                                                            fontFactor *
+                                                            wp(4.55),
+                                                        lineHeight:
+                                                            fontFactor *
+                                                            wp(5.78),
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </Text>
+                                            </AnimatedPressable>
+                                        </View>
                                         <MarginVertical size={4} />
                                     </View>
                                 </Pressable>

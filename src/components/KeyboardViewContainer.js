@@ -12,6 +12,7 @@ const KeyboardViewContainer = ({ children }) => {
                 {children}
             </ScrollView>
         ),
+        web: <View style={{ flex: 1 }}>{children}</View>,
     });
 };
 

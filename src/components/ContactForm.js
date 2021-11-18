@@ -1,4 +1,4 @@
-import React, { useReducer, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     StyleSheet,
     Text,
@@ -8,126 +8,20 @@ import {
     TouchableWithoutFeedback,
     Pressable,
     Platform,
+    Animated,
+    TouchableOpacity,
 } from 'react-native';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ModalSelector from 'react-native-modal-selector';
 import DatePickerModal from 'react-native-modal-datetime-picker';
 import InputField from './InputField';
-import validator from 'validator';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
+import { useForm, Controller } from 'react-hook-form';
 
-export default function ContactForm({ fontFactor, contactOption }) {
-    const inputFieldsReducer = (state, action) => {
-        switch (action.type) {
-            case 'UPDATE_NAME':
-                return { ...state, name: action.payload };
-            case 'UPDATE_EMAIL':
-                return { ...state, email: action.payload };
-            case 'UPDATE_PHONE':
-                return { ...state, phone: action.payload };
-            case 'UPDATE_REFERRAL_CHANNEL':
-                return { ...state, referralChannel: action.payload };
-            case 'UPDATE_BUDGET':
-                return { ...state, budget: action.payload };
-            case 'UPDATE_OTHER':
-                return { ...state, other: action.payload };
-            case 'UPDATE_PROJECT_DEADLINE':
-                return {
-                    ...state,
-                    projectDeadline: action.payload,
-                    defaultDate: action.payload,
-                };
-            case 'TOGGLE_DATE_PICKER':
-                return {
-                    ...state,
-                    datePickerVisible: !state.datePickerVisible,
-                };
-            case 'UPDATE_PROJECT_DETAILS':
-                return { ...state, projectDetails: action.payload };
-            case 'UPDATE_INQUIRY_TITLE':
-                return { ...state, inquiryTitle: action.payload };
-            case 'UPDATE_INQUIRY_DETAILS':
-                return { ...state, inquiryDetails: action.payload };
-            case 'UPDATE_FORM_ERROR':
-                return { ...state, formError: action.payload };
-            case 'UPDATE_NAME_FIELD_ERROR':
-                return {
-                    ...state,
-                    nameFieldError: action.payload
-                        ? {
-                              message: 'Please fill field',
-                          }
-                        : null,
-                };
-            case 'UPDATE_EMAIL_FIELD_ERROR':
-                return {
-                    ...state,
-                    emailFieldError: action.payload
-                        ? {
-                              message: state.email
-                                  ? 'Invalid Email'
-                                  : 'Please fill field',
-                          }
-                        : null,
-                };
-            case 'UPDATE_INQUIRY_DETAILS_FIELD_ERROR':
-                return {
-                    ...state,
-                    inquiryDetailsFieldError: action.payload
-                        ? { message: 'Please fill field' }
-                        : null,
-                };
-            case 'UPDATE_PROJECT_DETAILS_FIELD_ERROR':
-                return {
-                    ...state,
-                    projectDetailsFieldError: action.payload
-                        ? { message: 'Please fill field' }
-                        : null,
-                };
-            default:
-                return state;
-        }
-    };
-    const [state, dispatch] = useReducer(inputFieldsReducer, {
-        name: '',
-        email: '',
-        phone: '',
-        referralChannel: null,
-        budget: '',
-        other: '',
-        datePickerVisible: false,
-        projectDeadline: '',
-        projectDetails: '',
-        inquiryTitle: '',
-        inquiryDetails: '',
-        defaultDate: new Date(),
-        formError: '',
-        nameFieldError: null,
-        emailFieldError: null,
-        inquiryDetailsFieldError: null,
-        projectDetailsFieldError: null,
-    });
-    const {
-        name,
-        email,
-        phone,
-        referralChannel,
-        budget,
-        other,
-        datePickerVisible,
-        projectDeadline,
-        projectDetails,
-        inquiryTitle,
-        inquiryDetails,
-        defaultDate,
-        formError,
-        nameFieldError,
-        emailFieldError,
-        inquiryDetailsFieldError,
-        projectDetailsFieldError,
-    } = state;
+export default function ContactForm({ fontFactor }) {
+    const submitButtonAnimatedValue = useRef(new Animated.Value(1)).current;
     const styles2 = {
         baseFontSize: {
             fontSize: fontFactor * wp(4.55),
@@ -149,11 +43,74 @@ export default function ContactForm({ fontFactor, contactOption }) {
         },
         button: {
             paddingVertical: fontFactor * wp(3.5),
+            // transform: [{ scale: submitButtonAnimatedValue }],
         },
         buttonText: {
             fontSize: fontFactor * wp(5),
             lineHeight: fontFactor * wp(6.35),
         },
+        contactOptionSelector: {
+            borderColor: '#1A91D7',
+            textAlign: 'center',
+            padding: fontFactor * wp(4.55),
+            borderWidth: 1,
+            backgroundColor: '#ffffff',
+        },
+    };
+    const {
+        watch,
+        reset,
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        mode: 'onBlur',
+        reValidateMode: 'onChange',
+        defaultValues: {
+            name: '',
+            email: '',
+            phone: '',
+            referralChannel: '',
+            budget: '',
+            other: '',
+            projectDeadline: null,
+            inquiryTitle: '',
+            contactOption: '',
+            contactDetails: '',
+        },
+    });
+    const contactOption = watch('contactOption');
+    const inquiry = contactOption === 'Inquiry';
+    const hireUs = contactOption === 'Hire Us';
+    const swapErrorStateForMessage = (state) => {
+        switch (state) {
+            case 'email':
+                return 'E-mail Address';
+            case 'name':
+                return 'Your Name';
+            case 'contactOption':
+                return 'Contact Option';
+            case 'contactDetails':
+                return hireUs ? 'Project Details' : 'Inquiry Details';
+            default:
+                return '';
+        }
+    };
+    const [datePickerVisible, setDatePickerVisible] = useState(false);
+    const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+    const onPressInButton = (animatedValue) => {
+        Animated.timing(animatedValue, {
+            toValue: 0.8,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
+    };
+    const onPressOutButton = (animatedValue) => {
+        Animated.timing(animatedValue, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
     };
     let referralChannelIndex = 0;
     const referralChannelData = [
@@ -179,154 +136,135 @@ export default function ContactForm({ fontFactor, contactOption }) {
             label: 'Other',
         },
     ];
-    const otherOptionReferralChannelEnabled = referralChannel === 'Other';
-    const toggleDatePickerModal = () => {
-        dispatch({
-            type: 'TOGGLE_DATE_PICKER',
-        });
+    let contactOptionReference = 0;
+    const contactOptionData = [
+        {
+            key: contactOptionReference++,
+            label: 'Hire Us',
+        },
+        {
+            key: contactOptionReference++,
+            label: 'Inquiry',
+        },
+    ];
+    const onSubmit = () => {
+        setTimeout(() => console.log('submitted'), 5000);
     };
-    const onProjectDeadlineChange = (date) => {
-        toggleDatePickerModal();
-        dispatch({
-            type: 'UPDATE_PROJECT_DEADLINE',
-            payload: date,
-        });
-    };
-    const buttonRef = useRef(null);
-    const buttonDisabled = !hireUs && !inquiry;
-    const validateField = (field) => {
-        switch (field) {
-            case 'email':
-                return !validator.isEmail(validator.trim(email));
-            case 'name':
-                return validator.isEmpty(name, {
-                    ignore_whitespace: true,
-                });
-            case 'inquiryDetails':
-                return validator.isEmpty(inquiryDetails, {
-                    ignore_whitespace: true,
-                });
-            case 'projectDetails':
-                return validator.isEmpty(projectDetails, {
-                    ignore_whitespace: true,
-                });
-            default:
-                return;
-        }
-    };
-    const updateFieldError = (field) => {
-        switch (field) {
-            case 'name':
-                return dispatch({
-                    type: 'UPDATE_NAME_FIELD_ERROR',
-                    payload: validateField(field),
-                });
-            case 'email':
-                return dispatch({
-                    type: 'UPDATE_EMAIL_FIELD_ERROR',
-                    payload: validateField(field),
-                });
-            case 'inquiryDetails':
-                return dispatch({
-                    type: 'UPDATE_INQUIRY_DETAILS_FIELD_ERROR',
-                    payload: validateField(field),
-                });
-            case 'projectDetails':
-                return dispatch({
-                    type: 'UPDATE_PROJECT_DETAILS_FIELD_ERROR',
-                    payload: validateField(field),
-                });
-            default:
-                return;
-        }
-    };
-    const clearFieldError = (field) => {
-        switch (field) {
-            case 'name':
-                return dispatch({
-                    type: 'UPDATE_NAME_FIELD_ERROR',
-                    payload: null,
-                });
-            case 'email':
-                return dispatch({
-                    type: 'UPDATE_EMAIL_FIELD_ERROR',
-                    payload: null,
-                });
-            case 'inquiryDetails':
-                return dispatch({
-                    type: 'UPDATE_INQUIRY_DETAILS_FIELD_ERROR',
-                    payload: null,
-                });
-            case 'projectDetails':
-                return dispatch({
-                    type: 'UPDATE_PROJECT_DETAILS_FIELD_ERROR',
-                    payload: null,
-                });
-            default:
-                return;
-        }
-    };
-    const validateForm = () => {
-        let errorArray = [
-            {
-                field: 'Email',
-                error: validateField('email'),
-            },
-            {
-                field: 'Name',
-                error: validateField('name'),
-            },
-            inquiry
-                ? {
-                      field: 'Inquiry Details',
-                      error: validateField('inquiryDetails'),
-                  }
-                : {
-                      field: 'Project Details',
-                      error: validateField('projectDetails'),
-                  },
-        ];
-        errorArray = errorArray.filter((el) => el.error);
-        if (errorArray.length > 0) {
-            const arrayLength = errorArray.length;
-            const errorReducer = (sum, cur, ind) => {
-                if (ind === arrayLength - 1) {
-                    return sum + ' ' + cur.field;
-                } else {
-                    return sum + ' ' + cur.field + ',';
-                }
-            };
-            const formError = errorArray.reduce(errorReducer, '');
-            return formError;
-        } else return '';
-    };
-    const clearFormError = () => {
-        dispatch({
-            type: 'UPDATE_FORM_ERROR',
-            payload: null,
-        });
-    };
-    const handleSubmit = () => {
-        const formError = validateForm();
-        if (formError) {
-            dispatch({
-                type: 'UPDATE_FORM_ERROR',
-                payload: formError,
-            });
-        } else {
-            clearFormError();
-        }
-    };
-    const { statusBarHeight } = Constants;
-    const inquiry = contactOption === 'Inquiry';
-    const hireUs = contactOption === 'Hire Us';
 
-    //clear formError onFocus of any field
-    //test if changing contactOption type clears error text
+    const otherOptionReferralChannelEnabled =
+        watch('referralChannel') === 'Other';
+    const toggleDatePickerModal = () => {
+        setDatePickerVisible((oldState) => !oldState);
+    };
+    const contactOptionSelectorRef = useRef(null);
+    const { statusBarHeight } = Constants;
+    // console.log(errors);
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View>
+                <MarginVertical size={2} />
+                <View>
+                    <Text
+                        style={[
+                            styles.whiteText,
+                            styles.poppins500Font,
+                            styles2.baseFontSize,
+                        ]}
+                    >
+                        Do you want to get in touch or hire us ?
+                        {<Text style={styles.redText}> *</Text>}
+                    </Text>
+                    <MarginVertical />
+
+                    <Controller
+                        control={control}
+                        rules={{
+                            required: true,
+                        }}
+                        name="contactOption"
+                        render={({
+                            field: { onChange, onBlur, value, ref },
+                            fieldState: { error },
+                        }) => {
+                            return (
+                                <ModalSelector
+                                    ref={(reference) => {
+                                        contactOptionSelectorRef.current =
+                                            reference;
+                                        ref(reference);
+                                    }}
+                                    onModalClose={onBlur}
+                                    data={contactOptionData}
+                                    supportedOrientations={['portrait']}
+                                    accessible
+                                    scrollViewAccessibilityLabel={
+                                        'Scrollable options'
+                                    }
+                                    cancelButtonAccessibilityLabel={
+                                        'Cancel Button'
+                                    }
+                                    onChange={({ label }) => {
+                                        reset(
+                                            { contactDetails: '' },
+                                            {
+                                                keepValues: true,
+                                                keepErrors: false,
+                                                keepDirty: true,
+                                                keepIsSubmitted: true,
+                                                keepTouched: true,
+                                            }
+                                        );
+                                        onChange(label);
+                                    }}
+                                    overlayStyle={{
+                                        backgroundColor: 'rgba(0,0,0,0.9)',
+                                        marginTop: Platform.select({
+                                            ios: statusBarHeight,
+                                            android: 0,
+                                        }),
+                                    }}
+                                    backdropPressToClose={true}
+                                    optionTextStyle={{
+                                        color: 'black',
+                                        fontSize: fontFactor * wp(4.5),
+                                        lineHeight: fontFactor * wp(5.72),
+                                        fontFamily: 'Karla_400Regular',
+                                    }}
+                                    cancelTextStyle={{
+                                        color: 'red',
+                                        fontSize: fontFactor * wp(4.5),
+                                        lineHeight: fontFactor * wp(5.72),
+                                        fontFamily: 'Karla_500Medium',
+                                    }}
+                                    customSelector={
+                                        <TouchableOpacity
+                                            activeOpacity={0.5}
+                                            onPress={() => {
+                                                contactOptionSelectorRef.current?.open();
+                                            }}
+                                        >
+                                            <TextInput
+                                                error={error}
+                                                value={value}
+                                                style={[
+                                                    styles.poppins600Font,
+                                                    styles.blueText,
+                                                    styles2.baseFontSize,
+                                                    styles2.contactOptionSelector,
+                                                ]}
+                                                placeholder="Contact Option"
+                                                placeholderTextColor="#1CB8F3"
+                                                pointerEvents="none"
+                                                editable={false}
+                                            />
+                                        </TouchableOpacity>
+                                    }
+                                />
+                            );
+                        }}
+                    />
+                </View>
                 <MarginVertical />
                 <View>
                     <View
@@ -353,134 +291,156 @@ export default function ContactForm({ fontFactor, contactOption }) {
                     </View>
 
                     <MarginVertical />
-                    <InputField
-                        fontFactor={fontFactor}
-                        storeData={{
-                            dispatch,
-                            fieldValue: name,
-                            actionType: 'UPDATE_NAME',
+                    <Controller
+                        control={control}
+                        rules={{
+                            required: true,
                         }}
-                        textData={{
-                            label: 'Your Name',
-                            subParagraph: 'e.g Olawale Bashiru',
-                            important: true,
-                        }}
-                        onBlur={() => updateFieldError('name')}
-                        onFocus={() => {
-                            formError && clearFormError();
-                            clearFieldError('name');
-                        }}
-                        fieldError={nameFieldError}
-                    />
-                    <MarginVertical />
-
-                    <InputField
-                        storeData={{
-                            dispatch,
-                            fieldValue: email,
-                            actionType: 'UPDATE_EMAIL',
-                        }}
-                        fontFactor={fontFactor}
-                        textData={{
-                            label: 'E-mail Address',
-                            subParagraph: 'e.g olawalebashiru@gmail.com',
-                            important: true,
-                        }}
-                        onBlur={() => updateFieldError('email')}
-                        onFocus={() => {
-                            formError && clearFormError();
-                            clearFieldError('email');
-                        }}
-                        fieldError={emailFieldError}
-                    />
-
-                    <MarginVertical />
-                    <InputField
-                        storeData={{
-                            dispatch,
-                            fieldValue: phone,
-                            actionType: 'UPDATE_PHONE',
-                        }}
-                        fontFactor={fontFactor}
-                        textData={{
-                            label: 'Contact Number',
-                            subParagraph: 'Mobile number or skype ID',
-                        }}
-                    />
-                    <MarginVertical />
-                    <View>
-                        <Text style={[styles.whiteText]}>
-                            How did you hear about us?
-                        </Text>
-                        <MarginVertical size={0.2} />
-                        <ModalSelector
-                            data={referralChannelData}
-                            supportedOrientations={['portrait']}
-                            accessible={true}
-                            scrollViewAccessibilityLabel={'Scrollable options'}
-                            cancelButtonAccessibilityLabel={'Cancel Button'}
-                            onChange={(option) =>
-                                dispatch({
-                                    type: 'UPDATE_REFERRAL_CHANNEL',
-                                    payload: option.label,
-                                })
-                            }
-                            overlayStyle={{
-                                backgroundColor: 'rgba(0,0,0,0.9)',
-                                marginTop: Platform.select({
-                                    ios: statusBarHeight,
-                                    android: 0,
-                                }),
-                            }}
-                            sectionTextStyle={{
-                                fontSize: fontFactor * wp(4.5),
-                                lineHeight: fontFactor * wp(5.72),
-                                fontFamily: 'Karla_500Medium',
-                            }}
-                            optionTextStyle={{
-                                color: 'black',
-                                fontSize: fontFactor * wp(4.5),
-                                lineHeight: fontFactor * wp(5.72),
-                                fontFamily: 'Karla_400Regular',
-                            }}
-                            cancelTextStyle={{
-                                color: 'red',
-                                fontSize: fontFactor * wp(4.5),
-                                lineHeight: fontFactor * wp(5.72),
-                                fontFamily: 'Karla_500Medium',
-                            }}
-                            backdropPressToClose={true}
-                        >
-                            <TextInput
-                                style={[
-                                    styles.input,
-                                    styles2.input,
-                                    styles.karla400Font,
-                                    styles2.baseFontSize,
-                                    styles2.singleLineInput,
-                                ]}
-                                editable={false}
-                                placeholder="Please select an option"
-                                value={referralChannel}
+                        name="name"
+                        render={({
+                            field: { onChange, onBlur, value },
+                            fieldState: { error },
+                        }) => (
+                            <InputField
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                value={value}
+                                error={error}
+                                required
+                                subParagraph="e.g Olawale Bashiru"
+                                label="Your Name"
                             />
-                        </ModalSelector>
+                        )}
+                    />
+
+                    <MarginVertical />
+                    <Controller
+                        control={control}
+                        rules={{
+                            required: true,
+                            pattern:
+                                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                        }}
+                        name="email"
+                        render={({
+                            field: { onChange, onBlur, value },
+                            fieldState: { error },
+                        }) => (
+                            <InputField
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                value={value}
+                                error={error}
+                                required
+                                subParagraph="e.g olawalebashiru@gmail.com"
+                                label="E-mail Address"
+                            />
+                        )}
+                    />
+                    <MarginVertical />
+                    <Controller
+                        control={control}
+                        name="phone"
+                        render={({
+                            field: { onChange, onBlur, value },
+                            fieldState: { error },
+                        }) => (
+                            <InputField
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                value={value}
+                                error={error}
+                                subParagraph="Mobile number or skype ID"
+                                label="Contact Number"
+                            />
+                        )}
+                    />
+                    <MarginVertical />
+
+                    <View>
+                        <Controller
+                            control={control}
+                            name="referralChannel"
+                            render={({
+                                field: { onChange, onBlur, value, ref },
+                            }) => (
+                                <ModalSelector
+                                    touchableActiveOpacity={0.5}
+                                    ref={ref}
+                                    data={referralChannelData}
+                                    supportedOrientations={['portrait']}
+                                    accessible={true}
+                                    scrollViewAccessibilityLabel={
+                                        'Scrollable options'
+                                    }
+                                    cancelButtonAccessibilityLabel={
+                                        'Cancel Button'
+                                    }
+                                    onChange={({ label }) => onChange(label)}
+                                    onModalClose={onBlur}
+                                    overlayStyle={{
+                                        backgroundColor: 'rgba(0,0,0,0.9)',
+                                        marginTop: Platform.select({
+                                            ios: statusBarHeight,
+                                            android: 0,
+                                        }),
+                                    }}
+                                    sectionTextStyle={{
+                                        fontSize: fontFactor * wp(4.5),
+                                        lineHeight: fontFactor * wp(5.72),
+                                        fontFamily: 'Karla_500Medium',
+                                    }}
+                                    optionTextStyle={{
+                                        color: 'black',
+                                        fontSize: fontFactor * wp(4.5),
+                                        lineHeight: fontFactor * wp(5.72),
+                                        fontFamily: 'Karla_400Regular',
+                                    }}
+                                    cancelTextStyle={{
+                                        color: 'red',
+                                        fontSize: fontFactor * wp(4.5),
+                                        lineHeight: fontFactor * wp(5.72),
+                                        fontFamily: 'Karla_500Medium',
+                                    }}
+                                    backdropPressToClose={true}
+                                >
+                                    <InputField
+                                        onChange={onChange}
+                                        onBlur={onBlur}
+                                        value={value}
+                                        subParagraph="Please select an option"
+                                        label="How did you hear about us?"
+                                        pointerEvents="none"
+                                        editable={false}
+                                    />
+                                </ModalSelector>
+                            )}
+                        />
                     </View>
                     <MarginVertical />
                     {otherOptionReferralChannelEnabled && (
                         <View>
-                            <InputField
-                                storeData={{
-                                    dispatch,
-                                    fieldValue: other,
-                                    actionType: 'UPDATE_OTHER',
+                            <Controller
+                                control={control}
+                                rules={{
+                                    required: true,
                                 }}
-                                fontFactor={fontFactor}
-                                textData={{
-                                    label: 'Please state',
-                                    subParagraph:
-                                        'Please specify how you learnt about us',
-                                }}
+                                name="other"
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
+                                    <InputField
+                                        onChange={onChange}
+                                        onBlur={onBlur}
+                                        value={value}
+                                        error={error}
+                                        subParagraph="Please specify how you learnt about us"
+                                        label="Please state"
+                                    />
+                                )}
                             />
+
                             <MarginVertical />
                         </View>
                     )}
@@ -512,88 +472,86 @@ export default function ContactForm({ fontFactor, contactOption }) {
                             <MarginVertical />
                         </View>
                         <MarginVertical />
-                        <InputField
-                            storeData={{
-                                dispatch,
-                                fieldValue: budget,
-                                actionType: 'UPDATE_BUDGET',
-                            }}
-                            textData={{
-                                label: 'Your Budget',
-                                subParagraph: 'e.g \u20A6500,000 or $1,000',
-                            }}
-                            fontFactor={fontFactor}
+                        <Controller
+                            control={control}
+                            name="budget"
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
+                                <InputField
+                                    onChange={onChange}
+                                    onBlur={onBlur}
+                                    value={value}
+                                    error={error}
+                                    subParagraph={'e.g \u20A6500,000 or $1,000'}
+                                    label="Your Budget"
+                                />
+                            )}
+                        />
+                        <MarginVertical />
+                        <Controller
+                            control={control}
+                            name="projectDeadline"
+                            render={({ field: { onChange, value } }) => (
+                                <TouchableOpacity
+                                    activeOpacity={0.5}
+                                    onPress={toggleDatePickerModal}
+                                >
+                                    <InputField
+                                        value={
+                                            value ? value.toDateString() : value
+                                        }
+                                        subParagraph={
+                                            'Date, indicating day, month and year'
+                                        }
+                                        label="Project Deadline"
+                                        pointerEvents="none"
+                                        editable={false}
+                                    />
+                                    <DatePickerModal
+                                        isVisible={datePickerVisible}
+                                        mode="date"
+                                        onConfirm={(val) => {
+                                            toggleDatePickerModal();
+                                            onChange(val);
+                                        }}
+                                        onCancel={toggleDatePickerModal}
+                                        display="spinner"
+                                        textColor="white"
+                                        themeVariant="dark"
+                                        isDarkModeEnabled
+                                        date={new Date()}
+                                        minimumDate={new Date()}
+                                    />
+                                </TouchableOpacity>
+                            )}
                         />
 
                         <MarginVertical />
-                        <View>
-                            <Text style={[styles.whiteText]}>
-                                Project Deadline
-                            </Text>
-                            <MarginVertical size={0.2} />
-                            <Pressable onPress={toggleDatePickerModal}>
-                                <View pointerEvents="none">
-                                    <TextInput
-                                        editable={false}
-                                        value={
-                                            projectDeadline
-                                                ? projectDeadline.toDateString()
-                                                : projectDeadline
-                                        }
-                                        placeholder="Choose date"
-                                        style={[
-                                            styles.input,
-                                            styles2.input,
-                                            styles.karla400Font,
-                                            styles2.baseFontSize,
-                                        ]}
-                                    />
-                                </View>
-                            </Pressable>
-                            <MarginVertical size={0.2} />
-                            <Text
-                                style={[
-                                    styles2.subParagraph,
-                                    styles.blueText,
-                                    styles.karla400Font,
-                                ]}
-                            >
-                                Please specify in days, weeks or months
-                            </Text>
-                            <DatePickerModal
-                                isVisible={datePickerVisible}
-                                mode="date"
-                                onConfirm={onProjectDeadlineChange}
-                                onCancel={toggleDatePickerModal}
-                                display="spinner"
-                                textColor="white"
-                                themeVariant="dark"
-                                isDarkModeEnabled
-                                date={defaultDate}
-                                minimumDate={new Date()}
-                            />
-                        </View>
-                        <MarginVertical />
-                        <InputField
-                            storeData={{
-                                dispatch,
-                                fieldValue: projectDetails,
-                                actionType: 'UPDATE_PROJECT_DETAILS',
+                        <Controller
+                            control={control}
+                            rules={{
+                                required: hireUs,
                             }}
-                            fontFactor={fontFactor}
-                            megaSize
-                            textData={{
-                                label: 'Project Details',
-                                subParagraph:
-                                    "Please tell me about what you'll like to achieve, provide as much information as relavant",
-                                important: true,
-                            }}
-                            onBlur={() => updateFieldError('projectDetails')}
-                            onFocus={() => {
-                                formError && clearFormError();
-                                clearFieldError('projectDetails');
-                            }}
-                            fieldError={projectDetailsFieldError}
+                            name="contactDetails"
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
+                                <InputField
+                                    onChange={onChange}
+                                    onBlur={onBlur}
+                                    value={value}
+                                    error={error}
+                                    subParagraph={
+                                        "Please tell me about what you'll like to achieve, provide as much information as relavant"
+                                    }
+                                    label={'Project Details'}
+                                    megaSize
+                                    required
+                                />
+                            )}
                         />
                         <MarginVertical />
                     </View>
@@ -624,46 +582,55 @@ export default function ContactForm({ fontFactor, contactOption }) {
                             <MarginVertical />
                         </View>
                         <MarginVertical />
-                        <InputField
-                            storeData={{
-                                dispatch,
-                                fieldValue: inquiryTitle,
-                                actionType: 'UPDATE_INQUIRY_TITLE',
-                            }}
-                            fontFactor={fontFactor}
-                            textData={{
-                                label: 'Inquiry Title',
-                                subParagraph:
-                                    'Please specify in few words, what inquiry is about',
-                            }}
+                        <Controller
+                            control={control}
+                            name="inquiryTitle"
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
+                                <InputField
+                                    onChange={onChange}
+                                    onBlur={onBlur}
+                                    value={value}
+                                    error={error}
+                                    subParagraph={
+                                        'Please specify in few words, what inquiry is about'
+                                    }
+                                    label={'Inquiry Title'}
+                                />
+                            )}
                         />
                         <MarginVertical />
-                        <InputField
-                            storeData={{
-                                dispatch,
-                                fieldValue: inquiryDetails,
-                                actionType: 'UPDATE_INQUIRY_DETAILS',
+                        <Controller
+                            control={control}
+                            rules={{
+                                required: inquiry,
                             }}
-                            fontFactor={fontFactor}
-                            textData={{
-                                label: 'Inquiry Details',
-                                subParagraph:
-                                    'Please provide more detailed information on inquiry',
-                                important: true,
-                            }}
-                            megaSize
-                            onBlur={() => updateFieldError('inquiryDetails')}
-                            onFocus={() => {
-                                formError && clearFormError();
-                                clearFieldError('inquiryDetails');
-                            }}
-                            fieldError={inquiryDetailsFieldError}
+                            name="contactDetails"
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
+                                <InputField
+                                    onChange={onChange}
+                                    onBlur={onBlur}
+                                    value={value}
+                                    error={error}
+                                    subParagraph={
+                                        'Please provide more detailed information on inquiry'
+                                    }
+                                    label={'Inquiry Details'}
+                                    megaSize
+                                    required
+                                />
+                            )}
                         />
                         <MarginVertical />
                     </View>
                 )}
                 <View>
-                    {formError ? (
+                    {Object.keys(errors).length ? (
                         <Text
                             style={[
                                 styles2.subParagraph,
@@ -672,7 +639,17 @@ export default function ContactForm({ fontFactor, contactOption }) {
                             ]}
                         >
                             Error in{' '}
-                            <Text style={styles.redText}>{formError}</Text>{' '}
+                            <Text style={styles.redText}>
+                                {Object.keys(errors).reduce(
+                                    (prev, next) =>
+                                        prev
+                                            ? prev +
+                                              ', ' +
+                                              swapErrorStateForMessage(next)
+                                            : swapErrorStateForMessage(next),
+                                    ''
+                                )}
+                            </Text>{' '}
                             field(s)
                         </Text>
                     ) : (
@@ -687,24 +664,53 @@ export default function ContactForm({ fontFactor, contactOption }) {
                         </Text>
                     )}
                     <MarginVertical />
-                    <Pressable
-                        ref={buttonRef}
-                        disabled={buttonDisabled}
-                        style={[styles.button, styles2.button]}
-                        onPress={handleSubmit}
-                    >
-                        <Text
-                            style={[
-                                styles.buttonText,
-                                styles.karla600Font,
-                                styles2.buttonText,
-                                styles.whiteText,
-                                buttonDisabled && styles.buttonDisabled,
-                            ]}
+                    {Platform.OS === 'ios' ? (
+                        <TouchableOpacity
+                            activeOpacity={0.5}
+                            style={[styles.button, styles2.button]}
+                            onPress={handleSubmit(onSubmit, (e) =>
+                                console.log('error', e)
+                            )}
                         >
-                            Submit
-                        </Text>
-                    </Pressable>
+                            <Text
+                                style={[
+                                    styles.buttonText,
+                                    styles.karla600Font,
+                                    styles2.buttonText,
+                                    styles.whiteText,
+                                ]}
+                            >
+                                Submit
+                            </Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <AnimatedPressable
+                            style={[styles.button, styles2.button]}
+                            onPress={handleSubmit(onSubmit, (e) =>
+                                console.log('error', e)
+                            )}
+                            onPressIn={() =>
+                                onPressInButton(submitButtonAnimatedValue)
+                            }
+                            onPressOut={() =>
+                                onPressOutButton(submitButtonAnimatedValue)
+                            }
+                            delayPressIn={0}
+                            delayPressOut={0}
+                        >
+                            <Text
+                                style={[
+                                    styles.buttonText,
+                                    styles.karla600Font,
+                                    styles2.buttonText,
+                                    styles.whiteText,
+                                ]}
+                            >
+                                Submit
+                            </Text>
+                        </AnimatedPressable>
+                    )}
+                    <MarginVertical />
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -713,7 +719,6 @@ export default function ContactForm({ fontFactor, contactOption }) {
 
 ContactForm.propTypes = {
     fontFactor: PropTypes.number,
-    contactOption: PropTypes.string,
 };
 
 const styles = StyleSheet.create({
@@ -733,9 +738,6 @@ const styles = StyleSheet.create({
     karla600Font: {
         fontFamily: 'Karla_600SemiBold',
     },
-    buttonDisabled: {
-        opacity: 0.5,
-    },
     poppins500Font: {
         fontFamily: 'Poppins_500Medium',
     },
@@ -748,5 +750,8 @@ const styles = StyleSheet.create({
     },
     redText: {
         color: 'red',
+    },
+    poppins600Font: {
+        fontFamily: 'Poppins_600SemiBold',
     },
 });

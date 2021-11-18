@@ -23,18 +23,6 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
             padding: fontFactor * wp(4.55),
         },
     };
-    const [contactOption, setContactOption] = useState(null);
-    let contactOptionReference = 0;
-    const contactOptionData = [
-        {
-            key: contactOptionReference++,
-            label: 'Hire Us',
-        },
-        {
-            key: contactOptionReference++,
-            label: 'Inquiry',
-        },
-    ];
 
     return (
         <View
@@ -46,50 +34,9 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
                 },
             ]}
         >
-            <MarginVertical size={2} />
-            <Text style={[styles.allText, styles2.paragraph]}>
-                Do you want to get in touch or hire us ?
-            </Text>
-            <MarginVertical />
-            <ModalSelector
-                data={contactOptionData}
-                supportedOrientations={['portrait']}
-                accessible
-                scrollViewAccessibilityLabel={'Scrollable options'}
-                cancelButtonAccessibilityLabel={'Cancel Button'}
-                onChange={(option) => setContactOption(option.label)}
-                overlayStyle={{
-                    backgroundColor: 'rgba(0,0,0,0.9)',
-                    marginTop: Platform.select({
-                        ios: statusBarHeight,
-                        android: 0,
-                    }),
-                }}
-                backdropPressToClose={true}
-                optionTextStyle={{
-                    color: 'black',
-                    fontSize: fontFactor * wp(4.5),
-                    lineHeight: fontFactor * wp(5.72),
-                    fontFamily: 'Karla_400Regular',
-                }}
-                cancelTextStyle={{
-                    color: 'red',
-                    fontSize: fontFactor * wp(4.5),
-                    lineHeight: fontFactor * wp(5.72),
-                    fontFamily: 'Karla_500Medium',
-                }}
-            >
-                <TextInput
-                    style={[styles.contactOption, styles2.contactOption]}
-                    placeholder="Select Option"
-                    placeholderTextColor="#fff"
-                    editable={false}
-                    value={contactOption}
-                />
-            </ModalSelector>
             <ContactForm
                 fontFactor={fontFactor}
-                contactOption={contactOption}
+                // contactOption={contactOption}
             />
         </View>
     );
