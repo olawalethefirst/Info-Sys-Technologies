@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -20,7 +20,7 @@ import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 
-export default function ContactForm({ fontFactor }) {
+export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
     const submitButtonAnimatedValue = useRef(new Animated.Value(1)).current;
     const styles2 = {
         baseFontSize: {
@@ -43,7 +43,7 @@ export default function ContactForm({ fontFactor }) {
         },
         button: {
             paddingVertical: fontFactor * wp(3.5),
-            // transform: [{ scale: submitButtonAnimatedValue }],
+            transform: [{ scale: submitButtonAnimatedValue }],
         },
         buttonText: {
             fontSize: fontFactor * wp(5),
@@ -62,10 +62,17 @@ export default function ContactForm({ fontFactor }) {
         reset,
         control,
         handleSubmit,
-        formState: { errors },
+        formState: {
+            errors,
+            isSubmitted,
+            isValid,
+            isValidating,
+            submitCount,
+            isDirty,
+        },
     } = useForm({
         mode: 'onBlur',
-        reValidateMode: 'onChange',
+        reValidateMode: 'onBlur',
         defaultValues: {
             name: '',
             email: '',
@@ -158,274 +165,345 @@ export default function ContactForm({ fontFactor }) {
     };
     const contactOptionSelectorRef = useRef(null);
     const { statusBarHeight } = Constants;
-    // console.log(errors);
+    const transformErrorStatetoString = () => {
+        return Object.keys(errors).reduce(
+            (prev, next) =>
+                prev
+                    ? prev + ', ' + swapErrorStateForMessage(next)
+                    : swapErrorStateForMessage(next),
+            ''
+        );
+    };
+    const [isFormError, setIsFormError] = useState(false);
+    useEffect(() => {
+        setIsFormError(!!Object.keys(errors).length);
+    }, [errors, submitCount]);
+    const contactFormRef = useRef(null);
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View>
-                <MarginVertical size={2} />
+        <View ref={contactFormRef}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View>
-                    <Text
-                        style={[
-                            styles.whiteText,
-                            styles.poppins500Font,
-                            styles2.baseFontSize,
-                        ]}
-                    >
-                        Do you want to get in touch or hire us ?
-                        {<Text style={styles.redText}> *</Text>}
-                    </Text>
-                    <MarginVertical />
-
-                    <Controller
-                        control={control}
-                        rules={{
-                            required: true,
-                        }}
-                        name="contactOption"
-                        render={({
-                            field: { onChange, onBlur, value, ref },
-                            fieldState: { error },
-                        }) => {
-                            return (
-                                <ModalSelector
-                                    ref={(reference) => {
-                                        contactOptionSelectorRef.current =
-                                            reference;
-                                        ref(reference);
-                                    }}
-                                    onModalClose={onBlur}
-                                    data={contactOptionData}
-                                    supportedOrientations={['portrait']}
-                                    accessible
-                                    scrollViewAccessibilityLabel={
-                                        'Scrollable options'
-                                    }
-                                    cancelButtonAccessibilityLabel={
-                                        'Cancel Button'
-                                    }
-                                    onChange={({ label }) => {
-                                        reset(
-                                            { contactDetails: '' },
-                                            {
-                                                keepValues: true,
-                                                keepErrors: false,
-                                                keepDirty: true,
-                                                keepIsSubmitted: true,
-                                                keepTouched: true,
-                                            }
-                                        );
-                                        onChange(label);
-                                    }}
-                                    overlayStyle={{
-                                        backgroundColor: 'rgba(0,0,0,0.9)',
-                                        marginTop: Platform.select({
-                                            ios: statusBarHeight,
-                                            android: 0,
-                                        }),
-                                    }}
-                                    backdropPressToClose={true}
-                                    optionTextStyle={{
-                                        color: 'black',
-                                        fontSize: fontFactor * wp(4.5),
-                                        lineHeight: fontFactor * wp(5.72),
-                                        fontFamily: 'Karla_400Regular',
-                                    }}
-                                    cancelTextStyle={{
-                                        color: 'red',
-                                        fontSize: fontFactor * wp(4.5),
-                                        lineHeight: fontFactor * wp(5.72),
-                                        fontFamily: 'Karla_500Medium',
-                                    }}
-                                    customSelector={
-                                        <TouchableOpacity
-                                            activeOpacity={0.5}
-                                            onPress={() => {
-                                                contactOptionSelectorRef.current?.open();
-                                            }}
-                                        >
-                                            <TextInput
-                                                error={error}
-                                                value={value}
-                                                style={[
-                                                    styles.poppins600Font,
-                                                    styles.blueText,
-                                                    styles2.baseFontSize,
-                                                    styles2.contactOptionSelector,
-                                                ]}
-                                                placeholder="Contact Option"
-                                                placeholderTextColor="#1CB8F3"
-                                                pointerEvents="none"
-                                                editable={false}
-                                            />
-                                        </TouchableOpacity>
-                                    }
-                                />
-                            );
-                        }}
-                    />
-                </View>
-                <MarginVertical />
-                <View>
-                    <View
-                        style={[
-                            {
-                                borderBottomColor: 'rgba(255,255,255,0.5)',
-                                borderBottomWidth: wp(0.1),
-                            },
-                        ]}
-                    >
+                    <MarginVertical size={2} />
+                    <View>
                         <Text
                             style={[
                                 styles.whiteText,
                                 styles.poppins500Font,
-                                {
-                                    fontSize: fontFactor * wp(5.5),
-                                    lineHeight: fontFactor * wp(7),
-                                },
+                                styles2.baseFontSize,
                             ]}
                         >
-                            About You
+                            Do you want to get in touch or hire us?
+                            {<Text style={styles.redText}> *</Text>}
                         </Text>
                         <MarginVertical />
-                    </View>
 
-                    <MarginVertical />
-                    <Controller
-                        control={control}
-                        rules={{
-                            required: true,
-                        }}
-                        name="name"
-                        render={({
-                            field: { onChange, onBlur, value },
-                            fieldState: { error },
-                        }) => (
-                            <InputField
-                                onChange={onChange}
-                                onBlur={onBlur}
-                                value={value}
-                                error={error}
-                                required
-                                subParagraph="e.g Olawale Bashiru"
-                                label="Your Name"
-                            />
-                        )}
-                    />
-
-                    <MarginVertical />
-                    <Controller
-                        control={control}
-                        rules={{
-                            required: true,
-                            pattern:
-                                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                        }}
-                        name="email"
-                        render={({
-                            field: { onChange, onBlur, value },
-                            fieldState: { error },
-                        }) => (
-                            <InputField
-                                onChange={onChange}
-                                onBlur={onBlur}
-                                value={value}
-                                error={error}
-                                required
-                                subParagraph="e.g olawalebashiru@gmail.com"
-                                label="E-mail Address"
-                            />
-                        )}
-                    />
-                    <MarginVertical />
-                    <Controller
-                        control={control}
-                        name="phone"
-                        render={({
-                            field: { onChange, onBlur, value },
-                            fieldState: { error },
-                        }) => (
-                            <InputField
-                                onChange={onChange}
-                                onBlur={onBlur}
-                                value={value}
-                                error={error}
-                                subParagraph="Mobile number or skype ID"
-                                label="Contact Number"
-                            />
-                        )}
-                    />
-                    <MarginVertical />
-
-                    <View>
                         <Controller
                             control={control}
-                            name="referralChannel"
+                            rules={{
+                                required: true,
+                            }}
+                            name="contactOption"
                             render={({
                                 field: { onChange, onBlur, value, ref },
-                            }) => (
-                                <ModalSelector
-                                    touchableActiveOpacity={0.5}
-                                    ref={ref}
-                                    data={referralChannelData}
-                                    supportedOrientations={['portrait']}
-                                    accessible={true}
-                                    scrollViewAccessibilityLabel={
-                                        'Scrollable options'
-                                    }
-                                    cancelButtonAccessibilityLabel={
-                                        'Cancel Button'
-                                    }
-                                    onChange={({ label }) => onChange(label)}
-                                    onModalClose={onBlur}
-                                    overlayStyle={{
-                                        backgroundColor: 'rgba(0,0,0,0.9)',
-                                        marginTop: Platform.select({
-                                            ios: statusBarHeight,
-                                            android: 0,
-                                        }),
-                                    }}
-                                    sectionTextStyle={{
-                                        fontSize: fontFactor * wp(4.5),
-                                        lineHeight: fontFactor * wp(5.72),
-                                        fontFamily: 'Karla_500Medium',
-                                    }}
-                                    optionTextStyle={{
-                                        color: 'black',
-                                        fontSize: fontFactor * wp(4.5),
-                                        lineHeight: fontFactor * wp(5.72),
-                                        fontFamily: 'Karla_400Regular',
-                                    }}
-                                    cancelTextStyle={{
-                                        color: 'red',
-                                        fontSize: fontFactor * wp(4.5),
-                                        lineHeight: fontFactor * wp(5.72),
-                                        fontFamily: 'Karla_500Medium',
-                                    }}
-                                    backdropPressToClose={true}
-                                >
-                                    <InputField
-                                        onChange={onChange}
-                                        onBlur={onBlur}
-                                        value={value}
-                                        subParagraph="Please select an option"
-                                        label="How did you hear about us?"
-                                        pointerEvents="none"
-                                        editable={false}
+                                fieldState: { error },
+                            }) => {
+                                return (
+                                    <ModalSelector
+                                        ref={(reference) => {
+                                            contactOptionSelectorRef.current =
+                                                reference;
+                                            ref(reference);
+                                        }}
+                                        onModalClose={onBlur}
+                                        data={contactOptionData}
+                                        supportedOrientations={['portrait']}
+                                        accessible
+                                        scrollViewAccessibilityLabel={
+                                            'Scrollable options'
+                                        }
+                                        cancelButtonAccessibilityLabel={
+                                            'Cancel Button'
+                                        }
+                                        onChange={({ label }) => {
+                                            reset(
+                                                {
+                                                    contactDetails: '',
+                                                    budget: '',
+                                                    projectDeadline: null,
+                                                    inquiryTitle: '',
+                                                },
+                                                {
+                                                    keepValues: true,
+                                                    keepError: true,
+                                                    keepDirty: true,
+                                                    keepIsSubmitted: true,
+                                                    keepTouched: true,
+                                                }
+                                            );
+                                            onChange(label);
+                                        }}
+                                        overlayStyle={{
+                                            backgroundColor: 'rgba(0,0,0,0.9)',
+                                            marginTop: Platform.select({
+                                                ios: statusBarHeight,
+                                                android: 0,
+                                            }),
+                                        }}
+                                        backdropPressToClose={true}
+                                        optionTextStyle={{
+                                            color: 'black',
+                                            fontSize: fontFactor * wp(4.5),
+                                            lineHeight: fontFactor * wp(5.72),
+                                            fontFamily: 'Karla_400Regular',
+                                        }}
+                                        cancelTextStyle={{
+                                            color: 'red',
+                                            fontSize: fontFactor * wp(4.5),
+                                            lineHeight: fontFactor * wp(5.72),
+                                            fontFamily: 'Karla_500Medium',
+                                        }}
+                                        customSelector={
+                                            <TouchableOpacity
+                                                activeOpacity={0.5}
+                                                onPress={() => {
+                                                    contactOptionSelectorRef.current?.open();
+                                                }}
+                                            >
+                                                <TextInput
+                                                    error={error}
+                                                    value={value}
+                                                    style={[
+                                                        styles.poppins600Font,
+                                                        styles.blueText,
+                                                        styles2.baseFontSize,
+                                                        styles2.contactOptionSelector,
+                                                    ]}
+                                                    placeholder="Contact Option"
+                                                    placeholderTextColor="#1CB8F3"
+                                                    pointerEvents="none"
+                                                    editable={false}
+                                                />
+                                            </TouchableOpacity>
+                                        }
                                     />
-                                </ModalSelector>
-                            )}
+                                );
+                            }}
                         />
                     </View>
                     <MarginVertical />
-                    {otherOptionReferralChannelEnabled && (
+                    <View>
+                        <View
+                            style={[
+                                {
+                                    borderBottomColor: 'rgba(255,255,255,0.5)',
+                                    borderBottomWidth: wp(0.1),
+                                },
+                            ]}
+                        >
+                            <Text
+                                style={[
+                                    styles.whiteText,
+                                    styles.poppins500Font,
+                                    {
+                                        fontSize: fontFactor * wp(5.5),
+                                        lineHeight: fontFactor * wp(7),
+                                    },
+                                ]}
+                            >
+                                About You
+                            </Text>
+                            <MarginVertical />
+                        </View>
+
+                        <MarginVertical />
+                        <Controller
+                            control={control}
+                            rules={{
+                                required: true,
+                            }}
+                            name="name"
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
+                                <InputField
+                                    onChange={onChange}
+                                    onBlur={onBlur}
+                                    value={value}
+                                    error={error}
+                                    required
+                                    subParagraph="e.g Olawale Bashiru"
+                                    label="Your Name"
+                                />
+                            )}
+                        />
+
+                        <MarginVertical />
+                        <Controller
+                            control={control}
+                            rules={{
+                                required: true,
+                                pattern:
+                                    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                            }}
+                            name="email"
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
+                                <InputField
+                                    onChange={onChange}
+                                    onBlur={onBlur}
+                                    value={value}
+                                    error={error}
+                                    required
+                                    subParagraph="e.g olawalebashiru@gmail.com"
+                                    label="E-mail Address"
+                                />
+                            )}
+                        />
+                        <MarginVertical />
+                        <Controller
+                            control={control}
+                            name="phone"
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
+                                <InputField
+                                    onChange={onChange}
+                                    onBlur={onBlur}
+                                    value={value}
+                                    error={error}
+                                    subParagraph="Mobile number or skype ID"
+                                    label="Contact Number"
+                                />
+                            )}
+                        />
+                        <MarginVertical />
+
                         <View>
                             <Controller
                                 control={control}
-                                rules={{
-                                    required: true,
-                                }}
-                                name="other"
+                                name="referralChannel"
+                                render={({
+                                    field: { onChange, onBlur, value, ref },
+                                }) => (
+                                    <ModalSelector
+                                        touchableActiveOpacity={0.5}
+                                        ref={ref}
+                                        data={referralChannelData}
+                                        supportedOrientations={['portrait']}
+                                        accessible={true}
+                                        scrollViewAccessibilityLabel={
+                                            'Scrollable options'
+                                        }
+                                        cancelButtonAccessibilityLabel={
+                                            'Cancel Button'
+                                        }
+                                        onChange={({ label }) =>
+                                            onChange(label)
+                                        }
+                                        onModalClose={onBlur}
+                                        overlayStyle={{
+                                            backgroundColor: 'rgba(0,0,0,0.9)',
+                                            marginTop: Platform.select({
+                                                ios: statusBarHeight,
+                                                android: 0,
+                                            }),
+                                        }}
+                                        sectionTextStyle={{
+                                            fontSize: fontFactor * wp(4.5),
+                                            lineHeight: fontFactor * wp(5.72),
+                                            fontFamily: 'Karla_500Medium',
+                                        }}
+                                        optionTextStyle={{
+                                            color: 'black',
+                                            fontSize: fontFactor * wp(4.5),
+                                            lineHeight: fontFactor * wp(5.72),
+                                            fontFamily: 'Karla_400Regular',
+                                        }}
+                                        cancelTextStyle={{
+                                            color: 'red',
+                                            fontSize: fontFactor * wp(4.5),
+                                            lineHeight: fontFactor * wp(5.72),
+                                            fontFamily: 'Karla_500Medium',
+                                        }}
+                                        backdropPressToClose={true}
+                                    >
+                                        <InputField
+                                            onChange={onChange}
+                                            onBlur={onBlur}
+                                            value={value}
+                                            subParagraph="Please select an option"
+                                            label="How did you hear about us?"
+                                            pointerEvents="none"
+                                            editable={false}
+                                        />
+                                    </ModalSelector>
+                                )}
+                            />
+                        </View>
+                        <MarginVertical />
+                        {otherOptionReferralChannelEnabled && (
+                            <View>
+                                <Controller
+                                    control={control}
+                                    rules={{
+                                        required: true,
+                                    }}
+                                    name="other"
+                                    render={({
+                                        field: { onChange, onBlur, value },
+                                        fieldState: { error },
+                                    }) => (
+                                        <InputField
+                                            onChange={onChange}
+                                            onBlur={onBlur}
+                                            value={value}
+                                            error={error}
+                                            subParagraph="Please specify how you learnt about us"
+                                            label="Please state"
+                                        />
+                                    )}
+                                />
+
+                                <MarginVertical />
+                            </View>
+                        )}
+                    </View>
+
+                    {hireUs && (
+                        <View>
+                            <MarginVertical />
+                            <View
+                                style={[
+                                    {
+                                        borderBottomColor:
+                                            'rgba(255,255,255,0.5)',
+                                        borderBottomWidth: wp(0.1),
+                                    },
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        styles.whiteText,
+                                        styles.poppins500Font,
+                                        {
+                                            fontSize: fontFactor * wp(5.5),
+                                            lineHeight: fontFactor * wp(7),
+                                        },
+                                    ]}
+                                >
+                                    Project Details
+                                </Text>
+                                <MarginVertical />
+                            </View>
+                            <MarginVertical />
+                            <Controller
+                                control={control}
+                                name="budget"
                                 render={({
                                     field: { onChange, onBlur, value },
                                     fieldState: { error },
@@ -435,242 +513,197 @@ export default function ContactForm({ fontFactor }) {
                                         onBlur={onBlur}
                                         value={value}
                                         error={error}
-                                        subParagraph="Please specify how you learnt about us"
-                                        label="Please state"
+                                        subParagraph={
+                                            'e.g \u20A6500,000 or $1,000'
+                                        }
+                                        label="Your Budget"
                                     />
+                                )}
+                            />
+                            <MarginVertical />
+                            <Controller
+                                control={control}
+                                name="projectDeadline"
+                                render={({ field: { onChange, value } }) => (
+                                    <TouchableOpacity
+                                        activeOpacity={0.5}
+                                        onPress={toggleDatePickerModal}
+                                    >
+                                        <InputField
+                                            value={
+                                                value
+                                                    ? value.toDateString()
+                                                    : value
+                                            }
+                                            subParagraph={
+                                                'Date, indicating day, month and year'
+                                            }
+                                            label="Project Deadline"
+                                            pointerEvents="none"
+                                            editable={false}
+                                        />
+                                        <DatePickerModal
+                                            isVisible={datePickerVisible}
+                                            mode="date"
+                                            onConfirm={(val) => {
+                                                toggleDatePickerModal();
+                                                onChange(val);
+                                            }}
+                                            onCancel={toggleDatePickerModal}
+                                            display="spinner"
+                                            textColor="white"
+                                            themeVariant="dark"
+                                            isDarkModeEnabled
+                                            date={new Date()}
+                                            minimumDate={new Date()}
+                                        />
+                                    </TouchableOpacity>
                                 )}
                             />
 
                             <MarginVertical />
-                        </View>
-                    )}
-                </View>
-
-                {hireUs && (
-                    <View>
-                        <MarginVertical />
-                        <View
-                            style={[
-                                {
-                                    borderBottomColor: 'rgba(255,255,255,0.5)',
-                                    borderBottomWidth: wp(0.1),
-                                },
-                            ]}
-                        >
-                            <Text
-                                style={[
-                                    styles.whiteText,
-                                    styles.poppins500Font,
-                                    {
-                                        fontSize: fontFactor * wp(5.5),
-                                        lineHeight: fontFactor * wp(7),
-                                    },
-                                ]}
-                            >
-                                Project Details
-                            </Text>
-                            <MarginVertical />
-                        </View>
-                        <MarginVertical />
-                        <Controller
-                            control={control}
-                            name="budget"
-                            render={({
-                                field: { onChange, onBlur, value },
-                                fieldState: { error },
-                            }) => (
-                                <InputField
-                                    onChange={onChange}
-                                    onBlur={onBlur}
-                                    value={value}
-                                    error={error}
-                                    subParagraph={'e.g \u20A6500,000 or $1,000'}
-                                    label="Your Budget"
-                                />
-                            )}
-                        />
-                        <MarginVertical />
-                        <Controller
-                            control={control}
-                            name="projectDeadline"
-                            render={({ field: { onChange, value } }) => (
-                                <TouchableOpacity
-                                    activeOpacity={0.5}
-                                    onPress={toggleDatePickerModal}
-                                >
+                            <Controller
+                                control={control}
+                                rules={{
+                                    required: hireUs,
+                                }}
+                                name="contactDetails"
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
                                     <InputField
-                                        value={
-                                            value ? value.toDateString() : value
-                                        }
+                                        onChange={onChange}
+                                        onBlur={onBlur}
+                                        value={value}
+                                        error={error}
                                         subParagraph={
-                                            'Date, indicating day, month and year'
+                                            "Please tell me about what you'll like to achieve, provide as much information as relavant"
                                         }
-                                        label="Project Deadline"
-                                        pointerEvents="none"
-                                        editable={false}
+                                        label={'Project Details'}
+                                        megaSize
+                                        contactFormRef={contactFormRef}
+                                        required
+                                        scrollRef={scrollRef}
+                                        headerSize={headerSize}
                                     />
-                                    <DatePickerModal
-                                        isVisible={datePickerVisible}
-                                        mode="date"
-                                        onConfirm={(val) => {
-                                            toggleDatePickerModal();
-                                            onChange(val);
-                                        }}
-                                        onCancel={toggleDatePickerModal}
-                                        display="spinner"
-                                        textColor="white"
-                                        themeVariant="dark"
-                                        isDarkModeEnabled
-                                        date={new Date()}
-                                        minimumDate={new Date()}
-                                    />
-                                </TouchableOpacity>
-                            )}
-                        />
-
-                        <MarginVertical />
-                        <Controller
-                            control={control}
-                            rules={{
-                                required: hireUs,
-                            }}
-                            name="contactDetails"
-                            render={({
-                                field: { onChange, onBlur, value },
-                                fieldState: { error },
-                            }) => (
-                                <InputField
-                                    onChange={onChange}
-                                    onBlur={onBlur}
-                                    value={value}
-                                    error={error}
-                                    subParagraph={
-                                        "Please tell me about what you'll like to achieve, provide as much information as relavant"
-                                    }
-                                    label={'Project Details'}
-                                    megaSize
-                                    required
-                                />
-                            )}
-                        />
-                        <MarginVertical />
-                    </View>
-                )}
-                {inquiry && (
-                    <View>
-                        <MarginVertical />
-                        <View
-                            style={[
-                                {
-                                    borderBottomColor: 'rgba(255,255,255,0.5)',
-                                    borderBottomWidth: wp(0.1),
-                                },
-                            ]}
-                        >
-                            <Text
+                                )}
+                            />
+                            <MarginVertical />
+                        </View>
+                    )}
+                    {inquiry && (
+                        <View>
+                            <MarginVertical />
+                            <View
                                 style={[
-                                    styles.whiteText,
-                                    styles.poppins500Font,
                                     {
-                                        fontSize: fontFactor * wp(5.5),
-                                        lineHeight: fontFactor * wp(7),
+                                        borderBottomColor:
+                                            'rgba(255,255,255,0.5)',
+                                        borderBottomWidth: wp(0.1),
                                     },
                                 ]}
                             >
-                                Inquiry
-                            </Text>
+                                <Text
+                                    style={[
+                                        styles.whiteText,
+                                        styles.poppins500Font,
+                                        {
+                                            fontSize: fontFactor * wp(5.5),
+                                            lineHeight: fontFactor * wp(7),
+                                        },
+                                    ]}
+                                >
+                                    Inquiry
+                                </Text>
+                                <MarginVertical />
+                            </View>
+                            <MarginVertical />
+                            <Controller
+                                control={control}
+                                name="inquiryTitle"
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
+                                    <InputField
+                                        onChange={onChange}
+                                        onBlur={onBlur}
+                                        value={value}
+                                        error={error}
+                                        subParagraph={
+                                            'Please specify in few words, what inquiry is about'
+                                        }
+                                        label={'Inquiry Title'}
+                                    />
+                                )}
+                            />
+                            <MarginVertical />
+                            <Controller
+                                control={control}
+                                rules={{
+                                    required: inquiry,
+                                }}
+                                name="contactDetails"
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
+                                    <InputField
+                                        onChange={onChange}
+                                        onBlur={onBlur}
+                                        value={value}
+                                        error={error}
+                                        subParagraph={
+                                            'Please provide more detailed information on inquiry'
+                                        }
+                                        label={'Inquiry Details'}
+                                        megaSize
+                                        contactFormRef={contactFormRef}
+                                        required
+                                        scrollRef={scrollRef}
+                                        headerSize={headerSize}
+                                    />
+                                )}
+                            />
                             <MarginVertical />
                         </View>
-                        <MarginVertical />
-                        <Controller
-                            control={control}
-                            name="inquiryTitle"
-                            render={({
-                                field: { onChange, onBlur, value },
-                                fieldState: { error },
-                            }) => (
-                                <InputField
-                                    onChange={onChange}
-                                    onBlur={onBlur}
-                                    value={value}
-                                    error={error}
-                                    subParagraph={
-                                        'Please specify in few words, what inquiry is about'
-                                    }
-                                    label={'Inquiry Title'}
-                                />
-                            )}
-                        />
-                        <MarginVertical />
-                        <Controller
-                            control={control}
-                            rules={{
-                                required: inquiry,
-                            }}
-                            name="contactDetails"
-                            render={({
-                                field: { onChange, onBlur, value },
-                                fieldState: { error },
-                            }) => (
-                                <InputField
-                                    onChange={onChange}
-                                    onBlur={onBlur}
-                                    value={value}
-                                    error={error}
-                                    subParagraph={
-                                        'Please provide more detailed information on inquiry'
-                                    }
-                                    label={'Inquiry Details'}
-                                    megaSize
-                                    required
-                                />
-                            )}
-                        />
-                        <MarginVertical />
-                    </View>
-                )}
-                <View>
-                    {Object.keys(errors).length ? (
-                        <Text
-                            style={[
-                                styles2.subParagraph,
-                                styles.poppins500Font,
-                                styles.whiteText,
-                            ]}
-                        >
-                            Error in{' '}
-                            <Text style={styles.redText}>
-                                {Object.keys(errors).reduce(
-                                    (prev, next) =>
-                                        prev
-                                            ? prev +
-                                              ', ' +
-                                              swapErrorStateForMessage(next)
-                                            : swapErrorStateForMessage(next),
-                                    ''
-                                )}
-                            </Text>{' '}
-                            field(s)
-                        </Text>
-                    ) : (
-                        <Text
-                            style={[
-                                styles2.subParagraph,
-                                styles.yellowFontColor,
-                                styles.poppins500Font,
-                            ]}
-                        >
-                            You should get a reply within 24 hours .
-                        </Text>
                     )}
-                    <MarginVertical />
-                    {Platform.OS === 'ios' ? (
+                    <View>
+                        {isSubmitted && !isValid && isFormError ? (
+                            <Text
+                                style={[
+                                    styles2.subParagraph,
+                                    styles.poppins500Font,
+                                    styles.whiteText,
+                                ]}
+                            >
+                                Error in{' '}
+                                <Text style={styles.redText}>
+                                    {transformErrorStatetoString()}
+                                </Text>{' '}
+                                field(s)
+                            </Text>
+                        ) : (
+                            <Text
+                                style={[
+                                    styles2.subParagraph,
+                                    styles.yellowFontColor,
+                                    styles.poppins500Font,
+                                ]}
+                            >
+                                You should get a reply within 24 hours .
+                            </Text>
+                        )}
+                        <MarginVertical />
+
                         <TouchableOpacity
                             activeOpacity={0.5}
                             style={[styles.button, styles2.button]}
-                            onPress={handleSubmit(onSubmit, (e) =>
-                                console.log('error', e)
+                            onPress={handleSubmit(onSubmit, () =>
+                                console.log('error')
                             )}
+                            disabled={isFormError}
                         >
                             <Text
                                 style={[
@@ -683,37 +716,12 @@ export default function ContactForm({ fontFactor }) {
                                 Submit
                             </Text>
                         </TouchableOpacity>
-                    ) : (
-                        <AnimatedPressable
-                            style={[styles.button, styles2.button]}
-                            onPress={handleSubmit(onSubmit, (e) =>
-                                console.log('error', e)
-                            )}
-                            onPressIn={() =>
-                                onPressInButton(submitButtonAnimatedValue)
-                            }
-                            onPressOut={() =>
-                                onPressOutButton(submitButtonAnimatedValue)
-                            }
-                            delayPressIn={0}
-                            delayPressOut={0}
-                        >
-                            <Text
-                                style={[
-                                    styles.buttonText,
-                                    styles.karla600Font,
-                                    styles2.buttonText,
-                                    styles.whiteText,
-                                ]}
-                            >
-                                Submit
-                            </Text>
-                        </AnimatedPressable>
-                    )}
-                    <MarginVertical />
+
+                        <MarginVertical />
+                    </View>
                 </View>
-            </View>
-        </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>
+        </View>
     );
 }
 

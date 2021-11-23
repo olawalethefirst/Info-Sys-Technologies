@@ -7,7 +7,7 @@ import ModalSelector from 'react-native-modal-selector';
 import ContactForm from '../components/ContactForm';
 import PropTypes from 'prop-types';
 
-function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
+function Contact({ bodyHeight, headerSize, margin, fontFactor, scrollRef }) {
     const { statusBarHeight } = Constants;
     const styles2 = {
         paragraph: {
@@ -36,7 +36,8 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor }) {
         >
             <ContactForm
                 fontFactor={fontFactor}
-                // contactOption={contactOption}
+                scrollRef={scrollRef}
+                headerSize={headerSize}
             />
         </View>
     );
@@ -47,6 +48,8 @@ Contact.propTypes = {
     headerSize: PropTypes.number,
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
+    scrollViewOffset: PropTypes.number,
+    scrollRef: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

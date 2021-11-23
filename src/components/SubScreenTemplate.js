@@ -9,7 +9,6 @@ import {
 import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
-import updateScrollViewOffset from '../redux/actions/updateScrollViewOffset';
 
 function SubScreenTemplate({
     margin,
@@ -20,6 +19,8 @@ function SubScreenTemplate({
     scrollRef,
     updateScrollViewOffset,
     children,
+    updateContentHeight,
+    noHeader,
 }) {
     const scrollY = useRef(new Animated.Value(0));
     const handleScroll = Animated.event(
@@ -27,8 +28,10 @@ function SubScreenTemplate({
         {
             useNativeDriver: true,
             listener: (e) => {
-                !heading &&
+                updateScrollViewOffset &&
                     updateScrollViewOffset(e.nativeEvent.contentOffset.y);
+                updateContentHeight &&
+                    updateContentHeight(e.nativeEvent.contentSize.height);
             },
         }
     );
@@ -48,7 +51,7 @@ function SubScreenTemplate({
 
     return (
         <View style={[styles.container]}>
-            {heading && (
+            {!noHeader && (
                 <AnimatedImageBackground
                     //eslint-disable-next-line no-undef
                     source={require('../../assets/images/background2.png')}
@@ -85,7 +88,7 @@ function SubScreenTemplate({
                 scrollEventThrottle={16}
                 onScroll={handleScroll}
                 contentContainerStyle={
-                    heading && {
+                    !noHeader && {
                         paddingTop: headerSize,
                     }
                 }
@@ -112,6 +115,7 @@ SubScreenTemplate.propTypes = {
     scrollRef: PropTypes.object,
     updateScrollViewOffset: PropTypes.func,
     children: PropTypes.object,
+    noHeader: PropTypes.bool,
 };
 
 const styles = StyleSheet.create({
@@ -142,6 +146,4 @@ const mapStateToProps = (state) => ({
     bodyHeight: state.settingsState.bodyHeight,
 });
 
-export default connect(mapStateToProps, { updateScrollViewOffset })(
-    SubScreenTemplate
-);
+export default connect(mapStateToProps)(SubScreenTemplate);

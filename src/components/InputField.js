@@ -1,8 +1,19 @@
-import React from 'react';
-import { TextInput, Text, View, Platform, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {
+    TextInput,
+    Text,
+    View,
+    Platform,
+    StyleSheet,
+    Keyboard,
+    Dimensions,
+} from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import Constants from 'expo-constants';
+import { useSelector } from 'react-redux';
 
 function InputField({
     onChange,
@@ -14,6 +25,9 @@ function InputField({
     subParagraph,
     label,
     fontFactor,
+    scrollRef,
+    contactFormRef,
+    headerSize,
     ...props
 }) {
     const styles2 = {
@@ -37,9 +51,39 @@ function InputField({
             lineHeight: fontFactor * wp(4.62),
         },
     };
+    const windowHeight = Dimensions.get('window').height;
+    const { statusBarHeight } = Constants;
+    const mulitLineInputRef = useRef(null);
+    const [offset, setOffset] = useState(0);
+
+    useEffect(() => {
+        if (mulitLineInputRef?.current && contactFormRef?.current) {
+            console.log('passed');
+            mulitLineInputRef.current.measureLayout(
+                contactFormRef.current,
+                (left, top, height) => {
+                    setOffset(
+                        top +
+                            2 * headerSize -
+                            (windowHeight -
+                                headerSize -
+                                statusBarHeight -
+                                height)
+                    );
+                }
+            );
+        }
+    }, [
+        offset,
+        headerSize,
+        windowHeight,
+        statusBarHeight,
+        mulitLineInputRef,
+        contactFormRef,
+    ]);
 
     return (
-        <View>
+        <View ref={mulitLineInputRef}>
             <Text
                 style={[
                     styles.whiteText,
@@ -55,7 +99,26 @@ function InputField({
                 autoCapitalize={'none'}
                 autoCorrect={false}
                 multiline={megaSize ? true : false}
-                onBlur={onBlur}
+                onFocus={
+                    Platform.OS === 'ios' && megaSize
+                        ? () => {
+                              Keyboard.addListener('keyboardDidShow', () =>
+                                  scrollRef?.current?.scrollToOffset({
+                                      offset: offset,
+                                      animated: true,
+                                  })
+                              );
+                          }
+                        : null
+                }
+                onBlur={
+                    megaSize
+                        ? () => {
+                              Keyboard.removeAllListeners('keyboardDidShow');
+                              onBlur();
+                          }
+                        : onBlur
+                }
                 textAlignVertical={megaSize && 'top'}
                 value={value}
                 onChangeText={onChange}
@@ -114,8 +177,24 @@ const styles = StyleSheet.create({
     },
 });
 
+InputField.propTypes = {
+    onChange: PropTypes.func,
+    onBlur: PropTypes.func,
+    value: PropTypes.string,
+    error: PropTypes.object,
+    required: PropTypes.bool,
+    megaSize: PropTypes.bool,
+    subParagraph: PropTypes.string,
+    label: PropTypes.string,
+    fontFactor: PropTypes.number,
+    scrollRef: PropTypes.object,
+    headerSize: PropTypes.number,
+    contactFormRef: PropTypes.object,
+};
+
 const mapStateToProps = (state) => ({
     fontFactor: state.settingsState.fontFactor,
+    headerSize: state.settingsState.headerSize,
 });
 
 export default connect(mapStateToProps)(InputField);

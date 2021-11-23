@@ -7,11 +7,19 @@ import scrollToTop from '../helperFunctions/scrollToTop';
 import Contact from '../components/Contact';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
+import updateContactScrollViewOffset from '../redux/actions/updateContactScrollViewOffset';
+import updateContactContentSize from '../redux/actions/updateContactContentSize';
 
-function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
+function ContactScreen({
+    margin,
+    headerSize,
+    fontFactor,
+    bodyHeight,
+    updateContactScrollViewOffset,
+    updateContactContentSize,
+}) {
     const scrollRef = useRef(null);
     const { statusBarHeight } = Constants;
-    console.log(statusBarHeight);
 
     const sectionComponents = [
         {
@@ -23,6 +31,7 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
                     margin={margin}
                     fontFactor={fontFactor}
                     key="0"
+                    scrollRef={scrollRef}
                 />
             ),
         },
@@ -58,10 +67,22 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
                 fontFactor={fontFactor}
                 headerSize={headerSize}
                 scrollRef={scrollRef}
+                updateScrollViewOffset={updateContactScrollViewOffset}
+                requireScrollPosition
             />
         </KeyboardAvoidingView>
     );
 }
+
+ContactScreen.propTypes = {
+    margin: PropTypes.number,
+    headerSize: PropTypes.number,
+    fontFactor: PropTypes.number,
+    bodyHeight: PropTypes.number,
+    contactScrollViewOffset: PropTypes.number,
+    updateContactScrollViewOffset: PropTypes.func,
+    updateContactContentSize: PropTypes.func,
+};
 
 const mapStateToProps = (state) => ({
     margin: state.settingsState.margin,
@@ -70,14 +91,10 @@ const mapStateToProps = (state) => ({
     bodyHeight: state.settingsState.bodyHeight,
 });
 
-ContactScreen.propTypes = {
-    margin: PropTypes.number,
-    headerSize: PropTypes.number,
-    fontFactor: PropTypes.number,
-    bodyHeight: PropTypes.number,
-};
-
-export default connect(mapStateToProps)(ContactScreen);
+export default connect(mapStateToProps, {
+    updateContactScrollViewOffset,
+    updateContactContentSize,
+})(ContactScreen);
 
 const styles = StyleSheet.create({
     container: {

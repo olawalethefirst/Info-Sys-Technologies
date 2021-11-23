@@ -5,7 +5,9 @@ import {
     UPDATE_DEVICE_WIDTH_CLASS,
     UPDATE_BODY_HEIGHT,
     UPDATE_FONT_FACTOR,
-    UPDATE_SCROLL_POSITION,
+    UPDATE_SERVICES_SCROLL_POSITION,
+    UPDATE_CONTACT_SCROLL_POSITION,
+    UPDATE_CONTACT_CONTENT_SIZE,
 } from '../actions/actionTypes';
 
 //Initial States
@@ -17,7 +19,9 @@ const initialState = {
     bodyHeight: null,
     fontFactor: null,
     modalEnabled: false,
-    scrollViewOffset: 0,
+    servicesScrollViewOffset: 0,
+    contactScrollViewOffset: 0,
+    contactFormContentSize: 0,
 };
 
 export default function settingsReducer(state = initialState, action) {
@@ -52,8 +56,12 @@ export default function settingsReducer(state = initialState, action) {
                 ...state,
                 fontFactor: action.payload,
             };
-        case UPDATE_SCROLL_POSITION:
-            return { ...state, scrollViewOffset: action.payload };
+        case UPDATE_SERVICES_SCROLL_POSITION:
+            return { ...state, servicesScrollViewOffset: action.payload };
+        case UPDATE_CONTACT_SCROLL_POSITION:
+            return { ...state, contactScrollViewOffset: action.payload };
+        case UPDATE_CONTACT_CONTENT_SIZE:
+            return { ...state, contactFormContentSize: action.payload };
         default:
             return state;
     }

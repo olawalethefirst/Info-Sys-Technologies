@@ -5,13 +5,14 @@ import SubScreenTemplate from '../components/SubScreenTemplate';
 import Footer from '../components/Footer';
 import Services from '../components/Services';
 import PropTypes from 'prop-types';
+import updateServicesScrollViewOffset from '../redux/actions/updateServicesScrollViewOffset';
 
 function ServicesScreen({
     margin,
     fontFactor,
     headerSize,
     bodyHeight,
-    scrollViewOffset,
+    updateServicesScrollViewOffset,
 }) {
     const pagerRef = useRef(null);
     const scrollRef = useRef(null);
@@ -34,7 +35,6 @@ function ServicesScreen({
                     bodyHeight={bodyHeight}
                     pagerRef={pagerRef}
                     scrollRef={scrollRef}
-                    scrollViewOffset={scrollViewOffset}
                 />
             ),
         },
@@ -61,6 +61,10 @@ function ServicesScreen({
                 headerSize={headerSize}
                 scrollRef={scrollRef}
                 sectionComponents={sectionComponents}
+                requireScrollPosition
+                noHeader
+                heading={'Services'}
+                updateScrollViewOffset={updateServicesScrollViewOffset}
             />
         </SafeAreaView>
     );
@@ -71,7 +75,7 @@ ServicesScreen.propTypes = {
     fontFactor: PropTypes.number,
     headerSize: PropTypes.number,
     bodyHeight: PropTypes.number,
-    scrollViewOffset: PropTypes.number,
+    updateServicesScrollViewOffset: PropTypes.func,
 };
 
 const styles = StyleSheet.create({
@@ -86,7 +90,8 @@ const mapStateToProps = (state) => ({
     fontFactor: state.settingsState.fontFactor,
     headerSize: state.settingsState.headerSize,
     bodyHeight: state.settingsState.bodyHeight,
-    scrollViewOffset: state.settingsState.scrollViewOffset,
 });
 
-export default connect(mapStateToProps)(ServicesScreen);
+export default connect(mapStateToProps, { updateServicesScrollViewOffset })(
+    ServicesScreen
+);

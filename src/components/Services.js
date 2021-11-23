@@ -13,17 +13,12 @@ import { SafeAreaView, View, Dimensions, Animated } from 'react-native';
 //     technologyAndManagementDevelopmentTraining,
 //     cloudAccounting,
 // } from '../serviceDetails';
-// import DancingDownArrow from './DancingDownArrow';
-// import SlideIndicator from './SlideIndicator';
+import DancingDownArrow from './DancingDownArrow';
+import SlideIndicator from './SlideIndicator';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
-function Services({
-    bodyHeight,
-    headerSize,
-    fontFactor,
-    pagerRef,
-    scrollViewOffset,
-}) {
+function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
     const arrowWidth = 0.25 * headerSize;
     const { width } = Dimensions.get('window');
     const contentContainerWidth = width - 2 * headerSize;
@@ -50,6 +45,10 @@ function Services({
             useNativeDriver: true,
         })
     ).current;
+    const servicesScrollViewOffset = useSelector(
+        ({ settingsState: { servicesScrollViewOffset } }) =>
+            servicesScrollViewOffset
+    );
 
     return (
         <SafeAreaView
@@ -64,11 +63,12 @@ function Services({
                 initialPage={0}
                 orientation="vertical"
                 ref={pagerRef}
-                scrollEnabled={scrollViewOffset == 0}
+                scrollEnabled={servicesScrollViewOffset === 0}
                 onPageSelected={({ nativeEvent: { position } }) =>
                     updatePage(position)
                 }
                 overScrollMode="never"
+                bounces={false}
             >
                 <View collapsable={false}>
                     <ServicesIntro
@@ -183,7 +183,7 @@ function Services({
                         fadeOut={fadeOut}
                     />
                 </View>
-            </PagerView>
+            </PagerView> */}
             {page !== 7 && (
                 <DancingDownArrow
                     arrowWidth={arrowWidth}
@@ -197,7 +197,7 @@ function Services({
                 menuIconWidth={headerSize}
                 activeSlide={page}
                 animatedValue={animatedValue}
-            /> */}
+            />
         </SafeAreaView>
     );
 }
@@ -207,7 +207,6 @@ Services.propTypes = {
     headerSize: PropTypes.number,
     fontFactor: PropTypes.number,
     pagerRef: PropTypes.object,
-    scrollViewOffset: PropTypes.number,
 };
 
 export default React.memo(Services);
