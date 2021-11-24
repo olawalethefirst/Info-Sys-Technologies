@@ -13,7 +13,6 @@ import MarginVertical from './MarginVertical';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Constants from 'expo-constants';
-import { useSelector } from 'react-redux';
 
 function InputField({
     onChange,

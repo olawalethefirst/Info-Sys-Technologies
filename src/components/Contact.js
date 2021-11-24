@@ -1,35 +1,18 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Platform } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import Constants from 'expo-constants';
-import MarginVertical from './MarginVertical';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import ModalSelector from 'react-native-modal-selector';
 import ContactForm from '../components/ContactForm';
 import PropTypes from 'prop-types';
 
 function Contact({ bodyHeight, headerSize, margin, fontFactor, scrollRef }) {
     const { statusBarHeight } = Constants;
-    const styles2 = {
-        paragraph: {
-            fontSize: fontFactor * wp(4.55),
-            lineHeight: fontFactor * wp(5.78),
-        },
-        contactOption: {
-            fontSize: fontFactor * wp(4.55),
-            lineHeight: fontFactor * wp(5.78),
-            color: '#fff',
-            backgroundColor: '#1A91D7',
-            textAlign: 'center',
-            padding: fontFactor * wp(4.55),
-        },
-    };
 
     return (
         <View
             style={[
                 styles.container,
                 {
-                    minHeight: bodyHeight - headerSize + statusBarHeight,
+                    minHeight: bodyHeight - headerSize - statusBarHeight,
                     paddingHorizontal: margin,
                 },
             ]}
