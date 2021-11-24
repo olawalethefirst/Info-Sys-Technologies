@@ -6,7 +6,6 @@ import {
     TextInput,
     Keyboard,
     TouchableWithoutFeedback,
-    Pressable,
     Platform,
     Animated,
     TouchableOpacity,
@@ -20,12 +19,16 @@ import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 
-export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
+export default function ContactForm({ fontFactor, scrollRef }) {
     const submitButtonAnimatedValue = useRef(new Animated.Value(1)).current;
     const styles2 = {
         baseFontSize: {
             fontSize: fontFactor * wp(4.55),
             lineHeight: fontFactor * wp(5.78),
+        },
+        subHeaderFontSize: {
+            fontSize: fontFactor * wp(5.5),
+            lineHeight: fontFactor * wp(7),
         },
         input: {
             padding: fontFactor * wp(2),
@@ -50,27 +53,14 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
             lineHeight: fontFactor * wp(6.35),
         },
         contactOptionSelector: {
-            borderColor: '#1A91D7',
-            textAlign: 'center',
             padding: fontFactor * wp(4.55),
-            borderWidth: 1,
-            backgroundColor: '#ffffff',
+            borderWidth: wp(0.25) * fontFactor,
+        },
+        subHeaderBorderStyle: {
+            borderBottomWidth: wp(0.1) * fontFactor,
         },
     };
-    const {
-        watch,
-        reset,
-        control,
-        handleSubmit,
-        formState: {
-            errors,
-            isSubmitted,
-            isValid,
-            isValidating,
-            submitCount,
-            isDirty,
-        },
-    } = useForm({
+    const { watch, resetField, control, handleSubmit, formState } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onBlur',
         defaultValues: {
@@ -86,6 +76,7 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
             contactDetails: '',
         },
     });
+    const { errors, isSubmitted, isValid } = formState;
     const contactOption = watch('contactOption');
     const inquiry = contactOption === 'Inquiry';
     const hireUs = contactOption === 'Hire Us';
@@ -104,21 +95,6 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
         }
     };
     const [datePickerVisible, setDatePickerVisible] = useState(false);
-    const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-    const onPressInButton = (animatedValue) => {
-        Animated.timing(animatedValue, {
-            toValue: 0.8,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
-    };
-    const onPressOutButton = (animatedValue) => {
-        Animated.timing(animatedValue, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
-    };
     let referralChannelIndex = 0;
     const referralChannelData = [
         {
@@ -154,10 +130,31 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
             label: 'Inquiry',
         },
     ];
+    const resetContactOptionState = () => {
+        resetField('contactDetails', {
+            keepTouched: false,
+            keepError: false,
+            keepDirty: false,
+        });
+        resetField('budget', {
+            keepTouched: false,
+            keepError: false,
+            keepDirty: false,
+        });
+        resetField('projectDeadline', {
+            keepTouched: false,
+            keepError: false,
+            keepDirty: false,
+        });
+        resetField('inquiryTitle', {
+            keepTouched: false,
+            keepError: false,
+            keepDirty: false,
+        });
+    };
     const onSubmit = () => {
         setTimeout(() => console.log('submitted'), 5000);
     };
-
     const otherOptionReferralChannelEnabled =
         watch('referralChannel') === 'Other';
     const toggleDatePickerModal = () => {
@@ -175,9 +172,10 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
         );
     };
     const [isFormError, setIsFormError] = useState(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         setIsFormError(!!Object.keys(errors).length);
-    }, [errors, submitCount]);
+    });
     const contactFormRef = useRef(null);
 
     return (
@@ -226,21 +224,7 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
                                             'Cancel Button'
                                         }
                                         onChange={({ label }) => {
-                                            reset(
-                                                {
-                                                    contactDetails: '',
-                                                    budget: '',
-                                                    projectDeadline: null,
-                                                    inquiryTitle: '',
-                                                },
-                                                {
-                                                    keepValues: true,
-                                                    keepError: true,
-                                                    keepDirty: true,
-                                                    keepIsSubmitted: true,
-                                                    keepTouched: true,
-                                                }
-                                            );
+                                            resetContactOptionState();
                                             onChange(label);
                                         }}
                                         overlayStyle={{
@@ -278,6 +262,7 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
                                                         styles.blueText,
                                                         styles2.baseFontSize,
                                                         styles2.contactOptionSelector,
+                                                        styles.contactOptionSelector,
                                                     ]}
                                                     placeholder="Contact Option"
                                                     placeholderTextColor="#1CB8F3"
@@ -295,20 +280,15 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
                     <View>
                         <View
                             style={[
-                                {
-                                    borderBottomColor: 'rgba(255,255,255,0.5)',
-                                    borderBottomWidth: wp(0.1),
-                                },
+                                styles2.subHeaderBorderStyle,
+                                styles.subHeaderBorderStyle,
                             ]}
                         >
                             <Text
                                 style={[
                                     styles.whiteText,
                                     styles.poppins500Font,
-                                    {
-                                        fontSize: fontFactor * wp(5.5),
-                                        lineHeight: fontFactor * wp(7),
-                                    },
+                                    styles2.subHeaderFontSize,
                                 ]}
                             >
                                 About You
@@ -479,11 +459,8 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
                             <MarginVertical />
                             <View
                                 style={[
-                                    {
-                                        borderBottomColor:
-                                            'rgba(255,255,255,0.5)',
-                                        borderBottomWidth: wp(0.1),
-                                    },
+                                    styles2.subHeaderBorderStyle,
+                                    styles.subHeaderBorderStyle,
                                 ]}
                             >
                                 <Text
@@ -585,7 +562,6 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
                                         contactFormRef={contactFormRef}
                                         required
                                         scrollRef={scrollRef}
-                                        headerSize={headerSize}
                                     />
                                 )}
                             />
@@ -597,11 +573,8 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
                             <MarginVertical />
                             <View
                                 style={[
-                                    {
-                                        borderBottomColor:
-                                            'rgba(255,255,255,0.5)',
-                                        borderBottomWidth: wp(0.1),
-                                    },
+                                    styles2.subHeaderBorderStyle,
+                                    styles.subHeaderBorderStyle,
                                 ]}
                             >
                                 <Text
@@ -662,7 +635,6 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
                                         contactFormRef={contactFormRef}
                                         required
                                         scrollRef={scrollRef}
-                                        headerSize={headerSize}
                                     />
                                 )}
                             />
@@ -727,6 +699,7 @@ export default function ContactForm({ fontFactor, scrollRef, headerSize }) {
 
 ContactForm.propTypes = {
     fontFactor: PropTypes.number,
+    scrollRef: PropTypes.object,
 };
 
 const styles = StyleSheet.create({
@@ -761,5 +734,13 @@ const styles = StyleSheet.create({
     },
     poppins600Font: {
         fontFamily: 'Poppins_600SemiBold',
+    },
+    subHeaderBorderStyle: {
+        borderBottomColor: 'rgba(255,255,255,0.5)',
+    },
+    contactOptionSelector: {
+        borderColor: '#1A91D7',
+        textAlign: 'center',
+        backgroundColor: '#ffffff',
     },
 });

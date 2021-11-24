@@ -34,11 +34,7 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor, scrollRef }) {
                 },
             ]}
         >
-            <ContactForm
-                fontFactor={fontFactor}
-                scrollRef={scrollRef}
-                headerSize={headerSize}
-            />
+            <ContactForm fontFactor={fontFactor} scrollRef={scrollRef} />
         </View>
     );
 }
