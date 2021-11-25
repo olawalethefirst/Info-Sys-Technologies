@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -34,7 +34,8 @@ const CreatePost = ({
 }) => {
     const { statusBarHeight } = Constants;
     const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
-    const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+    const AnimatedTouchableOpacity =
+        Animated.createAnimatedComponent(TouchableOpacity);
     const postTitleAnimatedValue = useRef(new Animated.Value(0)).current;
     const postTitleBorder = postTitleAnimatedValue.interpolate({
         inputRange: [0, 1],
@@ -53,28 +54,20 @@ const CreatePost = ({
     const createPostButtonAnimatedValue = useRef(new Animated.Value(1)).current;
     const cancelButtonAnimatedValue = useRef(new Animated.Value(1)).current;
     const onFocusInput = (animatedValue) => {
-        Animated.timing(animatedValue, {
-            toValue: 1,
-            duration: 100,
-            useNativeDriver: false,
-        }).start();
+        return animatedValue.setValue(1);
     };
     const onBlurInput = (animatedValue) => {
-        Animated.timing(animatedValue, {
-            toValue: 0,
-            duration: 100,
-            useNativeDriver: false,
-        }).start();
+        return animatedValue.setValue(0);
     };
     const onPressInButton = (animatedValue) => {
-        Animated.timing(animatedValue, {
+        return Animated.timing(animatedValue, {
             toValue: 0.8,
             duration: 200,
             useNativeDriver: true,
         }).start();
     };
     const onPressOutButton = (animatedValue) => {
-        Animated.timing(animatedValue, {
+        return Animated.timing(animatedValue, {
             toValue: 1,
             duration: 200,
             useNativeDriver: true,
@@ -100,7 +93,7 @@ const CreatePost = ({
         formState: { errors },
     } = useForm({
         mode: 'onBlur',
-        reValidateMode: 'onChange',
+        reValidateMode: 'onBlur',
         defaultValues,
     });
     const onCancel = () => {
@@ -110,10 +103,18 @@ const CreatePost = ({
     const scrollViewRef = useRef(null);
     const modalSelectorRef = useRef(null);
     const [multiLineInputPosition, setMultiLineInputPosition] = useState(null);
-    console.log(defaultValues);
+    const [disableModalPressables, setDisableModalPressables] = useState(true);
+    const onSubmitSuccessful = (data) => {
+        console.log(data);
+    };
+    const onSubmitFailed = (errors) => {
+        console.log(errors);
+    };
 
     return (
         <Modal
+            onModalWillShow={() => setDisableModalPressables(false)}
+            onModalWillHide={() => setDisableModalPressables(true)}
             propagateSwipe
             isVisible={visible}
             onBackButtonPress={toggleModal}
@@ -123,19 +124,17 @@ const CreatePost = ({
             useNativeDriver={true}
             hideModalContentWhileAnimating={true}
             style={{
-                margin: 0,
+                margin: headerSize / 3,
                 marginTop: Platform.select({
                     ios: statusBarHeight + headerSize / 3,
                     android: headerSize / 3,
                 }),
-                padding: 0,
             }}
         >
             <Pressable
                 onPress={Keyboard.dismiss}
                 style={{
                     flex: 1,
-                    margin: 0,
                     backgroundColor: '#f7f7f7',
                     paddingHorizontal: margin,
                     paddingTop: headerSize,
@@ -174,6 +173,8 @@ const CreatePost = ({
                                 bounces={false}
                                 contentContainerStyle={{
                                     alignItems: 'center',
+                                    flexGrow: 1,
+                                    justifyContent: 'center',
                                 }}
                             >
                                 <Pressable
@@ -182,8 +183,7 @@ const CreatePost = ({
                                         width: `${fontFactor * 100}%`,
                                     }}
                                 >
-                                    <View>
-                                        <MarginVertical size={4} />
+                                    <View style={{ marginBottom: headerSize }}>
                                         <Text
                                             style={{
                                                 fontFamily: 'Poppins_500Medium',
@@ -221,7 +221,8 @@ const CreatePost = ({
                                                             );
                                                             onBlur();
                                                         }}
-                                                        onFocus={() => {
+                                                        onFocus={(e) => {
+                                                            e.preventDefault();
                                                             onFocusInput(
                                                                 postTitleAnimatedValue
                                                             );
@@ -244,6 +245,9 @@ const CreatePost = ({
                                                                 'Poppins_400Regular',
                                                             color: '#000000',
                                                         }}
+                                                        editable={
+                                                            !disableModalPressables
+                                                        }
                                                     />
                                                     <MarginVertical
                                                         size={0.3}
@@ -268,11 +272,14 @@ const CreatePost = ({
                                                     >
                                                         This is required
                                                     </Text>
+                                                    <MarginVertical
+                                                        size={0.3}
+                                                    />
                                                 </View>
                                             )}
                                             name="postTitle"
                                         />
-                                        <MarginVertical size={1.5} />
+                                        {/* <MarginVertical size={1.5} /> */}
                                         <Controller
                                             control={control}
                                             name="postCategory"
@@ -290,15 +297,9 @@ const CreatePost = ({
                                                         customSelector={
                                                             <Pressable
                                                                 onPress={() => {
-                                                                    console.log(
-                                                                        'hahahahha'
-                                                                    );
                                                                     modalSelectorRef.current.open();
                                                                 }}
                                                                 onPressIn={() => {
-                                                                    console.log(
-                                                                        'feelme'
-                                                                    );
                                                                     onFocusInput(
                                                                         postCategoryAnimatedValue
                                                                     );
@@ -307,6 +308,9 @@ const CreatePost = ({
                                                                     onBlurInput(
                                                                         postCategoryAnimatedValue
                                                                     )
+                                                                }
+                                                                disabled={
+                                                                    disableModalPressables
                                                                 }
                                                             >
                                                                 <AnimatedTextInput
@@ -447,11 +451,14 @@ const CreatePost = ({
                                                     >
                                                         This is required.
                                                     </Text>
+                                                    <MarginVertical
+                                                        size={0.3}
+                                                    />
                                                 </View>
                                             )}
                                         />
 
-                                        <MarginVertical size={1.5} />
+                                        {/* <MarginVertical size={1.5} /> */}
 
                                         <Controller
                                             control={control}
@@ -507,6 +514,9 @@ const CreatePost = ({
                                                             onBlur();
                                                         }}
                                                         onFocus={() => {
+                                                            onFocusInput(
+                                                                postBodyAnimatedValue
+                                                            );
                                                             //Implement for IOS alone
                                                             if (
                                                                 Platform.OS ===
@@ -550,6 +560,9 @@ const CreatePost = ({
                                                                 'top',
                                                             height: wp(25.16),
                                                         }}
+                                                        editable={
+                                                            !disableModalPressables
+                                                        }
                                                     />
                                                     <MarginVertical
                                                         size={0.3}
@@ -574,33 +587,46 @@ const CreatePost = ({
                                                     >
                                                         This is required
                                                     </Text>
+                                                    <MarginVertical
+                                                        size={0.3}
+                                                    />
                                                 </View>
                                             )}
                                             name="postBody"
                                         />
-                                        <MarginVertical size={1.5} />
+                                        {/* <MarginVertical size={1.5} /> */}
                                         <View
                                             style={{
                                                 flexDirection: 'row',
                                                 justifyContent: 'space-between',
                                             }}
                                         >
-                                            <AnimatedPressable
-                                                onPressIn={() =>
+                                            <AnimatedTouchableOpacity
+                                                activeOpacity={1}
+                                                disabled={
+                                                    disableModalPressables ||
+                                                    !!Object.keys(errors).length
+                                                }
+                                                onPressIn={() => {
+                                                    console.log('works');
                                                     onPressInButton(
                                                         createPostButtonAnimatedValue
-                                                    )
-                                                }
+                                                    );
+                                                }}
                                                 onPressOut={() =>
                                                     onPressOutButton(
                                                         createPostButtonAnimatedValue
                                                     )
                                                 }
+                                                onPress={handleSubmit(
+                                                    onSubmitSuccessful,
+                                                    onSubmitFailed
+                                                )}
                                                 style={{
                                                     backgroundColor: '#1A91D7',
                                                     padding:
                                                         fontFactor * wp(4.55),
-                                                    width: wp(40),
+                                                    // width: wp(40),
                                                     alignItems: 'center',
                                                     borderColor: '#1A91D7',
                                                     borderWidth: wp(0.25),
@@ -609,6 +635,7 @@ const CreatePost = ({
                                                             scale: createPostButtonAnimatedValue,
                                                         },
                                                     ],
+                                                    flex: 4,
                                                 }}
                                             >
                                                 <Text
@@ -628,8 +655,10 @@ const CreatePost = ({
                                                         ? 'Create Post'
                                                         : 'Update Post'}
                                                 </Text>
-                                            </AnimatedPressable>
-                                            <AnimatedPressable
+                                            </AnimatedTouchableOpacity>
+                                            <View style={{ flex: 1 }}></View>
+                                            <AnimatedTouchableOpacity
+                                                activeOpacity={1}
                                                 onPressIn={() =>
                                                     onPressInButton(
                                                         cancelButtonAnimatedValue
@@ -645,7 +674,8 @@ const CreatePost = ({
                                                     backgroundColor: '#ffffff',
                                                     padding:
                                                         fontFactor * wp(4.55),
-                                                    width: wp(40),
+                                                    flex: 4,
+                                                    // width: wp(40),
                                                     alignItems: 'center',
                                                     borderColor: '#1A91D7',
                                                     borderWidth: wp(0.25),
@@ -655,6 +685,9 @@ const CreatePost = ({
                                                         },
                                                     ],
                                                 }}
+                                                disabled={
+                                                    disableModalPressables
+                                                }
                                             >
                                                 <Text
                                                     style={{
@@ -671,9 +704,8 @@ const CreatePost = ({
                                                 >
                                                     Cancel
                                                 </Text>
-                                            </AnimatedPressable>
+                                            </AnimatedTouchableOpacity>
                                         </View>
-                                        <MarginVertical size={4} />
                                     </View>
                                 </Pressable>
                             </ScrollView>
