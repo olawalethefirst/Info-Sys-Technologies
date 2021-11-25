@@ -20,7 +20,7 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
                 width: 0,
                 height: wp(0.5) * fontFactor,
             },
-            shadowOpacity: 0.5,
+            shadowOpacity: 0.25,
             shadowRadius: wp(0.5) * fontFactor,
             elevation: wp(2) * fontFactor,
             zIndex: 10,
