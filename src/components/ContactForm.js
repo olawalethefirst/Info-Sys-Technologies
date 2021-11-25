@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     StyleSheet,
     Text,
@@ -76,24 +76,10 @@ export default function ContactForm({ fontFactor, scrollRef }) {
             contactDetails: '',
         },
     });
-    const { errors, isSubmitted, isValid } = formState;
+    const { errors } = formState;
     const contactOption = watch('contactOption');
     const inquiry = contactOption === 'Inquiry';
     const hireUs = contactOption === 'Hire Us';
-    const swapErrorStateForMessage = (state) => {
-        switch (state) {
-            case 'email':
-                return 'E-mail Address';
-            case 'name':
-                return 'Your Name';
-            case 'contactOption':
-                return 'Contact Option';
-            case 'contactDetails':
-                return hireUs ? 'Project Details' : 'Inquiry Details';
-            default:
-                return '';
-        }
-    };
     const [datePickerVisible, setDatePickerVisible] = useState(false);
     let referralChannelIndex = 0;
     const referralChannelData = [
@@ -152,6 +138,22 @@ export default function ContactForm({ fontFactor, scrollRef }) {
             keepDirty: false,
         });
     };
+    const AnimatedTouchableOpacity =
+        Animated.createAnimatedComponent(TouchableOpacity);
+    const onPressInButton = (animatedValue) => {
+        return Animated.timing(animatedValue, {
+            toValue: 0.9,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
+    };
+    const onPressOutButton = (animatedValue) => {
+        return Animated.timing(animatedValue, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
+    };
     const onSubmit = () => {
         setTimeout(() => console.log('submitted'), 5000);
     };
@@ -162,20 +164,6 @@ export default function ContactForm({ fontFactor, scrollRef }) {
     };
     const contactOptionSelectorRef = useRef(null);
     const { statusBarHeight } = Constants;
-    const transformErrorStatetoString = () => {
-        return Object.keys(errors).reduce(
-            (prev, next) =>
-                prev
-                    ? prev + ', ' + swapErrorStateForMessage(next)
-                    : swapErrorStateForMessage(next),
-            ''
-        );
-    };
-    const [isFormError, setIsFormError] = useState(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => {
-        setIsFormError(!!Object.keys(errors).length);
-    });
     const contactFormRef = useRef(null);
 
     return (
@@ -248,28 +236,47 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                             fontFamily: 'Karla_500Medium',
                                         }}
                                         customSelector={
-                                            <TouchableOpacity
-                                                activeOpacity={0.5}
-                                                onPress={() => {
-                                                    contactOptionSelectorRef.current?.open();
-                                                }}
-                                            >
-                                                <TextInput
-                                                    error={error}
-                                                    value={value}
+                                            <>
+                                                <TouchableOpacity
+                                                    activeOpacity={0.5}
+                                                    onPress={() => {
+                                                        contactOptionSelectorRef.current?.open();
+                                                    }}
+                                                >
+                                                    <TextInput
+                                                        error={error}
+                                                        value={value}
+                                                        style={[
+                                                            styles.poppins600Font,
+                                                            styles.blueText,
+                                                            styles2.baseFontSize,
+                                                            styles2.contactOptionSelector,
+                                                            styles.contactOptionSelector,
+                                                        ]}
+                                                        placeholder="Contact Option"
+                                                        placeholderTextColor="#1CB8F3"
+                                                        pointerEvents="none"
+                                                        editable={false}
+                                                    />
+                                                </TouchableOpacity>
+                                                <Text
                                                     style={[
-                                                        styles.poppins600Font,
-                                                        styles.blueText,
-                                                        styles2.baseFontSize,
-                                                        styles2.contactOptionSelector,
-                                                        styles.contactOptionSelector,
+                                                        styles.redText,
+                                                        styles.karla400Font,
+                                                        styles2.subParagraph,
+                                                        {
+                                                            marginTop:
+                                                                wp(0.88) *
+                                                                fontFactor,
+                                                            opacity: error
+                                                                ? 1
+                                                                : 0,
+                                                        },
                                                     ]}
-                                                    placeholder="Contact Option"
-                                                    placeholderTextColor="#1CB8F3"
-                                                    pointerEvents="none"
-                                                    editable={false}
-                                                />
-                                            </TouchableOpacity>
+                                                >
+                                                    Please choose an option
+                                                </Text>
+                                            </>
                                         }
                                     />
                                 );
@@ -642,40 +649,31 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                         </View>
                     )}
                     <View>
-                        {isSubmitted && !isValid && isFormError ? (
-                            <Text
-                                style={[
-                                    styles2.subParagraph,
-                                    styles.poppins500Font,
-                                    styles.whiteText,
-                                ]}
-                            >
-                                Error in{' '}
-                                <Text style={styles.redText}>
-                                    {transformErrorStatetoString()}
-                                </Text>{' '}
-                                field(s)
-                            </Text>
-                        ) : (
-                            <Text
-                                style={[
-                                    styles2.subParagraph,
-                                    styles.yellowFontColor,
-                                    styles.poppins500Font,
-                                ]}
-                            >
-                                You should get a reply within 24 hours .
-                            </Text>
-                        )}
+                        <Text
+                            style={[
+                                styles2.subParagraph,
+                                styles.yellowFontColor,
+                                styles.poppins500Font,
+                            ]}
+                        >
+                            You should get a reply within 24 hours .
+                        </Text>
+
                         <MarginVertical />
 
-                        <TouchableOpacity
-                            activeOpacity={0.5}
+                        <AnimatedTouchableOpacity
+                            activeOpacity={1}
                             style={[styles.button, styles2.button]}
+                            onPressIn={() => {
+                                onPressInButton(submitButtonAnimatedValue);
+                            }}
+                            onPressOut={() =>
+                                onPressOutButton(submitButtonAnimatedValue)
+                            }
                             onPress={handleSubmit(onSubmit, () =>
                                 console.log('error')
                             )}
-                            disabled={isFormError}
+                            disabled={!!Object.keys(errors).length}
                         >
                             <Text
                                 style={[
@@ -687,7 +685,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                             >
                                 Submit
                             </Text>
-                        </TouchableOpacity>
+                        </AnimatedTouchableOpacity>
 
                         <MarginVertical />
                     </View>
