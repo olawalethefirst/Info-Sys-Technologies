@@ -1,5 +1,5 @@
-import React, { useRef, useCallback } from 'react';
-import { StyleSheet, FlatList, SafeAreaView } from 'react-native';
+import React, { useRef, useCallback, useEffect } from 'react';
+import { StyleSheet, FlatList, View } from 'react-native';
 import Welcome from '../components/Welcome';
 import AboutMini from '../components/AboutMini';
 import ServicesMini from '../components/ServicesMini';
@@ -8,8 +8,8 @@ import ContactMini from '../components/ContactMini';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Footer from '../components/Footer';
-import ModalScreen from './ModalScreen';
 import scrollToTop from '../helperFunctions/scrollToTop';
+import { CommonActions } from '@react-navigation/native';
 
 function HomeScreen({
     margin,
@@ -17,6 +17,7 @@ function HomeScreen({
     fontFactor,
     deviceWidthClass,
     headerSize,
+    navigation,
 }) {
     const scrollRef = useRef(null);
     const memoizedScrollToTop = useCallback(scrollToTop, []);
@@ -86,14 +87,23 @@ function HomeScreen({
                 />
             ),
         },
-        {
-            key: '6',
-            data: <ModalScreen />,
-        },
     ];
 
+    useEffect(() => {
+        navigation.dispatch((state) => {
+            const routes = state.routes.filter((r) => r.name !== 'Navigation');
+            return CommonActions.reset({
+                ...state,
+                routes,
+                index: routes.length - 1,
+            });
+        });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigation]);
+
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <FlatList
                 contentContainerStyle={styles.list}
                 data={sectionComponents}
@@ -101,7 +111,7 @@ function HomeScreen({
                 keyExtractor={(item, index) => 'keyExtractor' + index}
                 ref={scrollRef}
             />
-        </SafeAreaView>
+        </View>
     );
 }
 
@@ -111,6 +121,7 @@ HomeScreen.propTypes = {
     fontFactor: PropTypes.number,
     deviceWidthClass: PropTypes.string,
     headerSize: PropTypes.number,
+    navigation: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

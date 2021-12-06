@@ -5,10 +5,14 @@ import {
     Text,
     View,
     ImageBackground,
+    TouchableOpacity,
+    Platform,
 } from 'react-native';
 import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
+import Icon from 'react-native-vector-icons/AntDesign';
+import { useNavigation } from '@react-navigation/native';
 
 function SubScreenTemplate({
     margin,
@@ -19,8 +23,10 @@ function SubScreenTemplate({
     scrollRef,
     updateScrollViewOffset,
     children,
-    updateContentHeight,
+    updateContentSize,
     noHeader,
+    deeplyNestedScreen,
+    updateFooterPosition,
 }) {
     const scrollY = useRef(new Animated.Value(0));
     const handleScroll = Animated.event(
@@ -30,8 +36,21 @@ function SubScreenTemplate({
             listener: (e) => {
                 updateScrollViewOffset &&
                     updateScrollViewOffset(e.nativeEvent.contentOffset.y);
-                updateContentHeight &&
-                    updateContentHeight(e.nativeEvent.contentSize.height);
+                updateContentSize &&
+                    updateContentSize(e.nativeEvent.contentSize.height);
+                updateFooterPosition &&
+                e.nativeEvent.contentOffset.y >=
+                    e.nativeEvent.contentSize.height -
+                        e.nativeEvent.layoutMeasurement.height -
+                        headerSize
+                    ? updateFooterPosition(
+                          e.nativeEvent.contentOffset.y -
+                              (e.nativeEvent.contentSize.height -
+                                  e.nativeEvent.layoutMeasurement.height -
+                                  headerSize)
+                      )
+                    : null;
+                // cc
             },
         }
     );
@@ -45,7 +64,7 @@ function SubScreenTemplate({
             useNativeDriver: true,
         }
     );
-
+    const navigation = useNavigation();
     const AnimatedImageBackground =
         Animated.createAnimatedComponent(ImageBackground);
 
@@ -60,22 +79,49 @@ function SubScreenTemplate({
                         styles.header,
                         {
                             paddingHorizontal: margin,
-                            minHeight: headerSize,
+                            height: headerSize,
                             transform: [
                                 {
                                     translateY,
                                 },
                             ],
                         },
+                        deeplyNestedScreen && {
+                            flexDirection: 'row',
+                            justifyContent: 'flex-start',
+                        },
                     ]}
                 >
+                    {deeplyNestedScreen && (
+                        <TouchableOpacity
+                            style={{
+                                width: headerSize,
+                                height: '100%',
+                                justifyContent: 'center',
+                            }}
+                            onPress={navigation.goBack}
+                        >
+                            <Icon
+                                name="arrowleft"
+                                size={fontFactor * wp(8.5)}
+                                color="#fff"
+                            />
+                        </TouchableOpacity>
+                    )}
                     <Text
                         style={[
-                            styles.headerText,
-                            {
+                            !deeplyNestedScreen && styles.headerText,
+                            !deeplyNestedScreen && {
                                 fontSize: fontFactor * wp(8.5),
                                 lineHeight: fontFactor * wp(10.81),
                             },
+                            deeplyNestedScreen && {
+                                fontSize: fontFactor * wp(6.8),
+                                lineHeight: fontFactor * wp(8.65),
+                            },
+                            deeplyNestedScreen &&
+                                styles.deeplyNestedScreenHeaderText,
+                            deeplyNestedScreen && { alignSelf: 'center' },
                         ]}
                     >
                         {heading}
@@ -97,7 +143,11 @@ function SubScreenTemplate({
                 renderItem={({ item }) => item.data}
                 keyExtractor={(item, index) => 'keyExtractor' + index}
                 ref={scrollRef}
-                keyboardDismissMode="on-drag"
+                // keyboardDismissMode="on-drag"
+                keyboardDismissMode={Platform.select({
+                    ios: 'interactive',
+                    android: 'on-drag',
+                })}
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled
             />
@@ -116,6 +166,8 @@ SubScreenTemplate.propTypes = {
     updateScrollViewOffset: PropTypes.func,
     children: PropTypes.object,
     noHeader: PropTypes.bool,
+    updateContentSize: PropTypes.func,
+    deeplyNestedScreen: PropTypes.bool,
 };
 
 const styles = StyleSheet.create({
@@ -136,6 +188,10 @@ const styles = StyleSheet.create({
     headerText: {
         color: '#fff',
         fontFamily: 'Poppins_600SemiBold',
+    },
+    deeplyNestedScreenHeaderText: {
+        color: '#fff',
+        fontFamily: 'Poppins_500Medium',
     },
 });
 

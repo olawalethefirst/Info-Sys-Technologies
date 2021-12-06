@@ -34,7 +34,7 @@
             "package": "com.technologies.infosys",
             "versionCode": 1,
             "googleServicesFile": "./google-services.json",
-            "softwareKeyboardLayoutMode": "pan"
+            "softwareKeyboardLayoutMode": "resize"
         },
         "web": {
             "favicon": "./assets/images/favicon.png"

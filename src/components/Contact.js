@@ -12,8 +12,8 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor, scrollRef }) {
             style={[
                 styles.container,
                 {
-                    minHeight: bodyHeight - headerSize - statusBarHeight,
                     paddingHorizontal: margin,
+                    flexGrow: 1,
                 },
             ]}
         >

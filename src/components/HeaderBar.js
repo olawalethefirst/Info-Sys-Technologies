@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, StatusBar } from 'react-native';
+import { View, StatusBar, Platform } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
 import HeaderLogo from './HeaderLogo';
 import MenuIcon from './MenuIcon';
 import PropTypes from 'prop-types';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Constants from 'expo-constants';
 
 function HeaderBar({ headerSize, margin, fontFactor }) {
     const headerWidth = wp(100);
@@ -23,7 +23,7 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
             shadowOpacity: 0.25,
             shadowRadius: wp(0.5) * fontFactor,
             elevation: wp(2) * fontFactor,
-            zIndex: 10,
+            // zIndex: 10,
         },
         headerBar: {
             flex: 1,
@@ -40,11 +40,18 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
             flex: headerSize,
         },
     };
-    // console.log('menuIconWidth', menuIconWidth);
+    const { statusBarHeight } = Constants;
 
     return (
         <View style={{ backgroundColor: '#1A91D7' }}>
-            <SafeAreaView>
+            <View
+                style={{
+                    marginTop: Platform.select({
+                        ios: statusBarHeight,
+                        android: 0,
+                    }),
+                }}
+            >
                 <View style={[styles.headerWithStatusBar]}>
                     <View style={[styles.headerBar]}>
                         <StatusBar
@@ -67,7 +74,7 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
                         </View>
                     </View>
                 </View>
-            </SafeAreaView>
+            </View>
         </View>
     );
 }

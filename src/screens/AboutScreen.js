@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { connect } from 'react-redux';
 import SubScreenTemplate from '../components/SubScreenTemplate';
@@ -9,6 +9,7 @@ import Delivery from '../components/Delivery';
 import Footer from '../components/Footer';
 import PropTypes from 'prop-types';
 import scrollToTop from '../helperFunctions/scrollToTop';
+import { CommonActions } from '@react-navigation/native';
 
 function AboutScreen({
     margin,
@@ -16,6 +17,7 @@ function AboutScreen({
     fontFactor,
     deviceWidthClass,
     headerSize,
+    navigation,
 }) {
     const columnMode = deviceWidthClass === 'type1';
     const scrollRef = useRef(null);
@@ -83,6 +85,19 @@ function AboutScreen({
             ),
         },
     ];
+    useEffect(() => {
+        navigation.dispatch((state) => {
+            const routes = state.routes.filter((r) => r.name !== 'Navigation');
+            return CommonActions.reset({
+                ...state,
+                routes,
+                index: routes.length - 1,
+            });
+        });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigation]);
+
     return (
         <SafeAreaView style={styles.container}>
             <SubScreenTemplate
@@ -104,6 +119,7 @@ AboutScreen.propTypes = {
     fontFactor: PropTypes.number,
     deviceWidthClass: PropTypes.string,
     headerSize: PropTypes.number,
+    navigation: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

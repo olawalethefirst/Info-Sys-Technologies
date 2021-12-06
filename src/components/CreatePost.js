@@ -168,7 +168,11 @@ const CreatePost = ({
                         >
                             <ScrollView
                                 showsVerticalScrollIndicator={false}
-                                keyboardDismissMode={'on-drag'}
+                                // keyboardDismissMode={'on-drag'}
+                                keyboardDismissMode={Platform.select({
+                                    ios: 'interactive',
+                                    android: 'on-drag',
+                                })}
                                 ref={scrollViewRef}
                                 bounces={false}
                                 contentContainerStyle={{

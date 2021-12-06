@@ -12,6 +12,7 @@ import ComputerMaintenance from './ComputerMaintenance';
 import Icon from 'react-native-vector-icons/Entypo';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/native';
 
 const PostMini = ({ fontFactor, title, timeStamp, likes }) => {
     const platformSpecificPostIconWidth =
@@ -38,12 +39,19 @@ const PostMini = ({ fontFactor, title, timeStamp, likes }) => {
         inputRange: [0, 1],
         outputRange: ['#000000', '#ffffff'],
     });
+    const navigation = useNavigation();
 
     return (
         <Pressable
             onPressIn={onPressIn}
             onPressOut={onPressOut}
             style={{ marginBottom: fontFactor * wp(5) }}
+            onPress={() =>
+                navigation.navigate('ForumStack', {
+                    screen: 'Post',
+                    params: {},
+                })
+            }
         >
             <Animated.View
                 style={[

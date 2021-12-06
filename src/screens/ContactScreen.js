@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import SubScreenTemplate from '../components/SubScreenTemplate';
 import { connect } from 'react-redux';
@@ -7,8 +7,15 @@ import scrollToTop from '../helperFunctions/scrollToTop';
 import Contact from '../components/Contact';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
+import { CommonActions } from '@react-navigation/native';
 
-function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
+function ContactScreen({
+    margin,
+    headerSize,
+    fontFactor,
+    bodyHeight,
+    navigation,
+}) {
     const scrollRef = useRef(null);
     const { statusBarHeight } = Constants;
 
@@ -41,6 +48,18 @@ function ContactScreen({ margin, headerSize, fontFactor, bodyHeight }) {
             ),
         },
     ];
+    useEffect(() => {
+        navigation.dispatch((state) => {
+            const routes = state.routes.filter((r) => r.name !== 'Navigation');
+            return CommonActions.reset({
+                ...state,
+                routes,
+                index: routes.length - 1,
+            });
+        });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigation]);
 
     return (
         <KeyboardAvoidingView
@@ -69,6 +88,7 @@ ContactScreen.propTypes = {
     fontFactor: PropTypes.number,
     bodyHeight: PropTypes.number,
     contactScrollViewOffset: PropTypes.number,
+    navigation: PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({

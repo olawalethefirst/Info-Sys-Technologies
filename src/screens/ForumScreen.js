@@ -1,6 +1,12 @@
 import Constants from 'expo-constants';
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, SafeAreaView, Button } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    SafeAreaView,
+    Button,
+    Dimensions,
+} from 'react-native';
 import SubScreenTemplate from '../components/SubScreenTemplate';
 import Forum from '../components/Forum';
 import Footer from '../components/Footer';
@@ -9,6 +15,7 @@ import { connect } from 'react-redux';
 import updateUser from '../redux/actions/updateUser';
 import scrollToTop from '../helperFunctions/scrollToTop';
 import AddPost from '../components/AddPost';
+import { CommonActions } from '@react-navigation/native';
 // import { LogBox } from 'react-native';
 // LogBox.ignoreAllLogs();
 
@@ -22,6 +29,7 @@ function ForumScreen({
     headerSize,
     bodyHeight,
     deviceWidthClass,
+    navigation,
 }) {
     useEffect(() => {
         firebase.auth().onAuthStateChanged((user) => {
@@ -66,8 +74,21 @@ function ForumScreen({
         },
     ];
 
+    useEffect(() => {
+        navigation.getParent()?.dispatch((state) => {
+            const routes = state.routes.filter((r) => r.name !== 'Navigation');
+            return CommonActions.reset({
+                ...state,
+                routes,
+                index: routes.length - 1,
+            });
+        });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigation]);
+
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ height: bodyHeight }}>
             <SubScreenTemplate
                 margin={margin}
                 fontFactor={fontFactor}

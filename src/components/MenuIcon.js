@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, Pressable, Animated, Platform } from 'react-native';
+import { StyleSheet, Pressable, Animated, Platform, View } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
-import ModalScreen from '../screens/ModalScreen';
 import PropTypes from 'prop-types';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import ModalCloseIcon from '../components/ModalCloseIcon';
+import Icon from 'react-native-vector-icons/Feather';
 
 export default function MenuIcon({ width, height, fontFactor }) {
     const svgWidth = 0.4 * width;
@@ -24,11 +26,18 @@ export default function MenuIcon({ width, height, fontFactor }) {
         setShowModal(false);
     };
     const isWeb = Platform.OS === 'web';
+    const navigation = useNavigation();
+    const route = useRoute();
+    const isNavigationScreen = route.name === 'Navigation';
 
     return (
         <Pressable
             style={[{ width: width, height: height }, styles.container]}
-            onPress={() => setShowModal(!showModal)}
+            onPress={() =>
+                isNavigationScreen
+                    ? navigation.goBack()
+                    : navigation.navigate('Navigation')
+            }
             onPressIn={onPressModalIconIn}
             onPressOut={onPressModalIconOut}
         >
@@ -40,45 +49,41 @@ export default function MenuIcon({ width, height, fontFactor }) {
                     },
                 ]}
             >
-                {!isWeb && (
-                    <ModalScreen
-                        visible={showModal}
-                        closeModal={closeModal}
-                        iconWidth={width}
-                        iconHeight={height}
-                        fontFactor={fontFactor}
-                    />
+                {!isNavigationScreen && (
+                    <Svg
+                        width={svgWidth}
+                        viewBox="0 0 200 125"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={styles.icon}
+                    >
+                        <Rect
+                            x={25}
+                            width={150}
+                            height={15}
+                            rx={5}
+                            fill="#161B26"
+                        />
+                        <Rect
+                            x={25}
+                            y={110}
+                            width={150}
+                            height={15}
+                            rx={5}
+                            fill="#161B26"
+                        />
+                        <Rect
+                            y={55}
+                            width={200}
+                            height={15}
+                            rx={5}
+                            fill="#161B26"
+                        />
+                    </Svg>
                 )}
-                <Svg
-                    width={svgWidth}
-                    viewBox="0 0 200 125"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={styles.icon}
-                >
-                    <Rect
-                        x={25}
-                        width={150}
-                        height={15}
-                        rx={5}
-                        fill="#161B26"
-                    />
-                    <Rect
-                        x={25}
-                        y={110}
-                        width={150}
-                        height={15}
-                        rx={5}
-                        fill="#161B26"
-                    />
-                    <Rect
-                        y={55}
-                        width={200}
-                        height={15}
-                        rx={5}
-                        fill="#161B26"
-                    />
-                </Svg>
+                {isNavigationScreen && (
+                    <Icon name="x" color={'black'} size={0.4 * width} />
+                )}
             </Animated.View>
         </Pressable>
     );

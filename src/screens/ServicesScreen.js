@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { connect } from 'react-redux';
 import SubScreenTemplate from '../components/SubScreenTemplate';
@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import Services from '../components/Services';
 import PropTypes from 'prop-types';
 import updateServicesScrollViewOffset from '../redux/actions/updateServicesScrollViewOffset';
+import { CommonActions } from '@react-navigation/native';
 
 function ServicesScreen({
     margin,
@@ -13,6 +14,7 @@ function ServicesScreen({
     headerSize,
     bodyHeight,
     updateServicesScrollViewOffset,
+    navigation,
 }) {
     const pagerRef = useRef(null);
     const scrollRef = useRef(null);
@@ -53,6 +55,19 @@ function ServicesScreen({
         },
     ];
 
+    useEffect(() => {
+        navigation.dispatch((state) => {
+            const routes = state.routes.filter((r) => r.name !== 'Navigation');
+            return CommonActions.reset({
+                ...state,
+                routes,
+                index: routes.length - 1,
+            });
+        });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigation]);
+
     return (
         <SafeAreaView style={styles.container}>
             <SubScreenTemplate
@@ -76,6 +91,7 @@ ServicesScreen.propTypes = {
     headerSize: PropTypes.number,
     bodyHeight: PropTypes.number,
     updateServicesScrollViewOffset: PropTypes.func,
+    navigation: PropTypes.objects,
 };
 
 const styles = StyleSheet.create({
