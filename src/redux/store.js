@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 const persistConfig = {
     key: 'root',
     storage,
-    blacklist: ['forumState', 'settingsTempState'],
+    blacklist: ['settingsTempState'],
 };
 
 const persistedReducer = persistReducer(persistConfig, mainReducer);

@@ -54,7 +54,7 @@ function MainNavigator({ headerSize }) {
                         headerStyle: {
                             height: getDefaultHeaderHeight(
                                 { height, width },
-                                true,
+                                false,
                                 statusBarHeight
                             ),
                         },

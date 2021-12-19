@@ -70,7 +70,6 @@ function PostScreen({
     ];
     const { statusBarHeight } = Constants;
     const toggleCallToAuth = () => {
-        console.log('triggered');
         setCallToAuthModalVisible((oldState) => !oldState);
     };
 
@@ -114,7 +113,6 @@ function PostScreen({
                                 left: 0,
                                 right: 0,
                                 backgroundColor: '#161B26',
-                                justifyContent: 'center',
                             },
                             {
                                 paddingHorizontal: margin,
@@ -171,16 +169,12 @@ function PostScreen({
                         onScroll={handleScroll}
                         contentContainerStyle={{
                             paddingVertical: headerSize,
-                            // justifyContent: 'flex-start',
                         }}
                         data={postData}
                         bounces={false}
                         renderItem={({ item, index }) => {
                             return (
                                 <PostDetail
-                                    margin={margin}
-                                    fontFactor={fontFactor}
-                                    headerSize={headerSize}
                                     {...item}
                                     lastComment={index === postData.length - 1}
                                     toggleCallToAuth={toggleCallToAuth}
@@ -203,6 +197,7 @@ function PostScreen({
                         visible={callToAuthModalVisible}
                         toggleAuth={toggleCallToAuth}
                         margin={margin}
+                        fontFactor={fontFactor}
                     />
                 </SafeAreaView>
             </KeyboardAvoidingView>

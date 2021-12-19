@@ -3,7 +3,7 @@ import Svg, { Defs, LinearGradient, Stop, Path } from 'react-native-svg';
 import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 
-function HeaderLogo({ margin, fontFactor }) {
+function HeaderLogo({ margin, fontFactor, headerSize }) {
     return (
         <View
             style={[
@@ -21,8 +21,12 @@ function HeaderLogo({ margin, fontFactor }) {
                 imageRendering="optimizeQuality"
                 fillRule="evenodd"
                 clipRule="evenodd"
-                viewBox="0 0 50000000 7954539"
-                style={{ flex: 1 }}
+                viewBox="200000 0 50000000 7954539"
+                style={{
+                    height: 0.6 * headerSize,
+                    aspectRatio: (50000000 - 200000) / 7954539,
+                    width: 0.6 * headerSize * ((50000000 - 200000) / 7954539),
+                }}
             >
                 <Defs>
                     <LinearGradient
@@ -71,6 +75,7 @@ function HeaderLogo({ margin, fontFactor }) {
 HeaderLogo.propTypes = {
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
+    headerSize: PropTypes.number,
 };
 
 const styles = StyleSheet.create({

@@ -6,6 +6,7 @@ import {
     SafeAreaView,
     Button,
     Dimensions,
+    Platform,
 } from 'react-native';
 import SubScreenTemplate from '../components/SubScreenTemplate';
 import Forum from '../components/Forum';
@@ -30,17 +31,22 @@ function ForumScreen({
     bodyHeight,
     deviceWidthClass,
     navigation,
+    updateUser,
 }) {
     useEffect(() => {
         firebase.auth().onAuthStateChanged((user) => {
-            updateUser(user);
+            if (user) {
+                updateUser(user);
+            } else {
+                updateUser(null);
+            }
         });
-    });
+    }, [updateUser]);
     const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
     const toggleModal = () => {
         setCreatePostModalVisible((prevState) => !prevState);
     };
-
+    const { statusBarHeight } = Constants;
     const scrollRef = useRef(null);
     const sectionComponents = [
         {
@@ -55,6 +61,7 @@ function ForumScreen({
                     createPostModalVisible={createPostModalVisible}
                     toggleModal={toggleModal}
                     key="0"
+                    user={user}
                 />
             ),
         },
@@ -88,7 +95,11 @@ function ForumScreen({
     }, [navigation]);
 
     return (
-        <SafeAreaView style={{ height: bodyHeight }}>
+        <SafeAreaView
+            style={{
+                height: bodyHeight,
+            }}
+        >
             <SubScreenTemplate
                 margin={margin}
                 fontFactor={fontFactor}

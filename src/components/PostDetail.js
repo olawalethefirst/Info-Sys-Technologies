@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Pressable, Keyboard } from 'react-native';
 import Post from './Post';
 import Comment from './Comment';
+import { connect } from 'react-redux';
 
 const PostDetail = ({
     margin,
@@ -16,6 +17,8 @@ const PostDetail = ({
     lastComment,
     headerSize,
     toggleCallToAuth,
+    deviceWidthClass,
+    user,
 }) => {
     return (
         <Pressable
@@ -32,6 +35,8 @@ const PostDetail = ({
                     title={title}
                     body={body}
                     toggleCallToAuth={toggleCallToAuth}
+                    deviceWidthClass={deviceWidthClass}
+                    user={user}
                 />
             )}
             {comment && (
@@ -41,12 +46,20 @@ const PostDetail = ({
                     username={username}
                     timestamp={timestamp}
                     comment={comment}
+                    deviceWidthClass={deviceWidthClass}
+                    user={user}
+                    toggleCallToAuth={toggleCallToAuth}
                 />
             )}
         </Pressable>
     );
 };
 
-export default PostDetail;
+const mapStateToProps = ({
+    forumState: { user },
+    settingsState: { deviceWidthClass, headerSize, fontFactor, margin },
+}) => ({ deviceWidthClass, headerSize, fontFactor, margin, user });
+
+export default connect(mapStateToProps)(PostDetail);
 
 const styles = StyleSheet.create({});

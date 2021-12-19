@@ -91,7 +91,7 @@ ServicesScreen.propTypes = {
     headerSize: PropTypes.number,
     bodyHeight: PropTypes.number,
     updateServicesScrollViewOffset: PropTypes.func,
-    navigation: PropTypes.objects,
+    navigation: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

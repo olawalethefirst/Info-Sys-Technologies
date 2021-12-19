@@ -213,6 +213,7 @@ const CreatePost = ({
                                                     onBlur,
                                                     value,
                                                 },
+                                                fieldState: { error },
                                             }) => (
                                                 <View>
                                                     <AnimatedTextInput
@@ -225,8 +226,7 @@ const CreatePost = ({
                                                             );
                                                             onBlur();
                                                         }}
-                                                        onFocus={(e) => {
-                                                            e.preventDefault();
+                                                        onFocus={() => {
                                                             onFocusInput(
                                                                 postTitleAnimatedValue
                                                             );
@@ -259,10 +259,9 @@ const CreatePost = ({
 
                                                     <Text
                                                         style={{
-                                                            opacity:
-                                                                errors.postTitle
-                                                                    ? 1
-                                                                    : 0,
+                                                            opacity: error
+                                                                ? 1
+                                                                : 0,
                                                             fontSize:
                                                                 fontFactor *
                                                                 wp(4),
@@ -295,6 +294,7 @@ const CreatePost = ({
                                                     value,
                                                     ref,
                                                 },
+                                                fieldState: { error },
                                             }) => (
                                                 <View>
                                                     <ModalSelector
@@ -438,10 +438,9 @@ const CreatePost = ({
 
                                                     <Text
                                                         style={{
-                                                            opacity:
-                                                                errors.postCategory
-                                                                    ? 1
-                                                                    : 0,
+                                                            opacity: error
+                                                                ? 1
+                                                                : 0,
                                                             fontSize:
                                                                 fontFactor *
                                                                 wp(4),
@@ -475,6 +474,7 @@ const CreatePost = ({
                                                     onBlur,
                                                     value,
                                                 },
+                                                fieldState: { error },
                                             }) => (
                                                 <View
                                                     onLayout={(e) => {
@@ -574,10 +574,9 @@ const CreatePost = ({
 
                                                     <Text
                                                         style={{
-                                                            opacity:
-                                                                errors.postBody
-                                                                    ? 1
-                                                                    : 0,
+                                                            opacity: error
+                                                                ? 1
+                                                                : 0,
                                                             fontSize:
                                                                 fontFactor *
                                                                 wp(4),
@@ -612,7 +611,6 @@ const CreatePost = ({
                                                     !!Object.keys(errors).length
                                                 }
                                                 onPressIn={() => {
-                                                    console.log('works');
                                                     onPressInButton(
                                                         createPostButtonAnimatedValue
                                                     );

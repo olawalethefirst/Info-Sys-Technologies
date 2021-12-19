@@ -57,7 +57,6 @@ function InputField({
 
     useEffect(() => {
         if (mulitLineInputRef?.current && contactFormRef?.current) {
-            console.log('passed');
             mulitLineInputRef.current.measureLayout(
                 contactFormRef.current,
                 (left, top, height) => {
@@ -143,9 +142,9 @@ function InputField({
                 >
                     {error &&
                         `${
-                            error.type === 'required'
-                                ? 'This is important'
-                                : 'Incorrect format'
+                            error.type === 'pattern'
+                                ? 'Incorrect format'
+                                : 'This is important'
                         }`}
                     {!error && subParagraph}
                 </Text>

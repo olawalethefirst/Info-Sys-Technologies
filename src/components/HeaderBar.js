@@ -35,6 +35,8 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
         },
         headerLogo: {
             flex: headerLogoWidth,
+            alignItems: 'flex-start',
+            justifyContent: 'center',
         },
         menuIcon: {
             flex: headerSize,
@@ -60,17 +62,21 @@ function HeaderBar({ headerSize, margin, fontFactor }) {
                             animated={true}
                         />
                         <View style={styles.container}>
-                            <HeaderLogo
-                                style={styles.headerLogo}
-                                fontFactor={fontFactor}
-                                margin={margin}
-                            />
-                            <MenuIcon
-                                style={styles.menuIcon}
-                                width={headerSize}
-                                height={headerSize}
-                                fontFactor={fontFactor}
-                            />
+                            <View style={styles.headerLogo}>
+                                <HeaderLogo
+                                    fontFactor={fontFactor}
+                                    margin={margin}
+                                    headerSize={headerSize}
+                                />
+                            </View>
+
+                            <View style={styles.menuIcon}>
+                                <MenuIcon
+                                    width={headerSize}
+                                    height={headerSize}
+                                    fontFactor={fontFactor}
+                                />
+                            </View>
                         </View>
                     </View>
                 </View>

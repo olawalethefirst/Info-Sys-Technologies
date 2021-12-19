@@ -2,14 +2,12 @@ import {
     UPDATE_USER_STATE,
     UPDATE_ACTIVE_FORUM_ACTION,
     RESET_ACTIVE_FORUM_ACTION,
-    UPDATE_NEW_USER,
 } from '../actions/actionTypes';
 
 // inital State
 const initialState = {
     user: null,
     activeForumAction: null,
-    newUser: false,
 };
 
 export default function forumReducer(state = initialState, action) {
@@ -28,11 +26,6 @@ export default function forumReducer(state = initialState, action) {
             return {
                 ...state,
                 activeForumAction: null,
-            };
-        case UPDATE_NEW_USER:
-            return {
-                ...state,
-                newUser: action.payload,
             };
         default:
             return state;

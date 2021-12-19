@@ -74,19 +74,14 @@ function ForumMini({ margin, fontFactor, bodyHeight }) {
                 </Text>
                 <MarginVertical size={4} />
             </ImageBackground>
-            <View
-                style={[
-                    styles.miniContainer,
-                    { paddingHorizontal: margin, minHeight: bodyHeight / 3 },
-                ]}
-            >
+            <View style={[styles.miniContainer, { paddingHorizontal: margin }]}>
                 <View
                     style={[
                         styles.microContainer,
                         { paddingHorizontal: 10 / fontFactor },
                     ]}
                 >
-                    <MarginVertical size={2} />
+                    <MarginVertical size={4} />
 
                     <Text
                         style={[
@@ -100,6 +95,7 @@ function ForumMini({ margin, fontFactor, bodyHeight }) {
                         You will enjoy conversations in areas like IT, Science,
                         History or Business, amongst others.
                     </Text>
+                    <MarginVertical size={4} />
                 </View>
                 <View style={{ flex: fontFactor * 0.02 }} />
                 <View

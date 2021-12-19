@@ -1,77 +1,94 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import * as Google from 'expo-auth-session/providers/google';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import authWithCredentialAsync from '../helperFunctions/authWithCredentialAsync';
 import createCredential from '../helperFunctions/createCredential';
-import { useDispatch } from 'react-redux';
-import updateNewUser from '../redux/actions/updateNewUser';
 import { clientId } from '../../config';
+import { useNavigation } from '@react-navigation/native';
 
 export default function useGoogleAuth(native) {
     //Universal States
     const [modalVisible, setModalVisible] = useState(false);
     const [activityIndicator, setActivityIndicator] = useState(false);
     const [credential, setCredential] = useState(null);
-    const [authorized, setAuthorized] = useState(false);
     const [error, setError] = useState('');
-    const dispatch = useDispatch();
+    const [retryAbleError, setRetryAbleError] = useState(false);
     const firebaseNetworkError =
         'A network error (such as timeout, interrupted connection or unreachable host) has occurred.';
+    const navigation = useNavigation();
 
     //Universal Functions
+    // const navigate = useCallback(
+    //     () => setTimeout(() => navigation.goBack(), 600),
+    //     [navigation]
+    // );
+    const resetError = () => setError('');
     const activateModal = () => {
+        resetError();
         setActivityIndicator(true);
         setModalVisible(true);
     };
-    const deactivateModal = () => {
+    const deactivateModal = useCallback(() => {
         setActivityIndicator(false);
-        setTimeout(() => setModalVisible(false), 400);
-    };
+        setTimeout(() => {
+            setModalVisible(false);
+        }, 350);
+    }, []);
     const persistModalWithError = () => {
         setActivityIndicator(false);
     };
     const dismissModal = () => {
         setModalVisible(false);
     };
-    const retryFirebaseAuth = () => {
-        setError('');
+    const retryAuth = () => {
+        resetError();
         setActivityIndicator(true);
         authWithCredentialAsync(credential)
-            .then((res) => {
-                dispatch(updateNewUser(res.additionalUserInfo.isNewUser));
-                setAuthorized(true);
+            .then(() => {
                 deactivateModal();
+                // navigate();
             })
             .catch((e) => {
                 if (e.message === firebaseNetworkError) {
-                    persistModalWithError();
                     setError(e.message);
+                    persistModalWithError();
                 } else {
                     deactivateModal();
                 }
             });
     };
-    const syncGoogleAuthWithFirebaseAsync = (credential) => {
-        authWithCredentialAsync(credential)
-            .then((res) => {
-                dispatch(updateNewUser(res.additionalUserInfo.isNewUser));
-                setAuthorized(true);
-                deactivateModal();
-            })
-            .catch((e) => {
-                if (e.message === firebaseNetworkError) {
-                    persistModalWithError();
-                    setError(e.message);
-                } else {
+    const syncGoogleAuthWithFirebaseAsync = useCallback(
+        (credential) => {
+            authWithCredentialAsync(credential)
+                .then(() => {
                     deactivateModal();
-                }
-            });
-    };
+                    // navigate();
+                })
+                .catch((e) => {
+                    if (e.message === firebaseNetworkError) {
+                        persistModalWithError();
+                        setError(e.message);
+                    } else {
+                        deactivateModal();
+                    }
+                });
+        },
+        [
+            deactivateModal, //navigate
+        ]
+    );
+    const initiatePromptAsync = () => promptAsync({ useProxy: true });
+
+    //RetryAble Error Update
+    useEffect(() => setRetryAbleError(error === firebaseNetworkError), [error]);
 
     // Expo Approach
-    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-        clientId: clientId.googleClientID,
-    });
+    const [request, response, promptAsync] = !native
+        ? // eslint-disable-next-line react-hooks/rules-of-hooks
+          Google.useIdTokenAuthRequest({
+              clientId: clientId.googleClientID,
+          })
+        : [null, null, null];
 
     !native &&
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -84,8 +101,7 @@ export default function useGoogleAuth(native) {
             } else if (response) {
                 deactivateModal();
             }
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [response]);
+        }, [response, syncGoogleAuthWithFirebaseAsync, deactivateModal]);
 
     // Native Approach
     const [initState, setInitState] = useState(null);
@@ -101,7 +117,8 @@ export default function useGoogleAuth(native) {
     const authenticateUserAsync = async () => {
         try {
             if (!initState) {
-                await initAsync();
+                await GoogleSignIn.initAsync();
+                setInitState(true);
             }
             try {
                 await GoogleSignIn.askForPlayServicesAsync();
@@ -130,34 +147,19 @@ export default function useGoogleAuth(native) {
             initAsync();
         }, []);
 
-    if (native) {
-        return [
-            activateModal,
-            modalVisible,
-            activityIndicator,
-            authorized,
-            error,
-            authenticateUserAsync,
-            retryFirebaseAuth,
-            dismissModal,
-            firebaseNetworkError,
-            setError,
-            setAuthorized,
-        ];
-    } else {
-        return [
-            activateModal,
-            modalVisible,
-            activityIndicator,
-            authorized,
-            error,
-            request,
-            promptAsync,
-            retryFirebaseAuth,
-            dismissModal,
-            firebaseNetworkError,
-            setError,
-            setAuthorized,
-        ];
-    }
+    const extraArray = native
+        ? [authenticateUserAsync]
+        : [request, initiatePromptAsync];
+
+    return [
+        activateModal, //1
+        modalVisible, //2
+        activityIndicator, //3
+        error, //4
+        retryAuth, //5
+        dismissModal, //6
+        resetError, //7
+        retryAbleError, //8
+        ...extraArray,
+    ];
 }
