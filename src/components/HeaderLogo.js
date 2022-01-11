@@ -1,19 +1,22 @@
 import React from 'react';
 import Svg, { Defs, LinearGradient, Stop, Path } from 'react-native-svg';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import PropTypes from 'prop-types';
 
-function HeaderLogo({ margin, fontFactor, headerSize }) {
+function HeaderLogo({ headerSize }) {
+    const svgWidth =
+        Platform.OS === 'web'
+            ? {
+                  //width of logo is calculated using existing aspect ratio of SVG image and known height of header Logo(70% of headerSize)
+                  width: (headerSize * 0.7(50000000 - 200000)) / 7954539,
+              }
+            : {
+                  // viewBox side ratio is used as aspectRatio to display entire svg while retaining original aspect ratio
+                  aspectRatio: (50000000 - 200000) / 7954539,
+              };
+
     return (
-        <View
-            style={[
-                styles.container,
-                {
-                    marginLeft: margin,
-                    marginRight: (margin * 4) / fontFactor,
-                },
-            ]}
-        >
+        <View style={[styles.container]}>
             <Svg
                 xmlns="http://www.w3.org/2000/svg"
                 shapeRendering="geometricPrecision"
@@ -23,9 +26,9 @@ function HeaderLogo({ margin, fontFactor, headerSize }) {
                 clipRule="evenodd"
                 viewBox="200000 0 50000000 7954539"
                 style={{
-                    height: 0.6 * headerSize,
-                    aspectRatio: (50000000 - 200000) / 7954539,
-                    width: 0.6 * headerSize * ((50000000 - 200000) / 7954539),
+                    height: '70%',
+                    // aspectRatio: (50000000 - 200000) / 7954539,
+                    ...svgWidth,
                 }}
             >
                 <Defs>
@@ -73,8 +76,6 @@ function HeaderLogo({ margin, fontFactor, headerSize }) {
 }
 
 HeaderLogo.propTypes = {
-    margin: PropTypes.number,
-    fontFactor: PropTypes.number,
     headerSize: PropTypes.number,
 };
 
@@ -82,6 +83,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
+        alignItems: 'flex-start',
     },
 });
 

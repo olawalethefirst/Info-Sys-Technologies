@@ -16,9 +16,8 @@ import {
 import DancingDownArrow from './DancingDownArrow';
 import SlideIndicator from './SlideIndicator';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 
-function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
+function Services({  headerSize, fontFactor, pagerRef }) {
     const arrowWidth = 0.25 * headerSize;
     const { width } = Dimensions.get('window');
     const contentContainerWidth = width - 2 * headerSize;
@@ -45,16 +44,13 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
             useNativeDriver: true,
         })
     ).current;
-    const servicesScrollViewOffset = useSelector(
-        ({ settingsState: { servicesScrollViewOffset } }) =>
-            servicesScrollViewOffset
-    );
+    let key = 0;
 
     return (
         <SafeAreaView
             style={[
                 {
-                    height: bodyHeight,
+                    flex: 1,
                 },
             ]}
         >
@@ -63,14 +59,12 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
                 initialPage={0}
                 orientation="vertical"
                 ref={pagerRef}
-                scrollEnabled={servicesScrollViewOffset === 0}
                 onPageSelected={({ nativeEvent: { position } }) =>
                     updatePage(position)
                 }
                 overScrollMode="never"
-                bounces={false}
             >
-                <View collapsable={false}>
+                <View key={`${key++}`} collapsable={false}>
                     <ServicesIntro
                         fontFactor={fontFactor}
                         arrowWidth={arrowWidth}
@@ -78,7 +72,7 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
                         contentContainerWidth={contentContainerWidth}
                     />
                 </View>
-                <View>
+                <View  key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
                         details={generalInformationTechnologyConsulting}
@@ -93,7 +87,7 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
                         fadeOut={fadeOut}
                     />
                 </View>
-                <View>
+                <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
                         details={accountingSoftwareAndFinancialManagementSystem}
@@ -108,7 +102,7 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
                         fadeOut={fadeOut}
                     />
                 </View>
-                <View>
+                <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
                         details={internalControlAndComplianceAudit}
@@ -123,7 +117,7 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
                         fadeOut={fadeOut}
                     />
                 </View>
-                <View>
+                <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
                         details={cloudAccounting}
@@ -138,7 +132,7 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
                         fadeOut={fadeOut}
                     />
                 </View>
-                <View>
+                <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
                         details={technologyAndManagementDevelopmentTraining}
@@ -153,7 +147,7 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
                         fadeOut={fadeOut}
                     />
                 </View>
-                <View>
+                <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
                         details={feasibilityAndBusinessPlanning}
@@ -168,7 +162,7 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
                         fadeOut={fadeOut}
                     />
                 </View>
-                <View>
+                <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
                         details={fixedAssetsManagement}
@@ -203,7 +197,6 @@ function Services({ bodyHeight, headerSize, fontFactor, pagerRef }) {
 }
 
 Services.propTypes = {
-    bodyHeight: PropTypes.number,
     headerSize: PropTypes.number,
     fontFactor: PropTypes.number,
     pagerRef: PropTypes.object,

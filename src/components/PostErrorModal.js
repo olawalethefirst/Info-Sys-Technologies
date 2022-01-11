@@ -1,38 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     Text,
     View,
-    // Modal,
-    TouchableOpacity,
+    Pressable,
     Platform,
+    TouchableOpacity,
 } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import Constants from 'expo-constants';
-import { useNavigation } from '@react-navigation/native';
+import { connect } from 'react-redux';
+import updateActiveForumAction from '../redux/actions/updateActiveForumAction';
 import Modal from 'react-native-modal';
+import Constants from 'expo-constants';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
+const PostErrorModal = ({
+    visible,
+    toggleModal,
+    retryCreatePost,
+    fontFactor,
+    margin,
+}) => {
     const { statusBarHeight } = Constants;
-    const navigation = useNavigation();
-    const [navigate, setNavigate] = useState(false);
-    const toggleNavigate = () => setNavigate((oldState) => !oldState);
 
     return (
         <Modal
             isVisible={visible}
-            animationIn="fadeIn"
-            animationOut="fadeOut"
-            animationOutTiming={navigate ? 150 : 300}
+            animationIn={'fadeIn'}
+            animationOut={'fadeOut'}
+            onBackdropPress={toggleModal}
+            onBackButtonPress={toggleModal}
             useNativeDriver
-            hideModalContentWhileAnimating
-            onModalHide={() => {
-                navigate &&
-                    navigation.navigate('Auth', {
-                        viewAnimatedValue: 0,
-                    });
-                navigate && toggleNavigate();
-            }}
+            hideModalContentWhileAnimating //animationType="slide" transparent={true}
             style={{
                 padding: 0,
                 margin: 0,
@@ -40,10 +38,8 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                     ios: statusBarHeight,
                     android: 0,
                 }),
-                justifyContent: 'center',
             }}
-            onBackButtonPress={toggleCallToAuth}
-            onBackdropPress={toggleCallToAuth}
+            backdropOpacity={0.7}
         >
             <View style={{ paddingHorizontal: margin }}>
                 <View
@@ -64,7 +60,7 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                             textAlign: 'center',
                         }}
                     >
-                        You need to be logged in to perform this action
+                        Posted failed
                     </Text>
                 </View>
 
@@ -78,9 +74,9 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                         marginBottom: wp(2.2),
                     }}
                     onPress={() => {
-                        toggleNavigate();
-                        toggleCallToAuth();
+                        retryCreatePost();
                     }}
+                    activeOpacity={0.7}
                 >
                     <Text
                         style={{
@@ -91,7 +87,7 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                             fontFamily: 'Karla_500Medium',
                         }}
                     >
-                        Join now
+                        Retry
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -103,7 +99,8 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                         borderRadius: wp(1.35),
                         marginBottom: wp(2.2),
                     }}
-                    onPress={toggleCallToAuth}
+                    onPress={toggleModal}
+                    activeOpacity={0.7}
                 >
                     <Text
                         style={{
@@ -122,6 +119,13 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
     );
 };
 
-export default CalltoAuth;
+// const mapStateToProps = ({
+//     forumTempState: { activeForumAction, createPostModalOpen },
+// }) => ({
+//     activeForumAction,
+//     createPostModalOpen,
+// });
+
+export default PostErrorModal;
 
 const styles = StyleSheet.create({});

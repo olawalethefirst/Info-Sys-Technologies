@@ -2,7 +2,6 @@ import { UPDATE_POST_SCREEN_OFFSET } from '../actions/actionTypes';
 
 const initialState = {
     postScreenOffset: 0,
-    keyboardHeight: 0,
 };
 
 export default function settingsTempReducer(state = initialState, action) {
@@ -10,6 +9,6 @@ export default function settingsTempReducer(state = initialState, action) {
         case UPDATE_POST_SCREEN_OFFSET:
             return { ...state, postScreenOffset: action.payload };
         default:
-            return state;
+            return { ...state };
     }
 }

@@ -53,7 +53,6 @@ const Auth = ({ minHeight, deviceWidthClass }) => {
     };
     const [containerHeight, setContainerHeight] = useState(minHeight);
     const columnMode = checkColumnMode(deviceWidthClass);
-    console.log(viewAnimatedValue);
 
     return (
         <View

@@ -2,11 +2,12 @@ import React from 'react';
 import { View } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-export default function MarginVertical({ size }) {
+function MarginVertical({ size, fontFactor }) {
     const styles = {
         container: {
-            height: size * wp(4.4),
+            height: size * wp(4.4) * fontFactor,
         },
     };
 
@@ -20,3 +21,9 @@ MarginVertical.propTypes = {
 MarginVertical.defaultProps = {
     size: 1,
 };
+const mapStateToProps = ({ settingsState: { fontFactor } }) => {
+    return {
+        fontFactor,
+    };
+};
+export default connect(mapStateToProps)(MarginVertical);

@@ -32,7 +32,7 @@ const useAuth = (createAccount) => {
         setActivityIndicator(false);
         setTimeout(() => {
             dismissModal();
-        }, 350);
+        }, 1000);
     };
     const persistAuthWithError = (message) => {
         setError(message);

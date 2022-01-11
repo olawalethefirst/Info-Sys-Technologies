@@ -71,6 +71,6 @@ export default function settingsReducer(state = initialState, action) {
         case UPDATE_VIEW_POST_FLATLIST_SCREEN_HEIGHT:
             return { ...state, viewPostFlatListScreenHeight: action.payload };
         default:
-            return state;
+            return { ...state };
     }
 }

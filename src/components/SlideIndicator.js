@@ -1,8 +1,7 @@
 import React from 'react';
 import { Animated } from 'react-native';
 import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
+    widthPercentageToDP as wp
 } from 'react-native-responsive-screen';
 import SliderCircle from './SliderCircle';
 import MarginVertical from './MarginVertical';
@@ -19,7 +18,7 @@ export default function SlideIndicator({
             style={{
                 position: 'absolute',
                 right: (menuIconWidth - size) / 2,
-                top: hp(10) + (wp(10.81) - wp(8.5)) / 2,
+                top: (4 *wp(4.4)) + (wp(10.81) - wp(8.5)) / 2, //header margin + (difference between header font size and header line height) 
                 opacity: animatedValue,
             }}
         >

@@ -1,12 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Constants from 'expo-constants';
 import ContactForm from '../components/ContactForm';
 import PropTypes from 'prop-types';
 
-function Contact({ bodyHeight, headerSize, margin, fontFactor, scrollRef }) {
-    const { statusBarHeight } = Constants;
-
+function Contact({ margin, fontFactor, scrollRef }) {
     return (
         <View
             style={[
@@ -23,7 +20,6 @@ function Contact({ bodyHeight, headerSize, margin, fontFactor, scrollRef }) {
 }
 
 Contact.propTypes = {
-    bodyHeight: PropTypes.number,
     headerSize: PropTypes.number,
     margin: PropTypes.number,
     fontFactor: PropTypes.number,

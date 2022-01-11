@@ -1,21 +1,13 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import SubScreenTemplate from '../components/SubScreenTemplate';
 import { connect } from 'react-redux';
-import Footer from '../components/Footer';
-import scrollToTop from '../helperFunctions/scrollToTop';
 import Contact from '../components/Contact';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
-import { CommonActions } from '@react-navigation/native';
+import {stickyHeaderHeight} from '../constants'
 
-function ContactScreen({
-    margin,
-    headerSize,
-    fontFactor,
-    bodyHeight,
-    navigation,
-}) {
+function ContactScreen({ margin, headerSize, fontFactor }) {
     const scrollRef = useRef(null);
     const { statusBarHeight } = Constants;
 
@@ -24,8 +16,6 @@ function ContactScreen({
             key: '0',
             data: (
                 <Contact
-                    bodyHeight={bodyHeight}
-                    headerSize={headerSize}
                     margin={margin}
                     fontFactor={fontFactor}
                     key="0"
@@ -33,40 +23,14 @@ function ContactScreen({
                 />
             ),
         },
-        {
-            key: '1',
-            data: (
-                <Footer
-                    headerSize={headerSize}
-                    darkMode={true}
-                    margin={margin}
-                    fontFactor={fontFactor}
-                    scrollToTop={scrollToTop}
-                    scrollRef={scrollRef}
-                    key="1"
-                />
-            ),
-        },
     ];
-    useEffect(() => {
-        navigation.dispatch((state) => {
-            const routes = state.routes.filter((r) => r.name !== 'Navigation');
-            return CommonActions.reset({
-                ...state,
-                routes,
-                index: routes.length - 1,
-            });
-        });
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigation]);
 
     return (
         <KeyboardAvoidingView
             behavior={Platform.select({ ios: 'padding', android: null })}
             style={styles.container}
             keyboardVerticalOffset={Platform.select({
-                ios: headerSize + statusBarHeight,
+                ios: stickyHeaderHeight + statusBarHeight,
                 android: null,
             })}
         >
@@ -76,7 +40,6 @@ function ContactScreen({
                 margin={margin}
                 fontFactor={fontFactor}
                 headerSize={headerSize}
-                scrollRef={scrollRef}
             />
         </KeyboardAvoidingView>
     );
@@ -86,16 +49,12 @@ ContactScreen.propTypes = {
     margin: PropTypes.number,
     headerSize: PropTypes.number,
     fontFactor: PropTypes.number,
-    bodyHeight: PropTypes.number,
-    contactScrollViewOffset: PropTypes.number,
-    navigation: PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
     margin: state.settingsState.margin,
     fontFactor: state.settingsState.fontFactor,
     headerSize: state.settingsState.headerSize,
-    bodyHeight: state.settingsState.bodyHeight,
 });
 
 export default connect(mapStateToProps)(ContactScreen);

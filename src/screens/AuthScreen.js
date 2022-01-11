@@ -20,6 +20,8 @@ import Footer from '../components/Footer';
 import scrollToTop from '../helperFunctions/scrollToTop';
 import Auth from '../components/Auth';
 import Constants from 'expo-constants';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import {stickyHeaderHeight} from '../constants'
 
 const AuthScreen = ({
     headerSize,
@@ -32,30 +34,21 @@ const AuthScreen = ({
 }) => {
     const scrollRef = useRef(null);
     const { statusBarHeight } = Constants;
+    const tabBarHeight = useBottomTabBarHeight();
+
     const sectionComponents = [
         {
             data: (
                 <Auth
-                    minHeight={bodyHeight - headerSize}
+                    minHeight={bodyHeight - tabBarHeight}
                     deviceWidthClass={deviceWidthClass}
-                />
-            ),
-        },
-        {
-            data: (
-                <Footer
-                    headerSize={headerSize}
-                    margin={margin}
-                    fontFactor={fontFactor}
-                    scrollToTop={scrollToTop}
-                    scrollRef={scrollRef}
                 />
             ),
         },
     ];
 
     useEffect(() => {
-        user ? setTimeout(() => navigation.goBack(), 600) : null;
+        user ? setTimeout(() => navigation.goBack(), 1200) : null;
     }, [user, navigation]);
 
     return (
@@ -63,7 +56,7 @@ const AuthScreen = ({
             style={{ flex: 1, backgroundColor: 'white' }}
             behavior={Platform.select({ ios: 'height', android: null })}
             keyboardVerticalOffset={Platform.select({
-                ios: headerSize + statusBarHeight,
+                ios: stickyHeaderHeight + statusBarHeight,
                 android: null,
             })}
         >

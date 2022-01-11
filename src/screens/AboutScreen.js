@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { connect } from 'react-redux';
 import SubScreenTemplate from '../components/SubScreenTemplate';
@@ -6,10 +6,8 @@ import BriefHistory from '../components/BriefHistory';
 import VisionAndMission from '../components/VisionAndMission';
 import Objectives from '../components/Objectives';
 import Delivery from '../components/Delivery';
-import Footer from '../components/Footer';
 import PropTypes from 'prop-types';
-import scrollToTop from '../helperFunctions/scrollToTop';
-import { CommonActions } from '@react-navigation/native';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 function AboutScreen({
     margin,
@@ -17,10 +15,10 @@ function AboutScreen({
     fontFactor,
     deviceWidthClass,
     headerSize,
-    navigation,
 }) {
     const columnMode = deviceWidthClass === 'type1';
-    const scrollRef = useRef(null);
+    const tabBarHeight = useBottomTabBarHeight();
+    const effectiveBodyHeight = bodyHeight - tabBarHeight;
     const sectionComponents = [
         {
             key: '0',
@@ -29,7 +27,7 @@ function AboutScreen({
                     fontFactor={fontFactor}
                     margin={margin}
                     columnMode={columnMode}
-                    bodyHeight={bodyHeight}
+                    bodyHeight={effectiveBodyHeight}
                     key="0"
                 />
             ),
@@ -41,7 +39,7 @@ function AboutScreen({
                     fontFactor={fontFactor}
                     margin={margin}
                     columnMode={columnMode}
-                    bodyHeight={bodyHeight}
+                    bodyHeight={effectiveBodyHeight}
                     key="1"
                 />
             ),
@@ -53,7 +51,7 @@ function AboutScreen({
                     fontFactor={fontFactor}
                     margin={margin}
                     columnMode={columnMode}
-                    bodyHeight={bodyHeight}
+                    bodyHeight={effectiveBodyHeight}
                     key="2"
                 />
             ),
@@ -65,38 +63,12 @@ function AboutScreen({
                     fontFactor={fontFactor}
                     margin={margin}
                     columnMode={columnMode}
-                    bodyHeight={bodyHeight}
+                    bodyHeight={effectiveBodyHeight}
                     key="3"
                 />
             ),
         },
-        {
-            key: '4',
-            data: (
-                <Footer
-                    fontFactor={fontFactor}
-                    margin={margin}
-                    headerSize={headerSize}
-                    darkMode={true}
-                    scrollToTop={scrollToTop}
-                    scrollRef={scrollRef}
-                    key="4"
-                />
-            ),
-        },
     ];
-    useEffect(() => {
-        navigation.dispatch((state) => {
-            const routes = state.routes.filter((r) => r.name !== 'Navigation');
-            return CommonActions.reset({
-                ...state,
-                routes,
-                index: routes.length - 1,
-            });
-        });
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigation]);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -107,7 +79,6 @@ function AboutScreen({
                 headerSize={headerSize}
                 heading="About Us"
                 sectionComponents={sectionComponents}
-                scrollRef={scrollRef}
             />
         </SafeAreaView>
     );

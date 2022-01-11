@@ -14,7 +14,13 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
 
-const PostMini = ({ fontFactor, title, timeStamp, likes }) => {
+const PostMini = ({
+    fontFactor,
+    title,
+    timeStamp,
+    likes,
+    toggleAddPostFlow,
+}) => {
     const platformSpecificPostIconWidth =
         Platform.OS === 'web'
             ? { width: wp(22) * fontFactor }
@@ -45,7 +51,6 @@ const PostMini = ({ fontFactor, title, timeStamp, likes }) => {
         <Pressable
             onPressIn={onPressIn}
             onPressOut={onPressOut}
-            style={{ marginBottom: fontFactor * wp(5) }}
             onPress={() =>
                 navigation.navigate('ForumStack', {
                     screen: 'Post',

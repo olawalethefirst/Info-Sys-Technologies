@@ -102,16 +102,16 @@ export default React.memo(ContactMini);
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#161B26',
+        backgroundColor: '#fff',
         justifyContent: 'center',
     },
     heading: {
         fontFamily: 'Poppins_600SemiBold',
-        color: '#fff',
+        // color: '#fff',
         textAlign: 'center',
     },
     paragraph: {
-        color: '#fff',
+        // color: '#fff',
         fontFamily: 'Karla_400Regular',
         textAlign: 'center',
     },
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
         // alignSelf: 'center',
     },
     buttonText: {
-        color: '#fff',
+        // color: '#fff',
         fontFamily: 'Poppins_600SemiBold',
         textAlign: 'center',
     },

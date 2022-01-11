@@ -18,18 +18,17 @@ import {
 import { connect } from 'react-redux';
 import CommentInput from '../components/CommentInput';
 import updateViewPostFooterPosition from '../redux/actions/updateViewPostFooterPosition';
-import Icon from 'react-native-vector-icons/AntDesign';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Constants from 'expo-constants';
 import PostDetail from '../components/PostDetail';
 import updatePostScreenOffset from '../redux/actions/updatePostScreenOffset';
 import CallToAuth from '../components/CallToAuth';
+import SecondaryHeader from '../components/SecondaryHeader';
+import {stickyHeaderHeight} from '../constants'
 
 function PostScreen({
     margin,
     fontFactor,
     headerSize,
-    bodyHeight,
     deviceWidthClass,
     updateViewPostFooterPosition,
     navigation,
@@ -57,10 +56,10 @@ function PostScreen({
             }) => updatePostScreenOffset(y),
         }
     );
-    const clampedScrollY = Animated.diffClamp(scrollY.current, 0, headerSize);
+    const clampedScrollY = Animated.diffClamp(scrollY.current, 0, stickyHeaderHeight);
     const translateY = clampedScrollY.interpolate({
-        inputRange: [0, headerSize],
-        outputRange: [0, -headerSize],
+        inputRange: [0, stickyHeaderHeight],
+        outputRange: [0, -stickyHeaderHeight],
     });
     const postData = [
         { post: 'post' },
@@ -91,76 +90,24 @@ function PostScreen({
                     // backgroundColor: 'green',
                 }}
                 keyboardVerticalOffset={Platform.select({
-                    ios: headerSize + statusBarHeight,
+                    ios: stickyHeaderHeight + statusBarHeight,
                     android: null,
                 })}
                 behavior={Platform.select({ ios: 'padding', android: null })}
             >
                 <SafeAreaView
                     style={{
-                        // backgroundColor: 'purple',
                         flex: 1,
                     }}
                 >
-                    <AnimatedImageBackground
-                        //eslint-disable-next-line no-undef
-                        source={require('../../assets/images/background2.png')}
-                        resizeMode="cover"
-                        style={[
-                            {
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                backgroundColor: '#161B26',
-                            },
-                            {
-                                paddingHorizontal: margin,
-                                height: headerSize,
-                                transform: [
-                                    {
-                                        translateY,
-                                    },
-                                ],
-                            },
-                            {
-                                flexDirection: 'row',
-                                justifyContent: 'flex-start',
-                            },
-                        ]}
-                    >
-                        <TouchableOpacity
-                            style={{
-                                width: headerSize,
-                                height: '100%',
-                                justifyContent: 'center',
-                            }}
-                            onPress={navigation.goBack}
-                        >
-                            <Icon
-                                name="arrowleft"
-                                size={fontFactor * wp(8.5)}
-                                color="#fff"
-                            />
-                        </TouchableOpacity>
-
-                        <Text
-                            style={[
-                                {
-                                    fontSize: fontFactor * wp(6.8),
-                                    lineHeight: fontFactor * wp(8.65),
-                                },
-
-                                {
-                                    color: '#fff',
-                                    fontFamily: 'Poppins_500Medium',
-                                },
-                                { alignSelf: 'center' },
-                            ]}
-                        >
-                            Post
-                        </Text>
-                    </AnimatedImageBackground>
+                    <SecondaryHeader
+                        heading={'Post'}
+                        headerSize={headerSize}
+                        margin={margin}
+                        translateY={translateY}
+                        fontFactor={fontFactor}
+                        deeplyNestedScreen
+                    />
 
                     <Animated.FlatList
                         nestedScrollEnabled
@@ -168,7 +115,8 @@ function PostScreen({
                         scrollEventThrottle={16}
                         onScroll={handleScroll}
                         contentContainerStyle={{
-                            paddingVertical: headerSize,
+                            paddingTop: stickyHeaderHeight,
+                            paddingBottom: headerSize
                         }}
                         data={postData}
                         bounces={false}
@@ -195,7 +143,7 @@ function PostScreen({
                     />
                     <CallToAuth
                         visible={callToAuthModalVisible}
-                        toggleAuth={toggleCallToAuth}
+                        toggleCallToAuth={toggleCallToAuth}
                         margin={margin}
                         fontFactor={fontFactor}
                     />
@@ -208,18 +156,11 @@ function PostScreen({
 const styles = StyleSheet.create({});
 
 const mapStateToProps = ({
-    settingsState: {
-        margin,
-        fontFactor,
-        headerSize,
-        bodyHeight,
-        deviceWidthClass,
-    },
+    settingsState: { margin, fontFactor, headerSize, deviceWidthClass },
 }) => ({
     margin,
     fontFactor,
     headerSize,
-    bodyHeight,
     deviceWidthClass,
 });
 

@@ -6,11 +6,15 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import GoogleAuthContainer from './GoogleAuthContainer';
 import { connect } from 'react-redux';
+import Constants from 'expo-constants';
 
 const Authoption = ({ fontFactor, animateView, user }) => {
+    const isNative =
+        Constants.appOwnership !== 'expo' && Constants.appOwnership !== 'guest';
+
     return (
         <View style={{ flexDirection: 'row' }}>
-            <GoogleAuthContainer native={false} fontFactor={fontFactor}>
+            <GoogleAuthContainer native={isNative} fontFactor={fontFactor}>
                 {(onPress, disabled) => (
                     <Pressable
                         disabled={disabled || user}

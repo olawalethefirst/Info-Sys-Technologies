@@ -32,7 +32,7 @@ export default function useGoogleAuth(native) {
         setActivityIndicator(false);
         setTimeout(() => {
             setModalVisible(false);
-        }, 350);
+        }, 1000);
     }, []);
     const persistModalWithError = () => {
         setActivityIndicator(false);

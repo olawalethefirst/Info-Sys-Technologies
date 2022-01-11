@@ -13,21 +13,15 @@ import {
 import MarginVertical from './MarginVertical';
 import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import AntDesignIcon from 'react-native-vector-icons/AntDesign';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
-import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useForm, Controller } from 'react-hook-form';
 import AuthForm from './AuthForm';
 import AuthSwitch from './AuthSwitch';
 import AuthOption from './AuthOption';
 
 const AuthTemplate = ({
-    minHeight,
     fontFactor,
     margin,
     createAccount,
     toggleAuthView,
-    headerSize,
 }) => {
     const viewAnimatedNumber = useRef(new Animated.Value(0)).current;
     const selectOptionView = viewAnimatedNumber.interpolate({
@@ -54,7 +48,6 @@ const AuthTemplate = ({
         }).start();
     };
     const [authFormcontainerHeight, setAuthFormContainerHeight] = useState(0);
-    const containerRef = useRef(null);
 
     return (
         <View>
@@ -164,17 +157,17 @@ const AuthTemplate = ({
                         />
                     </Animated.View>
                 </View>
+                <MarginVertical size={2} />
             </Pressable>
         </View>
     );
 };
 
 const mapStateToProps = ({
-    settingsState: { fontFactor, margin, headerSize },
+    settingsState: { fontFactor, margin,  },
 }) => ({
     fontFactor,
     margin,
-    headerSize,
 });
 
 export default connect(mapStateToProps)(AuthTemplate);

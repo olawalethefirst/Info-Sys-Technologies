@@ -20,17 +20,20 @@ import { useForm, Controller } from 'react-hook-form';
 import ModalSelector from 'react-native-modal-selector';
 import Modal from 'react-native-modal';
 import KeyboardViewContainer from './KeyboardViewContainer';
+import createPostAsync from '../helperFunctions/createPostAsync';
+import updateActiveForumAction from '../redux/actions/updateActiveForumAction';
+import { connect } from 'react-redux';
 
 const CreatePost = ({
     visible,
     headerSize,
     margin,
-    newPost,
-    title,
-    body,
-    category,
+    // title,
+    // body,
+    // category,
     fontFactor,
     toggleModal,
+    onSubmitSuccessful,
 }) => {
     const { statusBarHeight } = Constants;
     const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -81,39 +84,45 @@ const CreatePost = ({
         { key: index++, label: 'Accounting' },
         { key: index++, label: 'Networking' },
     ];
-    const defaultValues = {
-        postTitle: newPost ? '' : title,
-        postBody: newPost ? '' : body,
-        postCategory: newPost ? '' : category,
-    };
     const {
         control,
         handleSubmit,
         reset,
-        formState: { errors },
+        formState: { errors, isSubmitSuccessful },
     } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onBlur',
-        defaultValues,
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+        defaultValues: {
+            title: '',
+            body: '',
+            category: '',
+        },
     });
     const onCancel = () => {
         toggleModal();
-        reset({ postTitle: '', postBody: '', postCategory: '' });
+        reset();
     };
     const scrollViewRef = useRef(null);
     const modalSelectorRef = useRef(null);
     const [multiLineInputPosition, setMultiLineInputPosition] = useState(null);
     const [disableModalPressables, setDisableModalPressables] = useState(true);
-    const onSubmitSuccessful = (data) => {
-        console.log(data);
-    };
     const onSubmitFailed = (errors) => {
         console.log(errors);
     };
 
+    useEffect(() => {
+        if (isSubmitSuccessful) {
+            reset();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSubmitSuccessful]);
+
     return (
         <Modal
-            onModalWillShow={() => setDisableModalPressables(false)}
+            onModalWillShow={() => {
+                reset();
+                setDisableModalPressables(false);
+            }}
             onModalWillHide={() => setDisableModalPressables(true)}
             propagateSwipe
             isVisible={visible}
@@ -168,11 +177,8 @@ const CreatePost = ({
                         >
                             <ScrollView
                                 showsVerticalScrollIndicator={false}
-                                // keyboardDismissMode={'on-drag'}
-                                keyboardDismissMode={Platform.select({
-                                    ios: 'interactive',
-                                    android: 'on-drag',
-                                })}
+                                keyboardDismissMode={'none'}
+                                keyboardShouldPersistTaps="always"
                                 ref={scrollViewRef}
                                 bounces={false}
                                 contentContainerStyle={{
@@ -197,9 +203,7 @@ const CreatePost = ({
                                                 color: '#000000',
                                             }}
                                         >
-                                            {newPost
-                                                ? 'New Post'
-                                                : 'Update Post'}
+                                            New Post
                                         </Text>
                                         <MarginVertical size={2} />
                                         <Controller
@@ -216,43 +220,50 @@ const CreatePost = ({
                                                 fieldState: { error },
                                             }) => (
                                                 <View>
-                                                    <AnimatedTextInput
-                                                        placeholder="Post Title"
-                                                        placeholderTextColor="#808080"
-                                                        autoCapitalize="sentences"
-                                                        onBlur={() => {
-                                                            onBlurInput(
-                                                                postTitleAnimatedValue
-                                                            );
-                                                            onBlur();
-                                                        }}
-                                                        onFocus={() => {
-                                                            onFocusInput(
-                                                                postTitleAnimatedValue
-                                                            );
-                                                        }}
-                                                        onChangeText={onChange}
-                                                        value={value}
+                                                    <Animated.View
                                                         style={{
                                                             borderWidth:
                                                                 wp(0.5),
                                                             borderColor:
                                                                 postTitleBorder,
-                                                            padding: wp(4),
-                                                            fontSize:
-                                                                fontFactor *
-                                                                wp(4.5),
-                                                            lineHeight:
-                                                                fontFactor *
-                                                                wp(5.72),
-                                                            fontFamily:
-                                                                'Poppins_400Regular',
-                                                            color: '#000000',
                                                         }}
-                                                        editable={
-                                                            !disableModalPressables
-                                                        }
-                                                    />
+                                                    >
+                                                        <TextInput
+                                                            placeholder="Post Title"
+                                                            placeholderTextColor="#808080"
+                                                            autoCapitalize="sentences"
+                                                            onBlur={() => {
+                                                                onBlurInput(
+                                                                    postTitleAnimatedValue
+                                                                );
+                                                                onBlur();
+                                                            }}
+                                                            onFocus={() => {
+                                                                onFocusInput(
+                                                                    postTitleAnimatedValue
+                                                                );
+                                                            }}
+                                                            onChangeText={
+                                                                onChange
+                                                            }
+                                                            value={value}
+                                                            style={{
+                                                                padding: wp(4),
+                                                                fontSize:
+                                                                    fontFactor *
+                                                                    wp(4.5),
+                                                                lineHeight:
+                                                                    fontFactor *
+                                                                    wp(5.72),
+                                                                fontFamily:
+                                                                    'Poppins_400Regular',
+                                                                color: '#000000',
+                                                            }}
+                                                            editable={
+                                                                !disableModalPressables
+                                                            }
+                                                        />
+                                                    </Animated.View>
                                                     <MarginVertical
                                                         size={0.3}
                                                     />
@@ -280,12 +291,12 @@ const CreatePost = ({
                                                     />
                                                 </View>
                                             )}
-                                            name="postTitle"
+                                            name="title"
                                         />
                                         {/* <MarginVertical size={1.5} /> */}
                                         <Controller
                                             control={control}
-                                            name="postCategory"
+                                            name="category"
                                             rules={{ required: true }}
                                             render={({
                                                 field: {
@@ -498,76 +509,85 @@ const CreatePost = ({
                                                         }
                                                     }}
                                                 >
-                                                    <AnimatedTextInput
-                                                        multiline
-                                                        placeholder="Post Body"
-                                                        placeholderTextColor="#808080"
-                                                        autoCapitalize="sentences"
-                                                        onBlur={() => {
-                                                            if (
-                                                                Platform.OS ===
-                                                                'ios'
-                                                            ) {
-                                                                Keyboard.removeAllListeners(
-                                                                    'keyboardDidShow'
-                                                                );
-                                                            }
-                                                            onBlurInput(
-                                                                postBodyAnimatedValue
-                                                            );
-                                                            onBlur();
-                                                        }}
-                                                        onFocus={() => {
-                                                            onFocusInput(
-                                                                postBodyAnimatedValue
-                                                            );
-                                                            //Implement for IOS alone
-                                                            if (
-                                                                Platform.OS ===
-                                                                'ios'
-                                                            ) {
-                                                                Keyboard.addListener(
-                                                                    'keyboardDidShow',
-                                                                    () =>
-                                                                        scrollViewRef.current.scrollTo(
-                                                                            {
-                                                                                ...multiLineInputPosition,
-                                                                                y: multiLineInputPosition.height,
-                                                                                animated: true,
-                                                                            }
-                                                                        )
-                                                                );
-                                                            }
-
-                                                            onFocusInput(
-                                                                postBodyAnimatedValue
-                                                            );
-                                                        }}
-                                                        onChangeText={onChange}
-                                                        value={value}
+                                                    <Animated.View
                                                         style={{
                                                             borderWidth:
                                                                 wp(0.5),
                                                             borderColor:
                                                                 postBodyBorder,
-                                                            padding: wp(4),
-                                                            fontSize:
-                                                                fontFactor *
-                                                                wp(4.5),
-                                                            lineHeight:
-                                                                fontFactor *
-                                                                wp(5.72),
-                                                            fontFamily:
-                                                                'Poppins_400Regular',
-                                                            color: '#000000',
-                                                            textAlignVertical:
-                                                                'top',
-                                                            height: wp(25.16),
                                                         }}
-                                                        editable={
-                                                            !disableModalPressables
-                                                        }
-                                                    />
+                                                    >
+                                                        <TextInput
+                                                            multiline
+                                                            placeholder="Post Body"
+                                                            placeholderTextColor="#808080"
+                                                            autoCapitalize="sentences"
+                                                            onBlur={() => {
+                                                                if (
+                                                                    Platform.OS ===
+                                                                    'ios'
+                                                                ) {
+                                                                    Keyboard.removeAllListeners(
+                                                                        'keyboardDidShow'
+                                                                    );
+                                                                }
+                                                                onBlurInput(
+                                                                    postBodyAnimatedValue
+                                                                );
+                                                                onBlur();
+                                                            }}
+                                                            onFocus={() => {
+                                                                onFocusInput(
+                                                                    postBodyAnimatedValue
+                                                                );
+                                                                //Implement for IOS alone
+                                                                if (
+                                                                    Platform.OS ===
+                                                                    'ios'
+                                                                ) {
+                                                                    Keyboard.addListener(
+                                                                        'keyboardDidShow',
+                                                                        () =>
+                                                                            scrollViewRef?.current?.scrollTo(
+                                                                                {
+                                                                                    ...multiLineInputPosition,
+                                                                                    y: multiLineInputPosition.height,
+                                                                                    animated: true,
+                                                                                }
+                                                                            )
+                                                                    );
+                                                                }
+
+                                                                onFocusInput(
+                                                                    postBodyAnimatedValue
+                                                                );
+                                                            }}
+                                                            onChangeText={
+                                                                onChange
+                                                            }
+                                                            value={value}
+                                                            style={{
+                                                                padding: wp(4),
+                                                                fontSize:
+                                                                    fontFactor *
+                                                                    wp(4.5),
+                                                                lineHeight:
+                                                                    fontFactor *
+                                                                    wp(5.72),
+                                                                fontFamily:
+                                                                    'Poppins_400Regular',
+                                                                color: '#000000',
+                                                                textAlignVertical:
+                                                                    'top',
+                                                                height: wp(
+                                                                    25.16
+                                                                ),
+                                                            }}
+                                                            editable={
+                                                                !disableModalPressables
+                                                            }
+                                                        />
+                                                    </Animated.View>
                                                     <MarginVertical
                                                         size={0.3}
                                                     />
@@ -595,7 +615,7 @@ const CreatePost = ({
                                                     />
                                                 </View>
                                             )}
-                                            name="postBody"
+                                            name="body"
                                         />
                                         {/* <MarginVertical size={1.5} /> */}
                                         <View
@@ -653,9 +673,7 @@ const CreatePost = ({
                                                             wp(5.78),
                                                     }}
                                                 >
-                                                    {newPost
-                                                        ? 'Create Post'
-                                                        : 'Update Post'}
+                                                    Create Post
                                                 </Text>
                                             </AnimatedTouchableOpacity>
                                             <View style={{ flex: 1 }}></View>
@@ -719,6 +737,12 @@ const CreatePost = ({
     );
 };
 
-export default CreatePost;
+const mapStateToProps = ({ forumTempState: { activeForumAction } }) => ({
+    activeForumAction,
+});
+
+export default connect(mapStateToProps, {
+    updateActiveForumAction,
+})(CreatePost);
 
 const styles = StyleSheet.create({});

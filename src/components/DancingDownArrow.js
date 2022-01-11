@@ -28,14 +28,7 @@ export default class DancingDownArrow extends PureComponent {
     constructor(props) {
         super(props);
         this.animatedValue = new Animated.Value(0);
-    }
-
-    componentDidMount() {
-        this.animateIcon();
-    }
-
-    animateIcon() {
-        Animated.loop(
+        this.animateIcon = Animated.loop(
             Animated.sequence([
                 Animated.timing(this.animatedValue, {
                     toValue: wp(1.6),
@@ -48,7 +41,11 @@ export default class DancingDownArrow extends PureComponent {
                     useNativeDriver: true,
                 }),
             ])
-        ).start();
+        );
+    }
+
+    componentDidMount() {
+        this.animateIcon.start();
     }
 
     render() {
@@ -58,7 +55,8 @@ export default class DancingDownArrow extends PureComponent {
         const styles2 = {
             iconContainer: {
                 width: arrowWidth,
-                height: (arrowWidth * 125) / 42,
+                height: (arrowWidth * 125) / 42, //using arrow image aspect ratio
+                bottom: wp(4), //slightly above bottom
                 right: (menuIconWidth - arrowWidth) / 2,
                 opacity: animatedValue,
             },
@@ -67,7 +65,9 @@ export default class DancingDownArrow extends PureComponent {
         return (
             <AnimatedPressable
                 onPress={scrollToNextPage}
-                hitSlop={wp(2)}
+                // onPressIn={() => this.animateIcon.start()}
+                // onPressOut={() => this.animateIcon.start()}
+                hitSlop={wp(4)}
                 style={[
                     styles.iconContainer,
                     styles2.iconContainer,
@@ -87,12 +87,12 @@ DancingDownArrow.propTypes = {
     arrowWidth: PropTypes.number,
     menuIconWidth: PropTypes.number,
     scrollToNextPage: PropTypes.func,
+    animatedValue: PropTypes.object,
 };
 
 const styles = StyleSheet.create({
     iconContainer: {
         position: 'absolute',
-        bottom: wp(4),
         opacity: 0.8,
     },
 });

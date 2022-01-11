@@ -1,11 +1,20 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, Pressable, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/Foundation';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
+import CallToAuth from './CallToAuth';
 
-const AddPost = ({ margin, headerSize, fontFactor, toggleModal }) => {
+const AddPost = ({
+    margin,
+    headerSize,
+    fontFactor,
+    toggleModal,
+    user,
+    disabled,
+}) => {
     const animatedValue = useRef(new Animated.Value(1)).current;
+    const [callToAuthVisible, setCallToAuthVisible] = useState(false);
     const onPressIn = () => {
         Animated.timing(animatedValue, {
             toValue: 0.85,
@@ -21,17 +30,19 @@ const AddPost = ({ margin, headerSize, fontFactor, toggleModal }) => {
             useNativeDriver: true,
         }).start();
     };
+    const toggleCallToAuthModal = () =>
+        setCallToAuthVisible((oldState) => !oldState);
 
     return (
         <Pressable
             onPressIn={onPressIn}
             onPressOut={onPressOut}
-            onPress={toggleModal}
+            onPress={user ? toggleModal : toggleCallToAuthModal}
+            disabled={disabled}
             style={{
                 position: 'absolute',
                 right: margin,
-                bottom: headerSize * 1.25,
-                // zIndex: 1000,
+                bottom: headerSize,
             }}
         >
             <Animated.View
@@ -60,6 +71,12 @@ const AddPost = ({ margin, headerSize, fontFactor, toggleModal }) => {
                     }}
                 />
             </Animated.View>
+            <CallToAuth
+                toggleCallToAuth={toggleCallToAuthModal}
+                visible={callToAuthVisible}
+                margin={margin}
+                fontFactor={fontFactor}
+            />
         </Pressable>
     );
 };
@@ -69,6 +86,8 @@ AddPost.propTypes = {
     headerSize: PropTypes.number,
     fontFactor: PropTypes.number,
     toggleModal: PropTypes.func,
+    user: PropTypes.object,
+    disabled: PropTypes.bool,
 };
 
 export default AddPost;

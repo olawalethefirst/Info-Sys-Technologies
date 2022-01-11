@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     StyleSheet,
     Text,
@@ -7,18 +7,23 @@ import {
     Keyboard,
     TouchableOpacity,
     Pressable,
+    FlatList,
 } from 'react-native';
-import PostMini from './PostMini';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import SearchPosts from './SearchPosts';
-import CreatePost from './CreatePost';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 import { useNavigation } from '@react-navigation/native';
 import signOutUser from '../helperFunctions/signOutUser';
+import { firebase } from '../helperFunctions/initializeFirebase';
+import updatePosts from '../redux/actions/updatePosts';
+import updateActiveForumAction from '../redux/actions/updateActiveForumAction';
+import { connect } from 'react-redux';
+import updatePostsDataSource from '../redux/actions/updatePostsDataSource';
+import getPosts from '../helperFunctions/getPosts';
+import updatePostsFirstBatch from '../redux/actions/updatePostsFirstBatch';
 
 const Forum = ({
-    bodyHeight,
     margin,
     fontFactor,
     headerSize,
@@ -26,17 +31,112 @@ const Forum = ({
     createPostModalVisible,
     toggleModal,
     user,
+    posts,
+    updatePosts,
+    updatePostsDataSource,
+    activeForumAction,
+    fromCache,
+    updateActiveForumAction,
+    updatePostsFirstBatch,
 }) => {
     const columnMode = checkColumnMode(deviceWidthClass);
     const navigation = useNavigation();
+    const ITEM_HEIGHT = (wp(25) + wp(4.4)) * fontFactor;
+
+    // Move posts to foum screen
+    useEffect(() => {
+        console.log('useEffect triggered');
+        firebase
+            .firestore()
+            .collection('posts')
+            .orderBy('createdAt', 'desc')
+            // .limit(100)
+            .get()
+            // getPosts(true)
+            .then((snapshot) => {
+                console.log('I can be gotten');
+                if (!snapshot.metadata.fromCache) {
+                    const posts = snapshot.docs.map((doc) => ({
+                        postID: doc.ref.id,
+                        ...doc.data(),
+                    }));
+
+                    updatePostsFirstBatch(posts);
+                }
+
+                // updatePostsDataSource(snapshot.metadata.fromCache);
+                console.log('still has it', snapshot.metadata);
+                // console.log(snapshot.metadata)
+            })
+            .catch(() => console.log('failed'));
+
+        // setTimeout(()=>{
+        // const lastPostRef = firebase.firestore().collection('posts').doc(posts[posts.length -1].postID)
+        // console.log(lastPostRef)
+        //     // firebase
+        //     // .firestore()
+        //     // .collection('posts')
+        //     // .orderBy('createdAt', 'desc')
+        //     // .limit(25).startAfter()
+        //     // .get()
+        // }, 1000)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const lastPostRef = posts.length
+        ? firebase
+              .firestore()
+              .collection('posts')
+              .doc(posts[posts.length - 1].postID)
+        : null;
+
+    // posts.length &&
+    //     getPosts(null, null, lastPostRef)
+    //         .then((snapshot) => {
+    //             console.log('I can also be gotten');
+    //             const posts = snapshot.docs.map((doc) => ({
+    //                 postID: doc.ref.id,
+    //                 ...doc.data(),
+    //             }));
+
+    //             console.log('posts 2', posts);
+
+    //             // updatePostsDataSource(snapshot.metadata.fromCache);
+    //             // console.log('still has it', snapshot.metadata);
+    //             // console.log(snapshot.metadata)
+    //         })
+    //         .catch(() => console.log('failed'));
+
+    //approach by increasing limits instead
+    // useEffect(() => {
+    //     const listener = firebase
+    //         .firestore()
+    //         .collection('posts')
+    //         .orderBy('createdAt', 'desc')
+    //         .startAfter(posts[posts.length - 1])
+    //         .limit(20)
+    //         .get((snapshot) => {
+    //             if (posts?.length === 20) {
+    //                 console.log('about to call next');
+    //                 if (!snapshot.metadata.fromCache) {
+    //                     const newPosts = snapshot.docs.map((doc) => doc.data());
+    //                     console.log(posts[posts.length - 1], newPosts);
+    //                     // updatePosts(
+    //                     //     posts
+    //                     // );
+    //                 }
+    //             }
+
+    //             console.log(snapshot.metadata);
+    //         });
+    //     return listener;
+    // }, [updatePosts, posts]);
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View
                 style={[
                     {
-                        minHeight: bodyHeight - headerSize,
-                        backgroundColor: '#f7f7f7',
                         paddingHorizontal: margin,
                     },
                 ]}
@@ -179,16 +279,6 @@ const Forum = ({
                     <MarginVertical />
                     <SearchPosts fontFactor={fontFactor} />
                     <MarginVertical size={1.5} />
-
-                    <PostMini fontFactor={fontFactor} />
-                    <CreatePost
-                        toggleModal={toggleModal}
-                        visible={createPostModalVisible}
-                        margin={margin}
-                        headerSize={headerSize}
-                        fontFactor={fontFactor}
-                        newPost={true}
-                    />
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -202,4 +292,31 @@ const styles = StyleSheet.create({
     },
 });
 
-export default React.memo(Forum);
+const mapStateToProps = ({
+    forumState: { user },
+    settingsState: {
+        margin,
+        fontFactor,
+        headerSize,
+        deviceWidthClass,
+    },
+    forumTempState: { activeForumAction, fromCache, posts },
+}) => {
+    return {
+        margin,
+        fontFactor,
+        headerSize,
+        deviceWidthClass,
+        user,
+        posts,
+        activeForumAction,
+        fromCache,
+    };
+};
+
+export default connect(mapStateToProps, {
+    updatePosts,
+    updatePostsDataSource,
+    updateActiveForumAction,
+    updatePostsFirstBatch,
+})(React.memo(Forum));

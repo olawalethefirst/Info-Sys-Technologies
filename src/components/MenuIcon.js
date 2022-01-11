@@ -1,20 +1,17 @@
-import React, { useState, useRef } from 'react';
-import { StyleSheet, Pressable, Animated, Platform, View } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, Pressable, Animated } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 import PropTypes from 'prop-types';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import ModalCloseIcon from '../components/ModalCloseIcon';
-import Icon from 'react-native-vector-icons/Feather';
 
-export default function MenuIcon({ width, height, fontFactor }) {
-    const svgWidth = 0.4 * width;
-    const [showModal, setShowModal] = useState(false);
+export default function MenuIcon({ headerSize }) {
+    const svgHeight = 0.35 * headerSize;
     const animatedValue = useRef(new Animated.Value(1)).current;
     const onPressModalIconIn = () => {
         Animated.spring(animatedValue, {
-            toValue: 1.2,
+            toValue: 0.8,
             useNativeDriver: true,
         }).start();
+        3;
     };
     const onPressModalIconOut = () => {
         Animated.spring(animatedValue, {
@@ -22,22 +19,15 @@ export default function MenuIcon({ width, height, fontFactor }) {
             useNativeDriver: true,
         }).start();
     };
-    const closeModal = () => {
-        setShowModal(false);
-    };
-    const isWeb = Platform.OS === 'web';
-    const navigation = useNavigation();
-    const route = useRoute();
-    const isNavigationScreen = route.name === 'Navigation';
 
     return (
         <Pressable
-            style={[{ width: width, height: height }, styles.container]}
-            onPress={() =>
-                isNavigationScreen
-                    ? navigation.goBack()
-                    : navigation.navigate('Navigation')
-            }
+            style={styles.container}
+            // onPress={() =>
+            //     true
+            //         ? null
+            //         : null
+            // }
             onPressIn={onPressModalIconIn}
             onPressOut={onPressModalIconOut}
         >
@@ -49,62 +39,53 @@ export default function MenuIcon({ width, height, fontFactor }) {
                     },
                 ]}
             >
-                {!isNavigationScreen && (
-                    <Svg
-                        width={svgWidth}
-                        viewBox="0 0 200 125"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={styles.icon}
-                    >
-                        <Rect
-                            x={25}
-                            width={150}
-                            height={15}
-                            rx={5}
-                            fill="#161B26"
-                        />
-                        <Rect
-                            x={25}
-                            y={110}
-                            width={150}
-                            height={15}
-                            rx={5}
-                            fill="#161B26"
-                        />
-                        <Rect
-                            y={55}
-                            width={200}
-                            height={15}
-                            rx={5}
-                            fill="#161B26"
-                        />
-                    </Svg>
-                )}
-                {isNavigationScreen && (
-                    <Icon name="x" color={'black'} size={0.4 * width} />
-                )}
+                <Svg
+                    height={svgHeight}
+                    viewBox="0 0 200 130"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={styles.icon}
+                >
+                    <Rect
+                        x={25}
+                        width={150}
+                        height={12}
+                        rx={5}
+                        fill="#161B26"
+                    />
+                    <Rect
+                        x={25}
+                        y={110}
+                        width={150}
+                        height={12}
+                        rx={5}
+                        fill="#161B26"
+                    />
+                    <Rect
+                        y={55}
+                        width={200}
+                        height={12}
+                        rx={5}
+                        fill="#161B26"
+                    />
+                </Svg>
             </Animated.View>
         </Pressable>
     );
 }
 
 MenuIcon.propTypes = {
-    width: PropTypes.number,
-    height: PropTypes.number,
-    fontFactor: PropTypes.number,
+    headerSize: PropTypes.number,
 };
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: 'white',
-    },
+    container: { width: '100%', height: '100%', backgroundColor: '#fff' },
     animatedContainer: {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
     },
     icon: {
-        aspectRatio: 200 / 125,
+        aspectRatio: 200 / 130,
     },
 });
