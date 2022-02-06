@@ -19,44 +19,58 @@ const PostDetail = ({
     toggleCallToAuth,
     deviceWidthClass,
     user,
+    index,
+    scrollRef,
+    item,
+    containerRef,
+    effectiveBodyHeight,
+    commentInputRef
 }) => {
+    if (!index) {
+        return (
+            <Post
+                fontFactor={fontFactor}
+                margin={margin}
+                username={username}
+                timestamp={timestamp}
+                category={category}
+                title={title}
+                body={body}
+                toggleCallToAuth={toggleCallToAuth}
+                deviceWidthClass={deviceWidthClass}
+                user={user}
+                index={index}
+                scrollRef={scrollRef}
+                item={item}
+                containerRef={containerRef}
+                effectiveBodyHeight={effectiveBodyHeight}
+                commentInputRef={commentInputRef}
+            />
+        );
+    }
+
     return (
-        <Pressable
-            onPress={() => Keyboard.dismiss()}
-            style={[lastComment && { paddingBottom: headerSize }]}
-        >
-            {post && (
-                <Post
-                    fontFactor={fontFactor}
-                    margin={margin}
-                    username={username}
-                    timestamp={timestamp}
-                    category={category}
-                    title={title}
-                    body={body}
-                    toggleCallToAuth={toggleCallToAuth}
-                    deviceWidthClass={deviceWidthClass}
-                    user={user}
-                />
-            )}
-            {comment && (
-                <Comment
-                    fontFactor={fontFactor}
-                    margin={margin}
-                    username={username}
-                    timestamp={timestamp}
-                    comment={comment}
-                    deviceWidthClass={deviceWidthClass}
-                    user={user}
-                    toggleCallToAuth={toggleCallToAuth}
-                />
-            )}
-        </Pressable>
+        <Comment
+            fontFactor={fontFactor}
+            margin={margin}
+            username={username}
+            timestamp={timestamp}
+            comment={comment}
+            deviceWidthClass={deviceWidthClass}
+            user={user}
+            toggleCallToAuth={toggleCallToAuth}
+            index={index}
+            scrollRef={scrollRef}
+            item={item}
+            containerRef={containerRef}
+            effectiveBodyHeight={effectiveBodyHeight}
+            commentInputRef={commentInputRef}
+        />
     );
 };
 
 const mapStateToProps = ({
-    forumState: { user },
+    forumTempState: { user },
     settingsState: { deviceWidthClass, headerSize, fontFactor, margin },
 }) => ({ deviceWidthClass, headerSize, fontFactor, margin, user });
 

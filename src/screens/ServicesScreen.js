@@ -5,19 +5,14 @@ import SubScreenTemplate from '../components/SubScreenTemplate';
 import Footer from '../components/Footer';
 import Services from '../components/Services';
 import PropTypes from 'prop-types';
-import updateServicesScrollViewOffset from '../redux/actions/updateServicesScrollViewOffset';
 import { CommonActions } from '@react-navigation/native';
 
 function ServicesScreen({
     margin,
     fontFactor,
     headerSize,
-    updateServicesScrollViewOffset,
     navigation,
 }) {
-    const pagerRef = useRef(null);
-    const scrollRef = useRef(null);
-    
     
     return (
         <SafeAreaView style={styles.container}>
@@ -25,8 +20,6 @@ function ServicesScreen({
                     headerSize={headerSize}
                     margin={margin}
                     fontFactor={fontFactor}
-                    pagerRef={pagerRef}
-                    scrollRef={scrollRef}
                 />
         </SafeAreaView>
     );
@@ -36,7 +29,6 @@ ServicesScreen.propTypes = {
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
     headerSize: PropTypes.number,
-    updateServicesScrollViewOffset: PropTypes.func,
     navigation: PropTypes.object,
 };
 
@@ -53,6 +45,6 @@ const mapStateToProps = (state) => ({
     headerSize: state.settingsState.headerSize,
 });
 
-export default connect(mapStateToProps, { updateServicesScrollViewOffset })(
+export default connect(mapStateToProps)(
     ServicesScreen
 );

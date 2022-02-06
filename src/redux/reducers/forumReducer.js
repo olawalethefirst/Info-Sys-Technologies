@@ -1,15 +1,26 @@
-import { UPDATE_USER_STATE } from '../actions/actionTypes';
+import {
+    LOADING_POSTS_SUCCESSFUL,
+    REFRESHING_POSTS_SUCCESSFUL,
+    LOADING_POSTS_FIRST_BATCH_SUCCESSFUL,
+} from '../actions/actionTypes';
 
 // inital State
 const initialState = {
-    user: null,
+    posts: [],
 };
 
 export default function forumReducer(state = initialState, action) {
     switch (action.type) {
-        case UPDATE_USER_STATE:
-            return { ...state, user: action.payload };
+        case LOADING_POSTS_FIRST_BATCH_SUCCESSFUL:
+            return { ...state, posts: action.payload };
+        case LOADING_POSTS_SUCCESSFUL:
+            return {
+                ...state,
+                posts: [...state.posts, ...action.payload],
+            };
+        case REFRESHING_POSTS_SUCCESSFUL:
+            return { ...state, posts: action.payload };
         default:
-            return { ...state };
+            return state;
     }
 }

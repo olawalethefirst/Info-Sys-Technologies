@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, FlatList, View } from 'react-native';
 import Welcome from '../components/Welcome';
 import AboutMini from '../components/AboutMini';
@@ -8,16 +8,14 @@ import ContactMini from '../components/ContactMini';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useScrollToTop } from '@react-navigation/native';
 
-function HomeScreen({
-    margin,
-    bodyHeight,
-    fontFactor,
-    deviceWidthClass,
-}) {
+function HomeScreen({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
     const renderItem = ({ item }) => item.data;
     const tabBarHeight = useBottomTabBarHeight();
-    const effectiveBodyHeight = bodyHeight - tabBarHeight
+    const effectiveBodyHeight = bodyHeight - tabBarHeight;
+    const scrollRef = useRef(null);
+    useScrollToTop(scrollRef);
     const sectionComponents = [
         {
             key: '0',
@@ -71,7 +69,7 @@ function HomeScreen({
             ),
         },
     ];
-    
+
     return (
         <View style={styles.container}>
             <FlatList
@@ -80,6 +78,7 @@ function HomeScreen({
                 renderItem={renderItem}
                 keyExtractor={(item, index) => 'keyExtractor' + index}
                 bounces={false}
+                ref={scrollRef}
             />
         </View>
     );
@@ -101,7 +100,7 @@ const styles = StyleSheet.create({
     },
     list: {
         backgroundColor: '#161B26',
-    }
+    },
 });
 
 const mapStateToProps = (state) => ({

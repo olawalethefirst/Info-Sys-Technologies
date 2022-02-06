@@ -4,40 +4,37 @@ import {
     Text,
     Animated,
     ImageBackground,
-    TouchableOpacity,
     KeyboardAvoidingView,
     Platform,
     SafeAreaView,
     Pressable,
     Keyboard,
-    TouchableWithoutFeedback,
     View,
-    ScrollView,
-    TouchableHighlight,
 } from 'react-native';
 import { connect } from 'react-redux';
 import CommentInput from '../components/CommentInput';
-import updateViewPostFooterPosition from '../redux/actions/updateViewPostFooterPosition';
 import Constants from 'expo-constants';
 import PostDetail from '../components/PostDetail';
 import updatePostScreenOffset from '../redux/actions/updatePostScreenOffset';
 import CallToAuth from '../components/CallToAuth';
 import SecondaryHeader from '../components/SecondaryHeader';
-import {stickyHeaderHeight} from '../constants'
+import { stickyHeaderHeight } from '../constants';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 function PostScreen({
     margin,
     fontFactor,
     headerSize,
     deviceWidthClass,
-    updateViewPostFooterPosition,
     navigation,
     updatePostScreenOffset,
+    bodyHeight,
+    route: { params },
 }) {
     const [callToAuthModalVisible, setCallToAuthModalVisible] = useState(false);
-    const AnimatedImageBackground =
-        Animated.createAnimatedComponent(ImageBackground);
+    const tabBarHeight = useBottomTabBarHeight();
     const scrollRef = useRef(null);
+    const containerRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0));
     const handleScroll = Animated.event(
         [
@@ -56,7 +53,11 @@ function PostScreen({
             }) => updatePostScreenOffset(y),
         }
     );
-    const clampedScrollY = Animated.diffClamp(scrollY.current, 0, stickyHeaderHeight);
+    const clampedScrollY = Animated.diffClamp(
+        scrollY.current,
+        0,
+        stickyHeaderHeight
+    );
     const translateY = clampedScrollY.interpolate({
         inputRange: [0, stickyHeaderHeight],
         outputRange: [0, -stickyHeaderHeight],
@@ -71,26 +72,23 @@ function PostScreen({
     const toggleCallToAuth = () => {
         setCallToAuthModalVisible((oldState) => !oldState);
     };
+    const effectiveBodyHeight = bodyHeight - tabBarHeight;
+    const commentInputRef = useRef(null);
+    console.log(params);
 
     return (
-        <Pressable
+        <View
+            ref={containerRef}
             style={{
                 flex: 1,
-            }}
-            // onStartShouldSetResponder=
-            onPress={() => Keyboard.dismiss()}
-            onStartShouldSetResponder={() => {
-                console.log('tracked move');
-                return true;
             }}
         >
             <KeyboardAvoidingView
                 style={{
                     flex: 1,
-                    // backgroundColor: 'green',
                 }}
                 keyboardVerticalOffset={Platform.select({
-                    ios: stickyHeaderHeight + statusBarHeight,
+                    ios: headerSize + statusBarHeight,
                     android: null,
                 })}
                 behavior={Platform.select({ ios: 'padding', android: null })}
@@ -115,24 +113,30 @@ function PostScreen({
                         scrollEventThrottle={16}
                         onScroll={handleScroll}
                         contentContainerStyle={{
+                            minHeight: bodyHeight + headerSize,
                             paddingTop: stickyHeaderHeight,
-                            paddingBottom: headerSize
+                            paddingBottom: headerSize,
                         }}
                         data={postData}
                         bounces={false}
                         renderItem={({ item, index }) => {
                             return (
                                 <PostDetail
-                                    {...item}
+                                    item={item}
                                     lastComment={index === postData.length - 1}
                                     toggleCallToAuth={toggleCallToAuth}
+                                    index={index}
+                                    scrollRef={scrollRef}
+                                    containerRef={containerRef}
+                                    effectiveBodyHeight={effectiveBodyHeight}
+                                    commentInputRef={commentInputRef}
                                 />
                             );
                         }}
                         keyExtractor={(item, index) => 'keyExtractor' + index}
                         ref={scrollRef}
                         keyboardDismissMode={'none'}
-                        keyboardShouldPersistTaps="handled"
+                        keyboardShouldPersistTaps="never"
                     />
                     <CommentInput
                         headerSize={headerSize}
@@ -140,6 +144,7 @@ function PostScreen({
                         scrollRef={scrollRef}
                         fontFactor={fontFactor}
                         margin={margin}
+                        commentInputRef={commentInputRef}
                     />
                     <CallToAuth
                         visible={callToAuthModalVisible}
@@ -149,22 +154,28 @@ function PostScreen({
                     />
                 </SafeAreaView>
             </KeyboardAvoidingView>
-        </Pressable>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({});
 
 const mapStateToProps = ({
-    settingsState: { margin, fontFactor, headerSize, deviceWidthClass },
+    settingsState: {
+        margin,
+        fontFactor,
+        headerSize,
+        deviceWidthClass,
+        bodyHeight,
+    },
 }) => ({
     margin,
     fontFactor,
     headerSize,
     deviceWidthClass,
+    bodyHeight,
 });
 
 export default connect(mapStateToProps, {
-    updateViewPostFooterPosition,
     updatePostScreenOffset,
 })(PostScreen);

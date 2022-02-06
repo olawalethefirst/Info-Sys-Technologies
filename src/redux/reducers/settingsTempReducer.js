@@ -9,6 +9,6 @@ export default function settingsTempReducer(state = initialState, action) {
         case UPDATE_POST_SCREEN_OFFSET:
             return { ...state, postScreenOffset: action.payload };
         default:
-            return { ...state };
+            return state 
     }
 }

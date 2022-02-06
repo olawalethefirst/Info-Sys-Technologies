@@ -17,7 +17,7 @@ import DatePickerModal from 'react-native-modal-datetime-picker';
 import InputField from './InputField';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 
 export default function ContactForm({ fontFactor, scrollRef }) {
     const submitButtonAnimatedValue = useRef(new Animated.Value(1)).current;
@@ -60,7 +60,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
             borderBottomWidth: wp(0.1) * fontFactor,
         },
     };
-    const { watch, resetField, control, handleSubmit, formState } = useForm({
+    const { resetField, control, handleSubmit, formState } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onBlur',
         defaultValues: {
@@ -77,7 +77,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
         },
     });
     const { errors } = formState;
-    const contactOption = watch('contactOption');
+    const contactOption = useWatch({ name: 'contactOption', control });
     const inquiry = contactOption === 'Inquiry';
     const hireUs = contactOption === 'Hire Us';
     const [datePickerVisible, setDatePickerVisible] = useState(false);
@@ -157,14 +157,20 @@ export default function ContactForm({ fontFactor, scrollRef }) {
     const onSubmit = () => {
         setTimeout(() => console.log('submitted'), 5000);
     };
+    const otherOptionReferralChannel = useWatch({
+        name: 'referralChannel',
+        control,
+    });
     const otherOptionReferralChannelEnabled =
-        watch('referralChannel') === 'Other';
+        otherOptionReferralChannel === 'Other';
     const toggleDatePickerModal = () => {
         setDatePickerVisible((oldState) => !oldState);
     };
     const contactOptionSelectorRef = useRef(null);
     const { statusBarHeight } = Constants;
     const contactFormRef = useRef(null);
+
+    //console.log()
 
     return (
         <View ref={contactFormRef}>
@@ -253,7 +259,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                                             styles2.contactOptionSelector,
                                                             styles.contactOptionSelector,
                                                         ]}
-                                                        placeholder="Contact Option"
+                                                        placeholder="Select Option"
                                                         placeholderTextColor="#1CB8F3"
                                                         pointerEvents="none"
                                                         editable={false}
@@ -461,7 +467,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                         )}
                     </View>
 
-                    {hireUs && (
+                    {hireUs ? (
                         <View>
                             <MarginVertical />
                             <View
@@ -569,12 +575,13 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                         contactFormRef={contactFormRef}
                                         required
                                         scrollRef={scrollRef}
+                                        contactOption={contactOption}
                                     />
                                 )}
                             />
                             <MarginVertical />
                         </View>
-                    )}
+                    ) : null}
                     {inquiry && (
                         <View>
                             <MarginVertical />
@@ -642,6 +649,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                         contactFormRef={contactFormRef}
                                         required
                                         scrollRef={scrollRef}
+                                        contactOption={contactOption}
                                     />
                                 )}
                             />

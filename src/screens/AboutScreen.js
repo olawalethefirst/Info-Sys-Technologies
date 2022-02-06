@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { connect } from 'react-redux';
 import SubScreenTemplate from '../components/SubScreenTemplate';
@@ -8,6 +8,7 @@ import Objectives from '../components/Objectives';
 import Delivery from '../components/Delivery';
 import PropTypes from 'prop-types';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useScrollToTop } from '@react-navigation/native';
 
 function AboutScreen({
     margin,
@@ -19,6 +20,8 @@ function AboutScreen({
     const columnMode = deviceWidthClass === 'type1';
     const tabBarHeight = useBottomTabBarHeight();
     const effectiveBodyHeight = bodyHeight - tabBarHeight;
+    const scrollRef = useRef(null);
+    useScrollToTop(scrollRef);
     const sectionComponents = [
         {
             key: '0',
@@ -79,6 +82,7 @@ function AboutScreen({
                 headerSize={headerSize}
                 heading="About Us"
                 sectionComponents={sectionComponents}
+                scrollRef={scrollRef}
             />
         </SafeAreaView>
     );

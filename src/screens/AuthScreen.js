@@ -21,7 +21,6 @@ import scrollToTop from '../helperFunctions/scrollToTop';
 import Auth from '../components/Auth';
 import Constants from 'expo-constants';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import {stickyHeaderHeight} from '../constants'
 
 const AuthScreen = ({
     headerSize,
@@ -56,7 +55,7 @@ const AuthScreen = ({
             style={{ flex: 1, backgroundColor: 'white' }}
             behavior={Platform.select({ ios: 'height', android: null })}
             keyboardVerticalOffset={Platform.select({
-                ios: stickyHeaderHeight + statusBarHeight,
+                ios: headerSize + statusBarHeight,
                 android: null,
             })}
         >
@@ -81,7 +80,7 @@ const mapStateToProps = ({
         bodyHeight,
         deviceWidthClass,
     },
-    forumState: { user },
+    forumTempState: { user },
 }) => {
     return {
         headerSize,

@@ -40,15 +40,15 @@ function NavigationScreen({ fontFactor, navigation, user, updateUser }) {
         },
     };
 
-    useEffect(() => {
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                updateUser(user);
-            } else {
-                updateUser(null);
-            }
-        });
-    }, [updateUser]);
+    // useEffect(() => {
+    //     firebase.auth().onAuthStateChanged((user) => {
+    //         if (user) {
+    //             updateUser(user);
+    //         } else {
+    //             updateUser(null);
+    //         }
+    //     });
+    // }, [updateUser]);
     return (
         <SafeAreaView style={[styles.modalContainer]}>
             <Pressable
@@ -193,7 +193,7 @@ NavigationScreen.propTypes = {
 
 const mapStateToProps = ({
     settingsState: { fontFactor, headerSize },
-    forumState: { user },
+    forumTempState: { user },
 }) => ({
     fontFactor,
     headerSize,

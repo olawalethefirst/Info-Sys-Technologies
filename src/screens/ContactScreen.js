@@ -5,12 +5,12 @@ import { connect } from 'react-redux';
 import Contact from '../components/Contact';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
-import {stickyHeaderHeight} from '../constants'
+import { useScrollToTop } from '@react-navigation/native';
 
 function ContactScreen({ margin, headerSize, fontFactor }) {
     const scrollRef = useRef(null);
+    useScrollToTop(scrollRef);
     const { statusBarHeight } = Constants;
-
     const sectionComponents = [
         {
             key: '0',
@@ -30,7 +30,7 @@ function ContactScreen({ margin, headerSize, fontFactor }) {
             behavior={Platform.select({ ios: 'padding', android: null })}
             style={styles.container}
             keyboardVerticalOffset={Platform.select({
-                ios: stickyHeaderHeight + statusBarHeight,
+                ios: headerSize + statusBarHeight,
                 android: null,
             })}
         >
@@ -40,6 +40,7 @@ function ContactScreen({ margin, headerSize, fontFactor }) {
                 margin={margin}
                 fontFactor={fontFactor}
                 headerSize={headerSize}
+                scrollRef={scrollRef}
             />
         </KeyboardAvoidingView>
     );

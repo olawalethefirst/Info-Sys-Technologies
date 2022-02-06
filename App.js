@@ -13,6 +13,8 @@ import updateBodyHeight from './src/redux/actions/updateBodyHeight';
 import updateFontFactor from './src/redux/actions/updateFontFactor';
 import updateHeaderSize from './src/redux/actions/updateHeaderSize';
 import TabNavigator from './src/navigators/TabNavigator';
+import { firebase } from './src/helperFunctions/initializeFirebase';
+import updateUser from './src/redux/actions/updateUser';
 
 function PreApp() {
     const [assetsLoaded, setAssetsLoaded] = useState(false);
@@ -40,15 +42,38 @@ function PreApp() {
         async function prepare() {
             try {
                 await SplashScreen.preventAutoHideAsync();
-                triggerSynchronousActions();
                 await loadAssetsAsync();
                 setAssetsLoaded(true);
             } catch (e) {
+                console.log('assets loading failed');
                 prepare();
             }
         }
         prepare();
-    }, [triggerSynchronousActions]);
+    }, []);
+
+    useEffect(() => {
+        async function prepareSettingsState() {
+            if (
+                !margin ||
+                !headerSize ||
+                !deviceWidthClass ||
+                !bodyHeight ||
+                !fontFactor
+            ) {
+                console.log('triggered me');
+                triggerSynchronousActions();
+            }
+        }
+        prepareSettingsState();
+    }, [
+        triggerSynchronousActions,
+        margin,
+        headerSize,
+        deviceWidthClass,
+        bodyHeight,
+        fontFactor,
+    ]);
 
     useEffect(() => {
         if (
@@ -73,6 +98,20 @@ function PreApp() {
         assetsLoaded,
     ]);
 
+    // console.log(Platform.OS, margin,
+    //     headerSize,
+    //     deviceWidthClass,
+    //     bodyHeight,
+    //     fontFactor,
+    //     assetsLoaded)
+
+    useEffect(() => {
+        const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+            dispatch(updateUser(user));
+        });
+        return unsubscribe;
+    }, [dispatch]);
+
     if (!appIsReady) {
         return null;
     }
@@ -87,7 +126,7 @@ function PreApp() {
 export default function App() {
     return (
         <Provider store={store}>
-            <PersistGate persistor={persistor}>
+            <PersistGate loading={null} persistor={persistor}>
                 <SafeAreaProvider>
                     <PreApp />
                 </SafeAreaProvider>

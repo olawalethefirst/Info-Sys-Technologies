@@ -2,7 +2,6 @@ import { useState } from 'react';
 import signUpWithEmailAsync from '../helperFunctions/signUpWithEmailAsync';
 import signInWithEmailAsync from '../helperFunctions/signInWIthEmailAsync';
 import fetchAccountProvider from '../helperFunctions/fetchAccountProviderAsync';
-import { useNavigation } from '@react-navigation/native';
 
 const useAuth = (createAccount) => {
     //states
@@ -14,11 +13,8 @@ const useAuth = (createAccount) => {
     const invalidPassword =
         'The password is invalid or the user does not have a password.';
     const retryAbleError = error === firebaseNetworkError;
-    const navigation = useNavigation();
 
     //helper functions
-    const navigate = () => setTimeout(() => navigation.goBack(), 600);
-
     const activateModal = () => setModalVisible((oldState) => !oldState);
     const resetError = () => setError('');
     const auth = (email, password) =>

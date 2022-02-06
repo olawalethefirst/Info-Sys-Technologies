@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    Keyboard,
+} from 'react-native';
 import moment from 'moment';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -18,13 +24,48 @@ const Post = ({
     user,
     toggleCallToAuth,
     deviceWidthClass,
+    containerRef,
+    effectiveBodyHeight,
+    commentInputRef,
+    scrollRef,
 }) => {
     const [liked, setLiked] = useState(false);
     const columnMode = checkColumnMode(deviceWidthClass);
+    const postRef = useRef(null);
+
+    const onPress = () => {
+        commentInputRef.current?.focus();
+        let itemTopOffset;
+        let itemHeight;
+        if (containerRef.current && postRef.current) {
+            postRef.current.measureLayout(
+                containerRef.current,
+                (left, top, width, height) => {
+                    itemTopOffset = top;
+                    itemHeight = height;
+                }
+            );
+        }
+        Keyboard.addListener(
+            'keyboardDidShow',
+            ({ endCoordinates: { height } }) => {
+                if (itemTopOffset && itemHeight) {
+                    const offset =
+                        itemTopOffset -
+                        (effectiveBodyHeight - height - itemHeight);
+                    scrollRef.current.scrollToOffset({
+                        offset,
+                    });
+                }
+                Keyboard.removeAllListeners('keyboardDidShow');
+            }
+        );
+    };
 
     return (
         <View>
             <View
+                ref={postRef}
                 style={{
                     borderBottomColor: '#cecece',
                     borderBottomWidth: wp(0.25),
@@ -63,6 +104,17 @@ const Post = ({
                             }}
                         >
                             {moment(new Date()).fromNow()}
+                        </Text>
+                        <MarginVertical size={0.2} />
+                        <Text
+                            style={{
+                                fontSize: fontFactor * wp(3.75),
+                                lineHeight: fontFactor * wp(4.77),
+                                fontFamily: 'Poppins_400Regular',
+                                color: '#808080',
+                            }}
+                        >
+                            0 likes
                         </Text>
                     </View>
                     <MarginVertical />
@@ -138,7 +190,9 @@ const Post = ({
                             />
                         </TouchableOpacity>
                         <TouchableOpacity
-                            onPress={() => (user ? null : toggleCallToAuth())}
+                            onPress={() =>
+                                user ? onPress() : toggleCallToAuth()
+                            }
                             style={{
                                 padding: fontFactor * wp(1),
                                 margin: -fontFactor * wp(1),

@@ -1,15 +1,9 @@
 import {
     UPDATE_HEADER_SIZE,
     UPDATE_MARGIN,
-    ASSETS_LOADED,
     UPDATE_DEVICE_WIDTH_CLASS,
     UPDATE_BODY_HEIGHT,
     UPDATE_FONT_FACTOR,
-    UPDATE_SERVICES_SCROLL_POSITION,
-    UPDATE_CONTACT_SCROLL_POSITION,
-    UPDATE_CONTACT_CONTENT_SIZE,
-    UPDATE_VIEW_POST_FOOTER_POSITION,
-    UPDATE_VIEW_POST_FLATLIST_SCREEN_HEIGHT,
 } from '../actions/actionTypes';
 
 //Initial States
@@ -40,11 +34,6 @@ export default function settingsReducer(state = initialState, action) {
                 ...state,
                 margin: action.payload,
             };
-        case ASSETS_LOADED:
-            return {
-                ...state,
-                assetsLoaded: true,
-            };
         case UPDATE_DEVICE_WIDTH_CLASS:
             return {
                 ...state,
@@ -60,17 +49,7 @@ export default function settingsReducer(state = initialState, action) {
                 ...state,
                 fontFactor: action.payload,
             };
-        case UPDATE_SERVICES_SCROLL_POSITION:
-            return { ...state, servicesScrollViewOffset: action.payload };
-        case UPDATE_CONTACT_SCROLL_POSITION:
-            return { ...state, contactScrollViewOffset: action.payload };
-        case UPDATE_CONTACT_CONTENT_SIZE:
-            return { ...state, contactFormContentSize: action.payload };
-        case UPDATE_VIEW_POST_FOOTER_POSITION:
-            return { ...state, viewPostFooterPosition: action.payload };
-        case UPDATE_VIEW_POST_FLATLIST_SCREEN_HEIGHT:
-            return { ...state, viewPostFlatListScreenHeight: action.payload };
         default:
-            return { ...state };
+            return state;
     }
 }

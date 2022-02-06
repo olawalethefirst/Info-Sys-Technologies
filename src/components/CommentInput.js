@@ -20,6 +20,7 @@ const CommentInput = ({
     fontFactor,
     margin,
     scrollRef,
+    commentInputRef,
     // postScreenOffset,
 }) => {
     const [comment, setComment] = useState('');
@@ -41,6 +42,7 @@ const CommentInput = ({
             }}
         >
             <TextInput
+                ref={commentInputRef}
                 style={[
                     {
                         fontSize: fontFactor * wp(4),
@@ -55,21 +57,21 @@ const CommentInput = ({
                 onChangeText={(text) => setComment(text)}
                 placeholder="Type your comment"
                 placeholderTextColor="#808080"
-                onFocus={() =>
-                    Keyboard.addListener(
-                        'keyboardDidShow',
-                        ({ endCoordinates: { height } }) => {
-                            scrollRef.current.scrollToOffset({
-                                offset:
-                                    store.getState().settingsTempState
-                                        .postScreenOffset + height,
-                                animated: true,
-                            });
+                // onFocus={() =>
+                //     Keyboard.addListener(
+                //         'keyboardDidShow',
+                //         ({ endCoordinates: { height } }) => {
+                //             scrollRef.current.scrollToOffset({
+                //                 offset:
+                //                     store.getState().settingsTempState
+                //                         .postScreenOffset + height,
+                //                 animated: true,
+                //             });
 
-                            Keyboard.removeAllListeners('keyboardDidShow');
-                        }
-                    )
-                }
+                //             Keyboard.removeAllListeners('keyboardDidShow');
+                //         }
+                //     )
+                // }
                 textAlignVertical="center"
             />
             <TouchableOpacity

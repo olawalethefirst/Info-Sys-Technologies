@@ -6,7 +6,6 @@ const createCommentAsync = (commentID, mention, parentPost, comment) => {
         .firestore()
         .doc(`/comments/${commentID}`)
         .set({
-            ...mention,
             parentPost,
             owner: firebase.auth().currentUser.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),

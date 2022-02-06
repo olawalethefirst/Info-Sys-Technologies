@@ -11,6 +11,7 @@ import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import processErrorString from '../helperFunctions/processErrorString';
 
 // eslint-disable-next-line no-undef
 const AuthModal = ({
@@ -26,26 +27,7 @@ const AuthModal = ({
     retryAbleError,
 }) => {
     const { statusBarHeight } = Constants;
-    const generateError = (message) => {
-        switch (message) {
-            //err.code - auth/user-not-found (User not found) -- suggest sign up (This may be avoided by confirming provider before initiating flow - will not require to account for in response)
-            //err.code - auth/wrong-password (invalid password) - report invalid email or password
-            case 'Password should be at least 6 characters':
-                return 'Password should be at least 6 characters';
-            case 'The email address is badly formatted.':
-                return 'Invalid email format.';
-            case 'There is no user record corresponding to this identifier. The user may have been deleted.':
-                return 'Invalid username or password.';
-            case 'The email address is already in use by another account.':
-                return 'User already exists, please sign in instead.';
-            case 'Login with Google instead.':
-                return 'Login with Google instead.';
-            case 'The password is invalid or the user does not have a password.':
-                return 'Invalid username or password.';
-            default:
-                return 'An error occured, please try again';
-        }
-    };
+    const errorMessage = error ? processErrorString(error) : null;
 
     return (
         <Modal
@@ -127,7 +109,7 @@ const AuthModal = ({
                                 },
                             ]}
                         >
-                            {generateError(error)}
+                            {errorMessage}
                         </Text>
                     </View>
                     {retryAbleError && (
@@ -202,7 +184,7 @@ AuthModal.propTypes = {
 };
 
 const mapStateToProps = ({
-    forumState: { user },
+    forumTempState: { user },
     settingsState: { fontFactor, margin },
 }) => {
     return { user, fontFactor, margin };

@@ -13,14 +13,18 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import PropTypes from 'prop-types';
+import { Platform } from 'react-native';
 
 const Tab = createBottomTabNavigator();
+const isAndroid = Platform.OS === 'android'; // add padding to app for android to prevent weird shift when keyboard up
 
 const TabNavigator = ({ headerSize }) => {
     return (
         <Tab.Navigator
             initialRouteName="Home"
+            backBehavior="none"
             screenOptions={{
+                tabBarHideOnKeyboard: isAndroid ? true : false,
                 headerBackground: HeaderBackground,
                 headerTitleAlign: 'left',
                 headerTitle: function headerTitle() {
@@ -98,7 +102,6 @@ const TabNavigator = ({ headerSize }) => {
                     },
                 }}
             />
-
             <Tab.Screen
                 name="ForumStack"
                 component={ForumNavigator}

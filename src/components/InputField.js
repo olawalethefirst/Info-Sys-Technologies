@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
     TextInput,
     Text,
@@ -6,13 +6,12 @@ import {
     Platform,
     StyleSheet,
     Keyboard,
-    Dimensions,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Constants from 'expo-constants';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 function InputField({
     onChange,
@@ -26,7 +25,7 @@ function InputField({
     fontFactor,
     scrollRef,
     contactFormRef,
-    headerSize,
+    bodyHeight,
     ...props
 }) {
     const styles2 = {
@@ -50,38 +49,45 @@ function InputField({
             lineHeight: fontFactor * wp(4.62),
         },
     };
-    const windowHeight = Dimensions.get('window').height;
-    const { statusBarHeight } = Constants;
     const mulitLineInputRef = useRef(null);
-    const [offset, setOffset] = useState(0);
-
-    useEffect(() => {
-        if (mulitLineInputRef?.current && contactFormRef?.current) {
-            mulitLineInputRef.current.measureLayout(
-                contactFormRef.current,
-                (left, top, height) => {
-                    setOffset(
-                        top +
-                            2 * headerSize -
-                            (windowHeight -
-                                headerSize -
-                                statusBarHeight -
-                                height)
-                    );
+    const tabBarHeight = useBottomTabBarHeight();
+    const effectiveBodyHeight = bodyHeight - tabBarHeight;
+    const isIOS = Platform.OS === 'ios';
+    const keyBoardAvoidingFn = () => {
+        if (isIOS && megaSize) {
+            let fieldFormOffset;
+            let fieldHeight;
+            if (mulitLineInputRef.current && contactFormRef.current) {
+                mulitLineInputRef.current.measureLayout(
+                    contactFormRef.current,
+                    (left, top, width, height) => {
+                        fieldFormOffset = top;
+                        fieldHeight = height;
+                    }
+                );
+            }
+            Keyboard.addListener(
+                'keyboardDidShow',
+                ({ endCoordinates: { height } }) => {
+                    if (fieldHeight && fieldFormOffset) {
+                        const offset =
+                            fieldFormOffset -
+                            (effectiveBodyHeight - //used effectiveBodyHeight as keyboard height ignores height of tab Bar in calculation
+                                height -
+                                fieldHeight);
+                        scrollRef?.current?.scrollToOffset({
+                            offset: offset,
+                            animated: true,
+                        });
+                    }
+                    Keyboard.removeAllListeners('keyboardDidShow');
                 }
             );
         }
-    }, [
-        offset,
-        headerSize,
-        windowHeight,
-        statusBarHeight,
-        mulitLineInputRef,
-        contactFormRef,
-    ]);
+    };
 
     return (
-        <View ref={mulitLineInputRef}>
+        <View>
             <Text
                 style={[
                     styles.whiteText,
@@ -94,29 +100,12 @@ function InputField({
             </Text>
             <MarginVertical size={0.2} />
             <TextInput
+                ref={mulitLineInputRef}
                 autoCapitalize={'none'}
                 autoCorrect={false}
                 multiline={megaSize ? true : false}
-                onFocus={
-                    Platform.OS === 'ios' && megaSize
-                        ? () => {
-                              Keyboard.addListener('keyboardDidShow', () =>
-                                  scrollRef?.current?.scrollToOffset({
-                                      offset: offset,
-                                      animated: true,
-                                  })
-                              );
-                          }
-                        : null
-                }
-                onBlur={
-                    megaSize
-                        ? () => {
-                              Keyboard.removeAllListeners('keyboardDidShow');
-                              onBlur();
-                          }
-                        : onBlur
-                }
+                onFocus={keyBoardAvoidingFn}
+                onBlur={onBlur}
                 textAlignVertical={megaSize && 'top'}
                 value={value}
                 onChangeText={onChange}
@@ -186,13 +175,13 @@ InputField.propTypes = {
     label: PropTypes.string,
     fontFactor: PropTypes.number,
     scrollRef: PropTypes.object,
-    headerSize: PropTypes.number,
     contactFormRef: PropTypes.object,
+    bodyHeight: PropTypes.number,
 };
 
 const mapStateToProps = (state) => ({
     fontFactor: state.settingsState.fontFactor,
-    headerSize: state.settingsState.headerSize,
+    bodyHeight: state.settingsState.bodyHeight,
 });
 
 export default connect(mapStateToProps)(InputField);

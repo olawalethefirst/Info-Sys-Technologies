@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Pressable, Platform } from 'react-native';
 import { connect } from 'react-redux';
-import updateActiveForumAction from '../redux/actions/updateActiveForumAction';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -54,15 +53,9 @@ const PostSuccessfulModal = ({ visible, toggleModal, fontFactor, margin }) => {
     );
 };
 
-const mapStateToProps = ({
-    forumTempState: { activeForumAction, createPostModalOpen },
-}) => ({
-    activeForumAction,
-    createPostModalOpen,
-});
 
-export default connect(mapStateToProps, { updateActiveForumAction })(
+export default 
     PostSuccessfulModal
-);
+
 
 const styles = StyleSheet.create({});

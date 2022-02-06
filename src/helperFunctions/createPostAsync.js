@@ -7,6 +7,7 @@ const createPostAsync = (title, body, category, postID) => {
         title,
         body,
         category,
+        searchField: category + '. ' + title + '. ' + body 
     });
 };
 

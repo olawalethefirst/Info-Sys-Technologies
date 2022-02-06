@@ -8,7 +8,6 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { connect } from 'react-redux';
-import updateActiveForumAction from '../redux/actions/updateActiveForumAction';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -119,12 +118,7 @@ const PostErrorModal = ({
     );
 };
 
-// const mapStateToProps = ({
-//     forumTempState: { activeForumAction, createPostModalOpen },
-// }) => ({
-//     activeForumAction,
-//     createPostModalOpen,
-// });
+
 
 export default PostErrorModal;
 

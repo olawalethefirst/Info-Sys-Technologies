@@ -96,7 +96,7 @@ const Authoption = ({ fontFactor, animateView, user }) => {
     );
 };
 
-const mapStateToProps = ({ forumState: { user } }) => ({ user });
+const mapStateToProps = ({ forumTempState: { user } }) => ({ user });
 export default connect(mapStateToProps)(Authoption);
 
 const styles = StyleSheet.create({});

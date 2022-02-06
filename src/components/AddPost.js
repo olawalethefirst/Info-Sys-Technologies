@@ -4,6 +4,8 @@ import Icon from 'react-native-vector-icons/Foundation';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 import CallToAuth from './CallToAuth';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+//switch to use react native reanimated v2? for native animation 
 
 const AddPost = ({
     margin,
@@ -35,8 +37,8 @@ const AddPost = ({
 
     return (
         <Pressable
-            onPressIn={onPressIn}
-            onPressOut={onPressOut}
+            // onPressIn={onPressIn}
+            // onPressOut={onPressOut}
             onPress={user ? toggleModal : toggleCallToAuthModal}
             disabled={disabled}
             style={{
@@ -45,38 +47,42 @@ const AddPost = ({
                 bottom: headerSize,
             }}
         >
-            <Animated.View
-                style={[
-                    styles.container,
-                    {
-                        width: wp(20) * fontFactor,
-                        height: wp(20) * fontFactor,
-                        borderRadius: wp(10),
-                        transform: [{ scale: animatedValue }],
-                        elevation: wp(1) * fontFactor,
-                        shadowOffset: {
-                            width: wp(0.5) * fontFactor,
-                            height: wp(0.5) * fontFactor,
-                        },
-                        shadowRadius: wp(0.5) * fontFactor,
-                    },
-                ]}
-            >
-                <Icon
-                    name="plus"
-                    style={{
-                        fontSize: fontFactor * wp(6),
-                        lineHeight: fontFactor * wp(7.7),
-                        color: '#fff',
-                    }}
-                />
-            </Animated.View>
-            <CallToAuth
-                toggleCallToAuth={toggleCallToAuthModal}
-                visible={callToAuthVisible}
-                margin={margin}
-                fontFactor={fontFactor}
-            />
+            {({ pressed }) => (
+                <>
+                    <Animated.View
+                        style={[
+                            styles.container,
+                            {
+                                width: wp(20) * fontFactor,
+                                height: wp(20) * fontFactor,
+                                borderRadius: wp(10),
+                                transform: [{ scale: pressed ? 0.9 : 1 }],
+                                elevation: wp(1) * fontFactor,
+                                shadowOffset: {
+                                    width: wp(0.5) * fontFactor,
+                                    height: wp(0.5) * fontFactor,
+                                },
+                                shadowRadius: wp(0.5) * fontFactor,
+                            },
+                        ]}
+                    >
+                        <Icon
+                            name="plus"
+                            style={{
+                                fontSize: fontFactor * wp(6),
+                                lineHeight: fontFactor * wp(7.7),
+                                color: '#fff',
+                            }}
+                        />
+                    </Animated.View>
+                    <CallToAuth
+                        toggleCallToAuth={toggleCallToAuthModal}
+                        visible={callToAuthVisible}
+                        margin={margin}
+                        fontFactor={fontFactor}
+                    />
+                </>
+            )}
         </Pressable>
     );
 };

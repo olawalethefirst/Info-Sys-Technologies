@@ -1,36 +1,99 @@
 import {
-    UPDATE_POSTS_DATA_SOURCE,
-    UPDATE_ACTIVE_FORUM_ACTION,
-    CREATE_POST_MODAL_STATE,
-    UPDATE_POSTS,
-    UPDATE_POSTS_FIRST_BATCH,
+    UPDATE_USER_STATE,
+    LOADING_POSTS_INITIATED,
+    LOADING_POSTS_SUCCESSFUL,
+    LOADING_POSTS_FAILED,
+    REFRESHING_POSTS_INITIATED,
+    REFRESHING_POSTS_SUCCESSFUL,
+    REFRESHING_POSTS_FAILED,
+    LOADING_POSTS_FIRST_BATCH_SUCCESSFUL,
+    SEARCH_ACTIVE,
+    SEARCH_NOT_ACTIVE,
+    SHOW_FOOTER,
+    SEARCH_POSTS_INITIATED,
+    SEARCH_POSTS_SUCCESSFUL,
+    SEARCH_POSTS_FAILED,
 } from '../actions/actionTypes';
 
 // inital State
 const initialState = {
-    activeForumAction: null,
-    fromCache: true,
-    createPostModalOpen: false,
-    posts: [],
+    user: null,
+    loadingPosts: false,
+    loadingPostsError: null,
+    refreshingPosts: false,
+    searching: false,
+    searchResult: [],
+    showFooter: false,
+    searchString: '',
 };
 
 const forumTempReducer = (state = initialState, action) => {
     switch (action.type) {
-        case UPDATE_ACTIVE_FORUM_ACTION:
+        case UPDATE_USER_STATE:
+            return { ...state, user: action.payload };
+        case LOADING_POSTS_INITIATED:
+            return { ...state, loadingPosts: true };
+        case LOADING_POSTS_FIRST_BATCH_SUCCESSFUL:
+            return { ...state, loadingPosts: false, loadingPostsError: null };
+        case LOADING_POSTS_SUCCESSFUL:
+            return { ...state, loadingPosts: false, loadingPostsError: null };
+        case LOADING_POSTS_FAILED:
             return {
                 ...state,
-                activeForumAction: action.payload,
+                loadingPosts: false,
+                loadingPostsError: action.payload,
             };
-        case UPDATE_POSTS_DATA_SOURCE:
-            return { ...state, fromCache: action.payload };
-        case CREATE_POST_MODAL_STATE:
-            return { ...state, createPostModalOpen: action.payload };
-        case UPDATE_POSTS:
-            return { ...state, posts: [...state.posts, action.payload] };
-        case UPDATE_POSTS_FIRST_BATCH:
-            return { ...state, posts: action.payload };
+        case REFRESHING_POSTS_INITIATED:
+            return { ...state, refreshingPosts: true };
+        case REFRESHING_POSTS_SUCCESSFUL: {
+            return {
+                ...state,
+                refreshingPosts: false,
+                loadingPostsError: null,
+            };
+        }
+        case REFRESHING_POSTS_FAILED:
+            return {
+                ...state,
+                refreshingPosts: false,
+                loadingPostsError: action.payload,
+            };
+        case SEARCH_ACTIVE: {
+            return { ...state, searching: true, searchResult: [] };
+        }
+        case SEARCH_NOT_ACTIVE:
+            return {
+                ...state,
+                searching: false,
+                searchResult: [],
+                searchString: '',
+                loadingPosts: false,
+                loadingPostsError: null,
+            };
+        case SHOW_FOOTER:
+            return { ...state, showFooter: action.payload };
+        case SEARCH_POSTS_INITIATED:
+            return {
+                ...state,
+                searchString: action.payload,
+                loadingPosts: action.payload ? true : false,
+                loadingPostsError: null,
+            };
+        case SEARCH_POSTS_SUCCESSFUL:
+            return {
+                ...state,
+                loadingPosts: false,
+                searchResult: action.payload,
+            };
+        case SEARCH_POSTS_FAILED:
+            return {
+                ...state,
+                loadingPosts: false,
+                loadingPostsError: action.payload,
+                searchResult: [],
+            };
         default:
-            return { ...state };
+            return state;
     }
 };
 

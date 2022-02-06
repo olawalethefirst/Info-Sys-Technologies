@@ -21,16 +21,12 @@ import ModalSelector from 'react-native-modal-selector';
 import Modal from 'react-native-modal';
 import KeyboardViewContainer from './KeyboardViewContainer';
 import createPostAsync from '../helperFunctions/createPostAsync';
-import updateActiveForumAction from '../redux/actions/updateActiveForumAction';
 import { connect } from 'react-redux';
 
 const CreatePost = ({
     visible,
     headerSize,
     margin,
-    // title,
-    // body,
-    // category,
     fontFactor,
     toggleModal,
     onSubmitSuccessful,
@@ -165,7 +161,7 @@ const CreatePost = ({
                         })}
                         keyboardVerticalOffset={Platform.select({
                             ios: statusBarHeight + headerSize + headerSize / 3,
-                            android: 0,
+                            android: null,
                         })}
                         style={{ flex: 1 }}
                     >
@@ -737,12 +733,10 @@ const CreatePost = ({
     );
 };
 
-const mapStateToProps = ({ forumTempState: { activeForumAction } }) => ({
-    activeForumAction,
+const mapStateToProps = ({ forumTempState }) => ({
 });
 
 export default connect(mapStateToProps, {
-    updateActiveForumAction,
 })(CreatePost);
 
 const styles = StyleSheet.create({});

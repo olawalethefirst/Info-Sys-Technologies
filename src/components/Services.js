@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { SafeAreaView, View, Dimensions, Animated } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import ServicesIntro from './ServicesIntro';
@@ -16,8 +16,11 @@ import {
 import DancingDownArrow from './DancingDownArrow';
 import SlideIndicator from './SlideIndicator';
 import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/native';
 
-function Services({  headerSize, fontFactor, pagerRef }) {
+function Services({ headerSize, fontFactor }) {
+    const pagerRef = useRef(null);
+    const navigation = useNavigation();
     const arrowWidth = 0.25 * headerSize;
     const { width } = Dimensions.get('window');
     const contentContainerWidth = width - 2 * headerSize;
@@ -26,9 +29,11 @@ function Services({  headerSize, fontFactor, pagerRef }) {
         setPage(page);
     };
     const scrollToNextPage = () => {
-        console.log('called');
         pagerRef.current?.setPage(page + 1);
     };
+    const scrollToTop = useCallback(() => {
+        pagerRef.current?.setPage(0);
+    }, []);
     const animatedValue = useRef(new Animated.Value(1)).current;
     const fadeOut = useRef(
         Animated.timing(animatedValue, {
@@ -45,6 +50,15 @@ function Services({  headerSize, fontFactor, pagerRef }) {
         })
     ).current;
     let key = 0;
+
+    useEffect(() => {
+        navigation.addListener('tabPress', () => {
+            if (navigation.isFocused()) {
+                scrollToTop();
+            }
+        });
+        return () => navigation.removeListener('');
+    }, [navigation, scrollToTop]);
 
     return (
         <SafeAreaView
@@ -72,7 +86,7 @@ function Services({  headerSize, fontFactor, pagerRef }) {
                         contentContainerWidth={contentContainerWidth}
                     />
                 </View>
-                <View  key={`${key++}`} collapsable={false}>
+                <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
                         details={generalInformationTechnologyConsulting}

@@ -4,7 +4,6 @@ import * as GoogleSignIn from 'expo-google-sign-in';
 import authWithCredentialAsync from '../helperFunctions/authWithCredentialAsync';
 import createCredential from '../helperFunctions/createCredential';
 import { clientId } from '../../config';
-import { useNavigation } from '@react-navigation/native';
 
 export default function useGoogleAuth(native) {
     //Universal States
@@ -15,13 +14,7 @@ export default function useGoogleAuth(native) {
     const [retryAbleError, setRetryAbleError] = useState(false);
     const firebaseNetworkError =
         'A network error (such as timeout, interrupted connection or unreachable host) has occurred.';
-    const navigation = useNavigation();
 
-    //Universal Functions
-    // const navigate = useCallback(
-    //     () => setTimeout(() => navigation.goBack(), 600),
-    //     [navigation]
-    // );
     const resetError = () => setError('');
     const activateModal = () => {
         resetError();
