@@ -5,10 +5,12 @@ const makeQueryablePromise = (promise) => {
     const result = promise.then(
         (res) => {
             isFulfilled = true;
+            console.log('i am fulfilled');
             return res;
         },
         (e) => {
             isRejeceted = true;
+            console.log('i failed');
             throw e;
         }
     );

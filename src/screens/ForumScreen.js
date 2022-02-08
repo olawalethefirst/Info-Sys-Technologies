@@ -33,6 +33,9 @@ import onEndOfPostsReached from '../helperFunctions/onEndOfPostsReached';
 import { store } from '../redux/store';
 import updateShowFooter from '../redux/actions/updateShowFooter';
 import PropTypes from 'prop-types';
+import onLikePostAsync from '../helperFunctions/onLikePostAsync';
+import createPostAsync from '../helperFunctions/createPostAsync';
+import { v4 as uuidv4 } from 'uuid';
 
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['[2022-01-']);
@@ -123,85 +126,88 @@ function ForumScreen({
     });
 
     useEffect(() => {
-        // fetchPosts();
+        fetchPosts();
     }, [fetchPosts]);
 
-    // const createPlentyPosts = async () => {
-    //     const wordsArray = [
-    //         'To',
-    //         'is',
-    //         'Has',
-    //         'And',
-    //         'in',
-    //         'About',
-    //         'inside',
-    //         'From',
-    //         'without',
-    //         'Within',
-    //         'under',
-    //         'deeply',
-    //         'Below',
-    //         'Adapt',
-    //         'transform',
-    //     ];
-    //     // check firebase to enforce field value to one of a catgeroies array
-    //     const categories = [
-    //         'Computer Maintenance',
-    //         'Audit',
-    //         'Accounting',
-    //         'Networking',
-    //     ];
-    //     let i = 0;
-    //     while (i < 300) {
-    //         i++;
+    const createPlentyPosts = async () => {
+        const wordsArray = [
+            'To',
+            'is',
+            'Has',
+            'And',
+            'in',
+            'About',
+            'inside',
+            'From',
+            'without',
+            'Within',
+            'under',
+            'deeply',
+            'Below',
+            'Adapt',
+            'transform',
+        ];
+        // check firebase to enforce field value to one of a catgeroies array
+        const categories = [
+            'Computer Maintenance',
+            'Audit',
+            'Accounting',
+            'Networking',
+        ];
+        let i = 0;
+        while (i < 300) {
+            i++;
 
-    //         const wordsRandomNo = Math.floor(Math.random() * wordsArray.length);
-    //         const catgRandNo = Math.floor(Math.random() * categories.length);
-    //         const body = [];
-    //         for (let i = 0; i <= wordsRandomNo; i++) {
-    //             body.push(wordsArray[i]);
-    //         }
+            const wordsRandomNo = Math.floor(Math.random() * wordsArray.length);
+            const catgRandNo = Math.floor(Math.random() * categories.length);
+            const body = [];
+            for (let i = 0; i <= wordsRandomNo; i++) {
+                body.push(wordsArray[i]);
+            }
 
-    //         createPostAsync(
-    //             i + '',
-    //             body.join(' '),
-    //             categories[catgRandNo],
-    //             uuidv4()
-    //         )
-    //             .then((doc) => console.log(doc, ' added successfully'))
-    //             .catch((doc) => console.log(doc, 'add failed'));
-    //     }
-    // };
-    // const createPostLikes = async () => {
-    //     const usersArray = [
-    //         'qllAFZtSkqX7GuaZ9oW97zPhWKT2',
-    //         'f7Rk6WbGnUYwuD9oZO6gJiufWQ32',
-    //         'IW4GkxsLm9giSV18tnkOjvPrNXr1',
-    //         'BNfIHiYJuCQFcgxLhTipUQ6SXx82',
-    //         'sEQjfFZdlVbMpUwAASv5lzhj8vs2',
-    //         'F8mr2nPWVoOethu5S5JvQZAqPk92',
-    //         'EDWbWh3Y64aPYFGzMrPiKNqoCJD3',
-    //         '2dEkCa3zkYRR0kZm7Z8ceKKy4Ua2',
-    //         'x3laHuM1UPRt2KODV7qUXju3WMW2',
-    //         'ZwM019QIzmcoF0sqDFA42ZS1u3X2',
-    //         '1nGrqRqTIfRhaJS5k4eo26B2iZf1',
-    //         '5KayyblP7CNUFYGfUoFKVwdJ0kr1',
-    //         'hNuhIlPkrMTDGcePSn1TYMsT8bk2',
-    //         'AMDhHJ23XSaQXmEUzWzI6ve8aL03',
-    //         'lxiPfnbvixarHzg7vk4zF2drlZi1',
-    //     ];
+            createPostAsync(
+                i + '',
+                body.join(' '),
+                categories[catgRandNo],
+                uuidv4()
+            )
+                .then((doc) => console.log(doc, ' added successfully'))
+                .catch((doc) => console.log(doc, 'add failed'));
+        }
+    };
+    const createPostLikes = async () => {
+        // const usersArray = [
+        //     'qllAFZtSkqX7GuaZ9oW97zPhWKT2',
+        //     'f7Rk6WbGnUYwuD9oZO6gJiufWQ32',
+        //     'IW4GkxsLm9giSV18tnkOjvPrNXr1',
+        //     'BNfIHiYJuCQFcgxLhTipUQ6SXx82',
+        //     'sEQjfFZdlVbMpUwAASv5lzhj8vs2',
+        //     'F8mr2nPWVoOethu5S5JvQZAqPk92',
+        //     'EDWbWh3Y64aPYFGzMrPiKNqoCJD3',
+        //     '2dEkCa3zkYRR0kZm7Z8ceKKy4Ua2',
+        //     'x3laHuM1UPRt2KODV7qUXju3WMW2',
+        //     'ZwM019QIzmcoF0sqDFA42ZS1u3X2',
+        //     '1nGrqRqTIfRhaJS5k4eo26B2iZf1',
+        //     '5KayyblP7CNUFYGfUoFKVwdJ0kr1',
+        //     'hNuhIlPkrMTDGcePSn1TYMsT8bk2',
+        //     'AMDhHJ23XSaQXmEUzWzI6ve8aL03',
+        //     'lxiPfnbvixarHzg7vk4zF2drlZi1',
+        // ];
 
-    //     for (let i in posts) {
-    //         const postID = posts[i].postID;
-    //         const randomNoOfLikes = Math.floor(
-    //             Math.random() * usersArray.length
-    //         );
-    //         for (let j = 0; j < randomNoOfLikes; j++) {
-    //             const userID = usersArray[j];
-    //             onLikePost(postID, userID);
-    //         }
-    //     }
-    // };
+        // for (let i in posts) {
+        //     const postID = posts[i].postID;
+        //     const randomNoOfLikes = Math.floor(
+        //         Math.random() * usersArray.length
+        //     );
+        //     for (let j = 0; j < randomNoOfLikes; j++) {
+        //         const userID = usersArray[j];
+        //         onLikePostAsync(postID, userID);
+        //     }
+        // }
+        onLikePostAsync(posts[0].postID, 'qllAFZtSkqX7GuaZ9oW97zPhWKT2')
+            .then((e) => console.log('passsed with res: ', e))
+            .catch((e) => console.log('failed with res: ', e));
+    };
 
     return (
         <SafeAreaView style={styles2.containerHeight}>
@@ -271,7 +277,10 @@ function ForumScreen({
                     margin={margin}
                     headerSize={headerSize}
                     fontFactor={fontFactor}
-                    toggleModal={toggleModal}
+                    toggleModal={
+                        // toggleModal||
+                        createPostLikes
+                    }
                     user={user}
                     disabled={activityIndicator.current}
                 />

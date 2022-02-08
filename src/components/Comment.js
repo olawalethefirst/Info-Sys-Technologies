@@ -12,6 +12,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ReplyIcon from './ReplyIcon';
 import HeartIcon from './HeartIcon';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
+import NetInfo from '@react-native-community/netinfo';
 
 const PostComment = ({
     fontFactor,
@@ -60,6 +61,13 @@ const PostComment = ({
                 Keyboard.removeAllListeners('keyboardDidShow');
             }
         );
+    };
+
+    const onPress1 = () => {
+        NetInfo.fetch().then((state) => {
+            console.log('Connection type', state.type);
+            console.log('Is connected?', state.isConnected);
+        });
     };
 
     return (
@@ -135,7 +143,7 @@ const PostComment = ({
                     }}
                 >
                     <TouchableOpacity
-                        onPress={() => (user ? null : toggleCallToAuth())}
+                        onPress={() => (user ? onPress1() : toggleCallToAuth())}
                         style={{
                             padding: fontFactor * wp(1),
                             margin: -fontFactor * wp(1),
