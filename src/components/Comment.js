@@ -12,18 +12,15 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ReplyIcon from './ReplyIcon';
 import HeartIcon from './HeartIcon';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
-import NetInfo from '@react-native-community/netinfo';
+import { connect } from 'react-redux';
 
-const PostComment = ({
+const Comment = ({
     fontFactor,
     margin,
-    username,
-    timestamp,
-    comment,
     deviceWidthClass,
-    user,
+    uid,
+    item,
     toggleCallToAuth,
-    index,
     scrollRef,
     containerRef,
     effectiveBodyHeight,
@@ -34,41 +31,37 @@ const PostComment = ({
     const commentRef = useRef(null);
 
     const onPress = () => {
-        commentInputRef.current?.focus();
-        let itemTopOffset;
-        let itemHeight;
+        console.log('pressed me');
+        // commentInputRef.current?.focus();
+        // let itemTopOffset;
+        // let itemHeight;
 
-        if (containerRef.current && commentRef.current) {
-            commentRef.current.measureLayout(
-                containerRef.current,
-                (left, top, width, height) => {
-                    itemTopOffset = top;
-                    itemHeight = height;
-                }
-            );
-        }
-        Keyboard.addListener(
-            'keyboardDidShow',
-            ({ endCoordinates: { height } }) => {
-                if (itemTopOffset && itemHeight) {
-                    const offset =
-                        itemTopOffset -
-                        (effectiveBodyHeight - height - itemHeight);
-                    scrollRef.current.scrollToOffset({
-                        offset,
-                    });
-                }
-                Keyboard.removeAllListeners('keyboardDidShow');
-            }
-        );
+        // if (containerRef.current && commentRef.current) {
+        //     commentRef.current.measureLayout(
+        //         containerRef.current,
+        //         (left, top, width, height) => {
+        //             itemTopOffset = top;
+        //             itemHeight = height;
+        //         }
+        //     );
+        // }
+        // Keyboard.addListener(
+        //     'keyboardDidShow',
+        //     ({ endCoordinates: { height } }) => {
+        //         if (itemTopOffset && itemHeight) {
+        //             const offset =
+        //                 itemTopOffset -
+        //                 (effectiveBodyHeight - height - itemHeight);
+        //             scrollRef.current.scrollToOffset({
+        //                 offset,
+        //             });
+        //         }
+        //         Keyboard.removeAllListeners('keyboardDidShow');
+        //     }
+        // );
     };
 
-    const onPress1 = () => {
-        NetInfo.fetch().then((state) => {
-            console.log('Connection type', state.type);
-            console.log('Is connected?', state.isConnected);
-        });
-    };
+    const onPress1 = () => {};
 
     return (
         <View
@@ -85,7 +78,6 @@ const PostComment = ({
                     alignSelf: 'center',
                 }}
             >
-                <MarginVertical />
                 <View>
                     <Text
                         style={{
@@ -143,10 +135,10 @@ const PostComment = ({
                     }}
                 >
                     <TouchableOpacity
-                        onPress={() => (user ? onPress1() : toggleCallToAuth())}
+                        onPress={() => (uid ? onPress1() : toggleCallToAuth())}
                         style={{
-                            padding: fontFactor * wp(1),
-                            margin: -fontFactor * wp(1),
+                            padding: fontFactor * wp(2),
+                            margin: -fontFactor * wp(2),
                         }}
                     >
                         <HeartIcon
@@ -162,10 +154,10 @@ const PostComment = ({
                         />
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => (user ? onPress() : toggleCallToAuth())}
+                        onPress={() => (uid ? onPress() : toggleCallToAuth())}
                         style={{
-                            padding: fontFactor * wp(1),
-                            margin: -fontFactor * wp(1),
+                            padding: fontFactor * wp(2),
+                            margin: -fontFactor * wp(2),
                         }}
                     >
                         <ReplyIcon
@@ -180,6 +172,22 @@ const PostComment = ({
     );
 };
 
-export default PostComment;
+const mapStateToProps = ({
+    settingsState: {
+        fontFactor,
+        margin,
+        deviceWidthClass,
+        effectiveBodyHeight,
+    },
+    forumTempState: { uid },
+}) => ({
+    fontFactor,
+    margin,
+    deviceWidthClass,
+    uid,
+    effectiveBodyHeight,
+});
+
+export default connect(mapStateToProps)(Comment);
 
 const styles = StyleSheet.create({});

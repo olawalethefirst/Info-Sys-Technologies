@@ -12,14 +12,12 @@ import { useScrollToTop } from '@react-navigation/native';
 
 function AboutScreen({
     margin,
-    bodyHeight,
     fontFactor,
     deviceWidthClass,
     headerSize,
+    effectiveBodyHeight,
 }) {
     const columnMode = deviceWidthClass === 'type1';
-    const tabBarHeight = useBottomTabBarHeight();
-    const effectiveBodyHeight = bodyHeight - tabBarHeight;
     const scrollRef = useRef(null);
     useScrollToTop(scrollRef);
     const sectionComponents = [
@@ -90,7 +88,7 @@ function AboutScreen({
 
 AboutScreen.propTypes = {
     margin: PropTypes.number,
-    bodyHeight: PropTypes.number,
+    effectiveBodyHeight: PropTypes.number,
     fontFactor: PropTypes.number,
     deviceWidthClass: PropTypes.string,
     headerSize: PropTypes.number,
@@ -105,7 +103,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => ({
     margin: state.settingsState.margin,
-    bodyHeight: state.settingsState.bodyHeight,
+    effectiveBodyHeight: state.settingsState.effectiveBodyHeight,
     fontFactor: state.settingsState.fontFactor,
     deviceWidthClass: state.settingsState.deviceWidthClass,
     headerSize: state.settingsState.headerSize,

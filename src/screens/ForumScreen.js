@@ -33,19 +33,20 @@ import onEndOfPostsReached from '../helperFunctions/onEndOfPostsReached';
 import { store } from '../redux/store';
 import updateShowFooter from '../redux/actions/updateShowFooter';
 import PropTypes from 'prop-types';
-import onLikePostAsync from '../helperFunctions/onLikePostAsync';
-import createPostAsync from '../helperFunctions/createPostAsync';
-import { v4 as uuidv4 } from 'uuid';
+import UsernameModal from '../components/UsernameModal';
+// import onLikePostAsync from '../helperFunctions/onLikePostAsync';
+// import createPostAsync from '../helperFunctions/createPostAsync';
+// import { v4 as uuidv4 } from 'uuid';
+// import onUnlikePostAsync from '../helperFunctions/onUnlikePostAsync';
 
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['[2022-01-']);
 
 function ForumScreen({
-    user,
+    uid,
     margin,
     fontFactor,
     headerSize,
-    bodyHeight,
     deviceWidthClass,
     loadingPosts,
     loadingPostsError,
@@ -57,6 +58,7 @@ function ForumScreen({
     searchResult,
     updateShowFooter,
     showFooter,
+    effectiveBodyHeight,
 }) {
     const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
     const toggleModal = () => {
@@ -73,8 +75,6 @@ function ForumScreen({
     ] = useCreatePost(toggleModal);
     const scrollRef = useRef(null);
     useScrollToTop(scrollRef);
-    const tabBarHeight = useBottomTabBarHeight();
-    const effectiveBodyHeight = bodyHeight - tabBarHeight;
 
     const itemLength = wp(25) * fontFactor;
     const itemOffset = (wp(25) + wp(4.4)) * fontFactor;
@@ -126,88 +126,97 @@ function ForumScreen({
     });
 
     useEffect(() => {
-        fetchPosts();
+        // fetchPosts();
     }, [fetchPosts]);
 
-    const createPlentyPosts = async () => {
-        const wordsArray = [
-            'To',
-            'is',
-            'Has',
-            'And',
-            'in',
-            'About',
-            'inside',
-            'From',
-            'without',
-            'Within',
-            'under',
-            'deeply',
-            'Below',
-            'Adapt',
-            'transform',
-        ];
-        // check firebase to enforce field value to one of a catgeroies array
-        const categories = [
-            'Computer Maintenance',
-            'Audit',
-            'Accounting',
-            'Networking',
-        ];
-        let i = 0;
-        while (i < 300) {
-            i++;
+    // const createPlentyPosts = async () => {
+    //     const wordsArray = [
+    //         'To',
+    //         'is',
+    //         'Has',
+    //         'And',
+    //         'in',
+    //         'About',
+    //         'inside',
+    //         'From',
+    //         'without',
+    //         'Within',
+    //         'under',
+    //         'deeply',
+    //         'Below',
+    //         'Adapt',
+    //         'transform',
+    //     ];
+    //     // check firebase to enforce field value to one of a catgeroies array
+    //     const categories = [
+    //         'Computer Maintenance',
+    //         'Audit',
+    //         'Accounting',
+    //         'Networking',
+    //     ];
+    //     let i = 0;
+    //     while (i < 300) {
+    //         i++;
 
-            const wordsRandomNo = Math.floor(Math.random() * wordsArray.length);
-            const catgRandNo = Math.floor(Math.random() * categories.length);
-            const body = [];
-            for (let i = 0; i <= wordsRandomNo; i++) {
-                body.push(wordsArray[i]);
-            }
+    //         const wordsRandomNo = Math.floor(Math.random() * wordsArray.length);
+    //         const catgRandNo = Math.floor(Math.random() * categories.length);
+    //         const body = [];
+    //         for (let i = 0; i <= wordsRandomNo; i++) {
+    //             body.push(wordsArray[i]);
+    //         }
 
-            createPostAsync(
-                i + '',
-                body.join(' '),
-                categories[catgRandNo],
-                uuidv4()
-            )
-                .then((doc) => console.log(doc, ' added successfully'))
-                .catch((doc) => console.log(doc, 'add failed'));
-        }
-    };
-    const createPostLikes = async () => {
-        // const usersArray = [
-        //     'qllAFZtSkqX7GuaZ9oW97zPhWKT2',
-        //     'f7Rk6WbGnUYwuD9oZO6gJiufWQ32',
-        //     'IW4GkxsLm9giSV18tnkOjvPrNXr1',
-        //     'BNfIHiYJuCQFcgxLhTipUQ6SXx82',
-        //     'sEQjfFZdlVbMpUwAASv5lzhj8vs2',
-        //     'F8mr2nPWVoOethu5S5JvQZAqPk92',
-        //     'EDWbWh3Y64aPYFGzMrPiKNqoCJD3',
-        //     '2dEkCa3zkYRR0kZm7Z8ceKKy4Ua2',
-        //     'x3laHuM1UPRt2KODV7qUXju3WMW2',
-        //     'ZwM019QIzmcoF0sqDFA42ZS1u3X2',
-        //     '1nGrqRqTIfRhaJS5k4eo26B2iZf1',
-        //     '5KayyblP7CNUFYGfUoFKVwdJ0kr1',
-        //     'hNuhIlPkrMTDGcePSn1TYMsT8bk2',
-        //     'AMDhHJ23XSaQXmEUzWzI6ve8aL03',
-        //     'lxiPfnbvixarHzg7vk4zF2drlZi1',
-        // ];
+    //         createPostAsync(
+    //             i + '',
+    //             body.join(' '),
+    //             categories[catgRandNo],
+    //             uuidv4()
+    //         )
+    //             .then((doc) => console.log(doc, ' added successfully'))
+    //             .catch((doc) => console.log(doc, 'add failed'));
+    //     }
+    // };
+    // const createPostLikes = async () => {
+    //     // console.log('mo beere o');
+    //     // const postsNew = posts.splice(40, 60);
+    //     // const usersArray = [
+    //     //     'qllAFZtSkqX7GuaZ9oW97zPhWKT2',
+    //     //     'f7Rk6WbGnUYwuD9oZO6gJiufWQ32',
+    //     //     'IW4GkxsLm9giSV18tnkOjvPrNXr1',
+    //     //     'BNfIHiYJuCQFcgxLhTipUQ6SXx82',
+    //     //     'sEQjfFZdlVbMpUwAASv5lzhj8vs2',
+    //     //     'F8mr2nPWVoOethu5S5JvQZAqPk92',
+    //     //     'EDWbWh3Y64aPYFGzMrPiKNqoCJD3',
+    //     //     '2dEkCa3zkYRR0kZm7Z8ceKKy4Ua2',
+    //     //     'x3laHuM1UPRt2KODV7qUXju3WMW2',
+    //     //     'ZwM019QIzmcoF0sqDFA42ZS1u3X2',
+    //     //     '1nGrqRqTIfRhaJS5k4eo26B2iZf1',
+    //     //     '5KayyblP7CNUFYGfUoFKVwdJ0kr1',
+    //     //     'hNuhIlPkrMTDGcePSn1TYMsT8bk2',
+    //     //     'AMDhHJ23XSaQXmEUzWzI6ve8aL03',
+    //     //     'lxiPfnbvixarHzg7vk4zF2drlZi1',
+    //     // ];
 
-        // for (let i in posts) {
-        //     const postID = posts[i].postID;
-        //     const randomNoOfLikes = Math.floor(
-        //         Math.random() * usersArray.length
-        //     );
-        //     for (let j = 0; j < randomNoOfLikes; j++) {
-        //         const userID = usersArray[j];
-        //         onLikePostAsync(postID, userID);
-        //     }
-        // }
-        onLikePostAsync(posts[0].postID, 'qllAFZtSkqX7GuaZ9oW97zPhWKT2')
-            .then((e) => console.log('passsed with res: ', e))
-            .catch((e) => console.log('failed with res: ', e));
-    };
+    //     // for (let i in postsNew) {
+    //     //     const postID = postsNew[i].postID;
+    //     //     const randomNoOfLikes = Math.floor(
+    //     //         Math.random() * usersArray.length
+    //     //     );
+    //     //     for (let j = 0; j < randomNoOfLikes; j++) {
+    //     //         const userID = usersArray[j];
+    //     //         onLikePostAsync(postID, userID);
+    //     //     }
+    //     // }
+
+    //     try {
+    //         await onLikePostAsync(
+    //             '6d6c129a-bfba-4ef9-89b0-ab0540dcfd5c',
+    //             'AMDhHJ23XSaQXmEUzWzI6ve8aL03'
+    //         );
+    //         console.log('passed');
+    //     } catch (err) {
+    //         console.log('failed', err.message);
+    //     }
+    // };
 
     return (
         <SafeAreaView style={styles2.containerHeight}>
@@ -219,11 +228,7 @@ function ForumScreen({
                         margin={margin}
                         fontFactor={fontFactor}
                     />
-                    <Forum
-                        fontFactor={fontFactor}
-                        user={user}
-                        margin={margin}
-                    />
+                    <Forum fontFactor={fontFactor} uid={uid} margin={margin} />
                 </Pressable>
                 <FlatList
                     contentContainerStyle={styles2.flatlistContentContainer}
@@ -261,7 +266,7 @@ function ForumScreen({
                     }
                     ItemSeparatorComponent={RenderSeparator}
                     refreshing={refreshingPosts}
-                    // onRefresh={onRefresh}
+                    onRefresh={onRefresh}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshingPosts}
@@ -277,14 +282,11 @@ function ForumScreen({
                     margin={margin}
                     headerSize={headerSize}
                     fontFactor={fontFactor}
-                    toggleModal={
-                        // toggleModal||
-                        createPostLikes
-                    }
-                    user={user}
+                    toggleModal={toggleModal}
+                    uid={uid}
                     disabled={activityIndicator.current}
                 />
-                {user && (
+                {uid && (
                     <>
                         <CreatePost
                             toggleModal={toggleModal}
@@ -308,6 +310,7 @@ function ForumScreen({
                             fontFactor={fontFactor}
                             margin={margin}
                         />
+                        {/* <UsernameModal /> */}
                     </>
                 )}
             </View>
@@ -321,11 +324,11 @@ const mapStateToProps = ({
         margin,
         fontFactor,
         headerSize,
-        bodyHeight,
         deviceWidthClass,
+        effectiveBodyHeight,
     },
     forumTempState: {
-        user,
+        uid,
         loadingPosts,
         loadingPostsError,
         refreshingPosts,
@@ -334,11 +337,10 @@ const mapStateToProps = ({
         showFooter,
     },
 }) => ({
-    user,
+    uid,
     margin,
     fontFactor,
     headerSize,
-    bodyHeight,
     deviceWidthClass,
     posts,
     loadingPosts,
@@ -347,14 +349,14 @@ const mapStateToProps = ({
     searching,
     searchResult,
     showFooter,
+    effectiveBodyHeight,
 });
 
 ForumScreen.propTypes = {
-    user: PropTypes.object,
+    uid: PropTypes.string,
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
     headerSize: PropTypes.number,
-    bodyHeight: PropTypes.number,
     deviceWidthClass: PropTypes.string,
     loadingPosts: PropTypes.bool,
     loadingPostsError: PropTypes.string,

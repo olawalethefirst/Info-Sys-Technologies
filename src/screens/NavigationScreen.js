@@ -5,10 +5,8 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 import signOutUser from '../helperFunctions/signOutUser';
 import { connect } from 'react-redux';
-import { firebase } from '../helperFunctions/initializeFirebase';
-import updateUser from '../redux/actions/updateUser';
 
-function NavigationScreen({ fontFactor, navigation, user, updateUser }) {
+function NavigationScreen({ fontFactor, navigation, uid }) {
     const onPressNavItemIn = (animatedValue) => {
         Animated.timing(animatedValue, {
             toValue: 1.2,
@@ -40,15 +38,6 @@ function NavigationScreen({ fontFactor, navigation, user, updateUser }) {
         },
     };
 
-    // useEffect(() => {
-    //     firebase.auth().onAuthStateChanged((user) => {
-    //         if (user) {
-    //             updateUser(user);
-    //         } else {
-    //             updateUser(null);
-    //         }
-    //     });
-    // }, [updateUser]);
     return (
         <SafeAreaView style={[styles.modalContainer]}>
             <Pressable
@@ -159,7 +148,7 @@ function NavigationScreen({ fontFactor, navigation, user, updateUser }) {
             </Pressable>
             <MarginVertical size={2} />
 
-            {user && (
+            {uid && (
                 <Pressable
                     onPressIn={() => onPressNavItemIn(signOutAnimatedValue)}
                     onPressOut={() => onPressNavItemOut(signOutAnimatedValue)}
@@ -188,19 +177,19 @@ function NavigationScreen({ fontFactor, navigation, user, updateUser }) {
 NavigationScreen.propTypes = {
     fontFactor: PropTypes.number,
     navigation: PropTypes.object,
-    user: PropTypes.object,
+    uid: PropTypes.string,
 };
 
 const mapStateToProps = ({
     settingsState: { fontFactor, headerSize },
-    forumTempState: { user },
+    forumTempState: { uid },
 }) => ({
     fontFactor,
     headerSize,
-    user,
+    uid,
 });
 
-export default connect(mapStateToProps, { updateUser })(NavigationScreen);
+export default connect(mapStateToProps, {})(NavigationScreen);
 
 const styles = StyleSheet.create({
     modalContainer: {

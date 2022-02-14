@@ -12,7 +12,7 @@ const AddPost = ({
     headerSize,
     fontFactor,
     toggleModal,
-    user,
+    uid,
     disabled,
 }) => {
     const animatedValue = useRef(new Animated.Value(1)).current;
@@ -39,7 +39,7 @@ const AddPost = ({
         <Pressable
             // onPressIn={onPressIn}
             // onPressOut={onPressOut}
-            onPress={user ? toggleModal : toggleCallToAuthModal}
+            onPress={uid ? toggleModal : toggleCallToAuthModal}
             disabled={disabled}
             style={{
                 position: 'absolute',
@@ -92,7 +92,7 @@ AddPost.propTypes = {
     headerSize: PropTypes.number,
     fontFactor: PropTypes.number,
     toggleModal: PropTypes.func,
-    user: PropTypes.object,
+    uid: PropTypes.string,
     disabled: PropTypes.bool,
 };
 

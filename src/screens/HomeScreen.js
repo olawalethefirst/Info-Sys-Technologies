@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { StyleSheet, FlatList, View } from 'react-native';
 import Welcome from '../components/Welcome';
 import AboutMini from '../components/AboutMini';
@@ -9,11 +9,18 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useScrollToTop } from '@react-navigation/native';
+import updateEffectiveBodyHeight from '../redux/actions/updateEffectiveBodyHeight';
 
-function HomeScreen({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
+function HomeScreen({
+    margin,
+    bodyHeight,
+    fontFactor,
+    deviceWidthClass,
+    updateEffectiveBodyHeight,
+}) {
+    const [effectiveBodyHeight, setEffectiveBodyHeight] = useState(0);
     const renderItem = ({ item }) => item.data;
     const tabBarHeight = useBottomTabBarHeight();
-    const effectiveBodyHeight = bodyHeight - tabBarHeight;
     const scrollRef = useRef(null);
     useScrollToTop(scrollRef);
     const sectionComponents = [
@@ -69,6 +76,20 @@ function HomeScreen({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
             ),
         },
     ];
+    
+    useEffect(() => {
+        if (bodyHeight && tabBarHeight) {
+            setEffectiveBodyHeight(() => {
+                const val = bodyHeight - tabBarHeight;
+                updateEffectiveBodyHeight(val);
+                return val;
+            });
+        }
+    }, [bodyHeight, tabBarHeight, updateEffectiveBodyHeight]);
+
+    if (!effectiveBodyHeight) {
+        return null;
+    }
 
     return (
         <View style={styles.container}>
@@ -91,6 +112,7 @@ HomeScreen.propTypes = {
     deviceWidthClass: PropTypes.string,
     headerSize: PropTypes.number,
     navigation: PropTypes.object,
+    updateEffectiveBodyHeight: PropTypes.func,
 };
 
 const styles = StyleSheet.create({
@@ -111,4 +133,6 @@ const mapStateToProps = (state) => ({
     headerSize: state.settingsState.headerSize,
 });
 
-export default connect(mapStateToProps)(HomeScreen);
+export default connect(mapStateToProps, {
+    updateEffectiveBodyHeight,
+})(HomeScreen);

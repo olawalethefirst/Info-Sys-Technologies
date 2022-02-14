@@ -29,7 +29,7 @@ const AuthScreen = ({
     bodyHeight,
     navigation,
     deviceWidthClass,
-    user,
+    uid,
 }) => {
     const scrollRef = useRef(null);
     const { statusBarHeight } = Constants;
@@ -47,8 +47,8 @@ const AuthScreen = ({
     ];
 
     useEffect(() => {
-        user ? setTimeout(() => navigation.goBack(), 1200) : null;
-    }, [user, navigation]);
+        uid ? setTimeout(() => navigation.goBack(), 1200) : null;
+    }, [uid, navigation]);
 
     return (
         <KeyboardAvoidingView
@@ -80,7 +80,7 @@ const mapStateToProps = ({
         bodyHeight,
         deviceWidthClass,
     },
-    forumTempState: { user },
+    forumTempState: { uid },
 }) => {
     return {
         headerSize,
@@ -88,7 +88,7 @@ const mapStateToProps = ({
         fontFactor,
         bodyHeight,
         deviceWidthClass,
-        user,
+        uid,
     };
 };
 

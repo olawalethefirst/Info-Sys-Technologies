@@ -20,7 +20,7 @@ const AuthModal = ({
     error,
     retryAuth,
     dismissModal,
-    user,
+    uid,
     resetError,
     fontFactor,
     margin,
@@ -30,7 +30,7 @@ const AuthModal = ({
     const errorMessage = error ? processErrorString(error) : null;
 
     return (
-        <Modal
+        <Modal //change modal to react-native-modal to enable us naivgate away from screen upon successful authentication
             visible={modalVisible}
             // visible={true}
             onRequestClose={null}
@@ -74,10 +74,10 @@ const AuthModal = ({
                                     fontFamily: 'Karla_400Regular',
                                     textAlign: 'center',
                                 },
-                                user ? { color: 'black' } : { color: 'red' },
+                                uid ? { color: 'black' } : { color: 'red' },
                             ]}
                         >
-                            {user ? 'Successful!' : 'Failed!'}
+                            {uid ? 'Successful!' : 'Failed!'}
                         </Text>
                     </View>
                 )}
@@ -180,14 +180,14 @@ AuthModal.propTypes = {
     firebaseNetworkError: PropTypes.string,
     retryFirebaseAuth: PropTypes.func,
     dismissModal: PropTypes.func,
-    user: PropTypes.object,
+    uid: PropTypes.string,
 };
 
 const mapStateToProps = ({
-    forumTempState: { user },
+    forumTempState,
     settingsState: { fontFactor, margin },
 }) => {
-    return { user, fontFactor, margin };
+    return { uid:forumTempState, fontFactor, margin };
 };
 
 export default connect(mapStateToProps)(AuthModal);

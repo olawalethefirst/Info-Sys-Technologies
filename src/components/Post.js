@@ -12,26 +12,29 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ReplyIcon from './ReplyIcon';
 import HeartIcon from './HeartIcon';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
+import { connect } from 'react-redux';
+import CommentsHeading from './CommentsHeading';
+import Username from './Username';
+import Created from './Created';
+import Likes from './Likes';
+import Category from './Category';
 
 const Post = ({
     fontFactor,
     margin,
-    username,
-    timestamp,
-    category,
-    title,
-    body,
-    user,
-    toggleCallToAuth,
+    uid,
     deviceWidthClass,
+    toggleCallToAuth,
     containerRef,
     effectiveBodyHeight,
     commentInputRef,
     scrollRef,
+    item,
 }) => {
     const [liked, setLiked] = useState(false);
     const columnMode = checkColumnMode(deviceWidthClass);
     const postRef = useRef(null);
+    // console.log(item);
 
     const onPress = () => {
         commentInputRef.current?.focus();
@@ -78,59 +81,18 @@ const Post = ({
                         alignSelf: 'center',
                     }}
                 >
-                    <MarginVertical />
                     <View>
-                        <Text
-                            style={{
-                                fontSize: fontFactor * wp(4),
-                                lineHeight: fontFactor * wp(5.09),
-                                fontFamily: 'Poppins_500Medium',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}
-                        >
-                            @username
-                        </Text>
+                        <Username fontFactor={fontFactor} />
                         <MarginVertical size={0.2} />
 
-                        <Text
-                            style={{
-                                fontSize: fontFactor * wp(3.75),
-                                lineHeight: fontFactor * wp(4.77),
-                                fontFamily: 'Poppins_400Regular',
-                                color: '#808080',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}
-                        >
-                            {moment(new Date()).fromNow()}
-                        </Text>
+                        <Created fontFactor={fontFactor} />
                         <MarginVertical size={0.2} />
-                        <Text
-                            style={{
-                                fontSize: fontFactor * wp(3.75),
-                                lineHeight: fontFactor * wp(4.77),
-                                fontFamily: 'Poppins_400Regular',
-                                color: '#808080',
-                            }}
-                        >
-                            0 likes
-                        </Text>
+                        <Likes fontFactor={fontFactor} />
                     </View>
                     <MarginVertical />
 
                     <View>
-                        <Text
-                            style={{
-                                fontSize: fontFactor * wp(4),
-                                lineHeight: fontFactor * wp(5.09),
-                                fontFamily: 'Poppins_500Medium',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}
-                        >
-                            Category
-                        </Text>
+                        <Category Category fontFactor={fontFactor} />
                         <MarginVertical size={0.5} />
                         <Text
                             style={{
@@ -168,7 +130,7 @@ const Post = ({
                     >
                         <TouchableOpacity
                             onPress={() =>
-                                user
+                                uid
                                     ? setLiked((liked) => !liked)
                                     : toggleCallToAuth()
                             }
@@ -191,7 +153,7 @@ const Post = ({
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() =>
-                                user ? onPress() : toggleCallToAuth()
+                                uid ? onPress() : toggleCallToAuth()
                             }
                             style={{
                                 padding: fontFactor * wp(1),
@@ -208,39 +170,22 @@ const Post = ({
                 </View>
             </View>
             <MarginVertical />
-            <View
-                style={{
-                    borderBottomWidth: wp(0.25),
-                    borderBottomColor: '#cecece',
-                    marginHorizontal: margin,
-                }}
-            >
-                <View
-                    style={{
-                        width: columnMode ? '90%' : '100%',
-                        alignSelf: 'center',
-                    }}
-                >
-                    <View style={{ flex: 1 }}>
-                        <Text
-                            style={{
-                                fontSize: fontFactor * wp(6),
-                                lineHeight: fontFactor * wp(7.7),
-                                fontFamily: 'Poppins_500Medium',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}
-                        >
-                            Comments
-                        </Text>
-                        <MarginVertical size={0.5} />
-                    </View>
-                </View>
-            </View>
+            <CommentsHeading />
         </View>
     );
 };
 
-export default Post;
+const mapStateToProps = ({
+    settingsState: { fontFactor, margin, deviceWidthClass, effectiveBodyHeight },
+    forumTempState: { uid },
+}) => ({
+    fontFactor,
+    margin,
+    deviceWidthClass,
+    uid,
+    effectiveBodyHeight
+});
+
+export default connect(mapStateToProps)(Post);
 
 const styles = StyleSheet.create({});

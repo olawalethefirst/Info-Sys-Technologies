@@ -1,7 +1,6 @@
-import { firebase } from '../helperFunctions/initializeFirebase';
+import { GoogleAuthProvider } from 'firebase/auth';
 
 // eslint-disable-next-line no-undef
 export default createCredential = (idToken) => {
-    const googleProvider = new firebase.auth.GoogleAuthProvider();
-    return googleProvider.credential(idToken);
+    return GoogleAuthProvider.credential(idToken);
 };

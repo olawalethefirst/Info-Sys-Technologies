@@ -16,8 +16,6 @@ export default function generateError(message) {
             return 'Login with Google instead';
         case 'The password is invalid or the user does not have a password.':
             return 'Invalid username or password';
-        case errorMessages.networkError:
-            return 'Error loading posts'
         case errorMessages.offline:
             return 'Error loading posts'
         default:

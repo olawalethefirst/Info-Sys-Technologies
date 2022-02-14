@@ -1,13 +1,13 @@
 import React from 'react';
 import moment from 'moment';
 import PostMini from './PostMini';
-import { firebase } from '../helperFunctions/initializeFirebase';
+import { Timestamp } from 'firebase/firestore';
 
 export default function renderPost({ item }) {
     const { body, title, postID, owner, createdAt, category, likes } = item;
     const { seconds, nanoseconds } = createdAt;
     const createdString = `created ${moment(
-        new firebase.firestore.Timestamp(seconds, nanoseconds).toDate()
+        new Timestamp(seconds, nanoseconds).toDate()
     ).fromNow()}`;
     const likeCount = Object.keys(likes || {}).length;
 

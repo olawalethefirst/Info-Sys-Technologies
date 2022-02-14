@@ -1,16 +1,15 @@
-import { firebase } from './initializeFirebase';
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { firestore, auth } from './initializeFirebase';
 
-const createCommentAsync = (commentID, mention, parentPost, comment) => {
+const createCommentAsync = (commentID, parentPostID, comment) => {
     // mention is an object containing a mention field and uid value else empty
-    return firebase
-        .firestore()
-        .doc(`/comments/${commentID}`)
-        .set({
-            parentPost,
-            owner: firebase.auth().currentUser.uid,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            comment,
-        });
+    const docRef = doc(firestore, `/comments/${commentID}`);
+    return setDoc(docRef, {
+        parentPostID,
+        owner: auth.currentUser.uid,
+        createdAt: serverTimestamp(),
+        comment,
+    });
 };
 
 export default createCommentAsync;

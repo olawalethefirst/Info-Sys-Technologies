@@ -1,4 +1,5 @@
-import { firebase } from './initializeFirebase';
+import { auth } from './initializeFirebase';
+import { fetchSignInMethodsForEmail } from 'firebase/auth';
 
 const fetchAccountProvider = async (email) => {
     //After confirming provider, direct to appropriate flow - gmail or traditional flow
@@ -7,7 +8,7 @@ const fetchAccountProvider = async (email) => {
 
     //error - any other error, suggest to please try again, (An occured, please try again)
 
-    return firebase.auth().fetchSignInMethodsForEmail(email);
+    return fetchSignInMethodsForEmail(auth, email);
 
     // try {
     //     const providers = await auth.fetchSignInMethodsForEmail(

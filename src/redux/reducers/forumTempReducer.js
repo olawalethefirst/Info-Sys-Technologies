@@ -1,5 +1,5 @@
 import {
-    UPDATE_USER_STATE,
+    UPDATE_UID,
     LOADING_POSTS_INITIATED,
     LOADING_POSTS_SUCCESSFUL,
     LOADING_POSTS_FAILED,
@@ -17,7 +17,7 @@ import {
 
 // inital State
 const initialState = {
-    user: null,
+    uid: null,
     loadingPosts: false,
     loadingPostsError: null,
     refreshingPosts: false,
@@ -29,8 +29,8 @@ const initialState = {
 
 const forumTempReducer = (state = initialState, action) => {
     switch (action.type) {
-        case UPDATE_USER_STATE:
-            return { ...state, user: action.payload };
+        case UPDATE_UID:
+            return { ...state, uid: action.payload };
         case LOADING_POSTS_INITIATED:
             return { ...state, loadingPosts: true };
         case LOADING_POSTS_FIRST_BATCH_SUCCESSFUL:

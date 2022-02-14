@@ -1,7 +1,8 @@
-import { firebase } from './initializeFirebase';
+import { auth } from './initializeFirebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const signUpWihthEmail = (email, password) => {
-    return firebase.auth().createUserWithEmailAndPassword(email, password);
+    return createUserWithEmailAndPassword(auth, email, password);
 };
 
 export default signUpWihthEmail;

@@ -21,7 +21,6 @@ const CommentInput = ({
     margin,
     scrollRef,
     commentInputRef,
-    // postScreenOffset,
 }) => {
     const [comment, setComment] = useState('');
 
@@ -57,22 +56,7 @@ const CommentInput = ({
                 onChangeText={(text) => setComment(text)}
                 placeholder="Type your comment"
                 placeholderTextColor="#808080"
-                // onFocus={() =>
-                //     Keyboard.addListener(
-                //         'keyboardDidShow',
-                //         ({ endCoordinates: { height } }) => {
-                //             scrollRef.current.scrollToOffset({
-                //                 offset:
-                //                     store.getState().settingsTempState
-                //                         .postScreenOffset + height,
-                //                 animated: true,
-                //             });
-
-                //             Keyboard.removeAllListeners('keyboardDidShow');
-                //         }
-                //     )
-                // }
-                textAlignVertical="center"
+               textAlignVertical="center"
             />
             <TouchableOpacity
                 style={{

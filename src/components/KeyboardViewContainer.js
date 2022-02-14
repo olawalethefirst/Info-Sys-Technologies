@@ -1,19 +1,24 @@
 import React from 'react';
 import { View, Platform, ScrollView } from 'react-native';
+import PropTypes from 'prop-types';
 
 const KeyboardViewContainer = ({ children }) => {
-    return Platform.select({
-        ios: <View style={{ flex: 1 }}>{children}</View>,
-        android: (
+    if (Platform.OS === 'android') {
+        return (
             <ScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
                 showsVerticalScrollIndicator={false}
-                keyboardDismissMode="on-drag"
+                keyboardShouldPersistTaps="never"
             >
                 {children}
             </ScrollView>
-        ),
-        web: <View style={{ flex: 1 }}>{children}</View>,
-    });
+        );
+    }
+    return <View style={{ flex: 1 }}>{children}</View>;
 };
 
 export default KeyboardViewContainer;
+
+KeyboardViewContainer.propTypes = {
+    children: PropTypes.object,
+};

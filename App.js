@@ -13,8 +13,12 @@ import updateBodyHeight from './src/redux/actions/updateBodyHeight';
 import updateFontFactor from './src/redux/actions/updateFontFactor';
 import updateHeaderSize from './src/redux/actions/updateHeaderSize';
 import TabNavigator from './src/navigators/TabNavigator';
-import { firebase } from './src/helperFunctions/initializeFirebase';
-import updateUser from './src/redux/actions/updateUser';
+import { updateAuthState } from './src/helperFunctions/initializeFirebase';
+import updateUID from './src/redux/actions/updateUID';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs([
+    'AsyncStorage has been extracted from react-native core and will be removed in a future release. ',
+]);
 
 function PreApp() {
     const [assetsLoaded, setAssetsLoaded] = useState(false);
@@ -45,7 +49,7 @@ function PreApp() {
                 await loadAssetsAsync();
                 setAssetsLoaded(true);
             } catch (e) {
-                console.log('assets loading failed');
+                console.log('assets loading failed', e);
                 prepare();
             }
         }
@@ -76,19 +80,26 @@ function PreApp() {
     ]);
 
     useEffect(() => {
-        if (
-            margin &&
-            headerSize &&
-            deviceWidthClass &&
-            bodyHeight &&
-            fontFactor &&
-            assetsLoaded
-        ) {
-            setAppIsReady(async () => {
-                await SplashScreen.hideAsync();
-                return true;
-            });
-        }
+        const prep = () => {
+            if (
+                margin &&
+                headerSize &&
+                deviceWidthClass &&
+                bodyHeight &&
+                fontFactor &&
+                assetsLoaded
+            ) {
+                updateAuthState((uid) => {
+                    dispatch(updateUID(uid));
+                });
+                setAppIsReady(async () => {
+                    await SplashScreen.hideAsync();
+                    return true;
+                });
+            }
+        };
+        const unsubscribe = prep();
+        return unsubscribe;
     }, [
         margin,
         headerSize,
@@ -96,21 +107,8 @@ function PreApp() {
         bodyHeight,
         fontFactor,
         assetsLoaded,
+        dispatch,
     ]);
-
-    // console.log(Platform.OS, margin,
-    //     headerSize,
-    //     deviceWidthClass,
-    //     bodyHeight,
-    //     fontFactor,
-    //     assetsLoaded)
-
-    useEffect(() => {
-        const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-            dispatch(updateUser(user));
-        });
-        return unsubscribe;
-    }, [dispatch]);
 
     if (!appIsReady) {
         return null;

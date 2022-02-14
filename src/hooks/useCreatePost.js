@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import createPostAsync from '../helperFunctions/createPostAsync';
-import deleteCreatePostRequestAsync from '../helperFunctions/deleteCreatePostRequestAsync';
+import deletePostAsync from '../helperFunctions/deletePostAsync';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { Keyboard } from 'react-native';
@@ -48,7 +48,7 @@ export default function useCreatePost(toggleModal) {
             });
             console.log('postData current data verification', postData);
             if (postData) {
-                deleteCreatePostRequestAsync(postID)
+                deletePostAsync(postID)
                     .then(() => console.log('delete successful'))
                     .catch(() => console.log('delete failed'));
                 setPostError(true);
@@ -78,7 +78,7 @@ export default function useCreatePost(toggleModal) {
             });
             console.log('postData current data verification', postData);
             if (postData) {
-                deleteCreatePostRequestAsync(postID)
+                deletePostAsync(postID)
                     .then(() => console.log('delete successful'))
                     .catch(() => console.log('delete failed'));
                 setPostError(true);

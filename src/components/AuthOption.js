@@ -8,7 +8,7 @@ import GoogleAuthContainer from './GoogleAuthContainer';
 import { connect } from 'react-redux';
 import Constants from 'expo-constants';
 
-const Authoption = ({ fontFactor, animateView, user }) => {
+const Authoption = ({ fontFactor, animateView, uid }) => {
     const isNative =
         Constants.appOwnership !== 'expo' && Constants.appOwnership !== 'guest';
 
@@ -17,7 +17,7 @@ const Authoption = ({ fontFactor, animateView, user }) => {
             <GoogleAuthContainer native={isNative} fontFactor={fontFactor}>
                 {(onPress, disabled) => (
                     <Pressable
-                        disabled={disabled || user}
+                        disabled={disabled || !!uid}
                         onPress={onPress}
                         style={({ pressed }) => {
                             return {
@@ -96,7 +96,7 @@ const Authoption = ({ fontFactor, animateView, user }) => {
     );
 };
 
-const mapStateToProps = ({ forumTempState: { user } }) => ({ user });
+const mapStateToProps = ({ forumTempState: { uid } }) => ({ uid });
 export default connect(mapStateToProps)(Authoption);
 
 const styles = StyleSheet.create({});

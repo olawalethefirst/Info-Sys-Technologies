@@ -1,10 +1,10 @@
 import { auth } from './initializeFirebase';
-import { Timestamp } from 'firebase/firestore';
+import { deleteField } from 'firebase/firestore';
 import makeQueryablePromise from './makeQueryablePromise';
 import NetInfo from '@react-native-community/netinfo';
 import createLikeAsync from './createLikeAsync';
 
-const onLikePostAsync = async (parentID, parentType, tempUID) => {
+const onUnlikePostAsync = async (parentID, parentType, tempUID) => {
     const docPath = () => {
         switch (parentType) {
             case 'comment':
@@ -17,18 +17,25 @@ const onLikePostAsync = async (parentID, parentType, tempUID) => {
         if (state.isConnected) {
             const res = new Promise((resolve, reject) => {
                 const docMap = {};
-                const createdAt = new Date();
                 docMap[
                     `likes.${
                         auth.currentUser.uid
                         // tempUID
                     }`
-                ] = Timestamp.fromDate(createdAt);
+                ] = deleteField();
 
                 const request = makeQueryablePromise(
                     createLikeAsync(docPath, docMap)
                 );
-                request.then(() => resolve()).catch((err) => reject(err));
+                request
+                    .then(() => {
+                        console.log('I reallly passed');
+                        resolve();
+                    })
+                    .catch((err) => {
+                        console.log('I reallly failed');
+                        reject(err);
+                    });
 
                 setTimeout(() => {
                     if (request.isPending()) {
@@ -44,4 +51,4 @@ const onLikePostAsync = async (parentID, parentType, tempUID) => {
     });
 };
 
-export default onLikePostAsync;
+export default onUnlikePostAsync;

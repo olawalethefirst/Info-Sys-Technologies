@@ -29,13 +29,15 @@ export default function RenderPostsFooter({
         fontSizeL2: { fontSize: fontFactor * wp(5) },
     });
     //only render footer when there's an intersection in the set of "length smaller than screen" and "not loading post"
-    const showFooterSpacer = showFooter && !loadingPosts;
+    const showFooterSpacer = showFooter && !loadingPosts && !loadingPostsError;
     const showLoadingIndicator = loadingPosts;
     const showError =
         loadingPostsError && loadingPostsError !== errorMessages.noPost;
     const showIndicatorAndErroSpacer = loadingPosts && showError;
     const showNoSearchResult =
         searching && loadingPostsError === errorMessages.noPost;
+
+    console.log(loadingPostsError);
 
     if (showNoSearchResult) {
         return (

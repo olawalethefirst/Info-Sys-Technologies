@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import signOutUser from '../helperFunctions/signOutUser';
 import PropTypes from 'prop-types';
 
-const Forum = ({ margin, fontFactor, user }) => {
+const Forum = ({ margin, fontFactor, uid }) => {
     const navigation = useNavigation();
     const styles2 = StyleSheet.create({
         fontSizeL1: {
@@ -29,7 +29,7 @@ const Forum = ({ margin, fontFactor, user }) => {
     return (
         <SafeAreaView>
             <View style={styles2.paddingHorizontalMargin}>
-                {!user && (
+                {!uid && (
                     <View
                         style={[
                             styles.bordeBottomWidth1,
@@ -116,7 +116,7 @@ const Forum = ({ margin, fontFactor, user }) => {
                     <Text style={[styles.postsHeading, styles2.fontSizeL2]}>
                         Posts
                     </Text>
-                    {user && (
+                    {uid && (
                         <Pressable
                             onPress={() => signOutUser()}
                             style={({ pressed }) => [
@@ -153,7 +153,7 @@ const Forum = ({ margin, fontFactor, user }) => {
 Forum.propTypes = {
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
-    user: PropTypes.object,
+    uid: PropTypes.string,
 };
 
 const styles = StyleSheet.create({

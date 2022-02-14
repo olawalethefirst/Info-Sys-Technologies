@@ -53,11 +53,13 @@ export default function useGoogleAuth(native) {
     const syncGoogleAuthWithFirebaseAsync = useCallback(
         (credential) => {
             authWithCredentialAsync(credential)
-                .then(() => {
+                .then((res) => {
+                    console.log('successful: ', res);
                     deactivateModal();
                     // navigate();
                 })
                 .catch((e) => {
+                    console.log('failed: ', e);
                     if (e.message === firebaseNetworkError) {
                         persistModalWithError();
                         setError(e.message);

@@ -1,6 +1,6 @@
-import { firebase } from './initializeFirebase';
+import { auth } from './initializeFirebase';
 
 // eslint-disable-next-line no-undef
 export default signOutUser = () => {
-    return firebase.auth().signOut();
+    return auth.signOut();
 };

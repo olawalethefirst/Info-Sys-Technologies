@@ -4,6 +4,7 @@ import {
     UPDATE_DEVICE_WIDTH_CLASS,
     UPDATE_BODY_HEIGHT,
     UPDATE_FONT_FACTOR,
+    UPDATE_EFFECTIVE_BODY_HEIGHT,
 } from '../actions/actionTypes';
 
 //Initial States
@@ -20,6 +21,7 @@ const initialState = {
     contactFormContentSize: 0,
     viewPostFooterPosition: 0,
     viewPostFlatListScreenHeight: 0,
+    effectiveBodyHeight: 0,
 };
 
 export default function settingsReducer(state = initialState, action) {
@@ -49,6 +51,8 @@ export default function settingsReducer(state = initialState, action) {
                 ...state,
                 fontFactor: action.payload,
             };
+        case UPDATE_EFFECTIVE_BODY_HEIGHT:
+            return { ...state, effectiveBodyHeight: action.payload };
         default:
             return state;
     }

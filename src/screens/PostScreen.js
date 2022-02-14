@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -15,11 +15,14 @@ import { connect } from 'react-redux';
 import CommentInput from '../components/CommentInput';
 import Constants from 'expo-constants';
 import PostDetail from '../components/PostDetail';
-import updatePostScreenOffset from '../redux/actions/updatePostScreenOffset';
 import CallToAuth from '../components/CallToAuth';
 import SecondaryHeader from '../components/SecondaryHeader';
 import { stickyHeaderHeight } from '../constants';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { firestore } from '../helperFunctions/initializeFirebase';
+import { onSnapshot, doc } from 'firebase/firestore';
+import MarginVertical from '../components/MarginVertical';
+import RenderSeparator from '../components/RenderSeparator';
 
 function PostScreen({
     margin,
@@ -27,12 +30,12 @@ function PostScreen({
     headerSize,
     deviceWidthClass,
     navigation,
-    updatePostScreenOffset,
-    bodyHeight,
-    route: { params },
+    effectiveBodyHeight,
+    route: {
+        params: { body, category, createdAt, owner, postID, title },
+    }, //maybe update postMini to send only this
 }) {
     const [callToAuthModalVisible, setCallToAuthModalVisible] = useState(false);
-    const tabBarHeight = useBottomTabBarHeight();
     const scrollRef = useRef(null);
     const containerRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0));
@@ -46,11 +49,6 @@ function PostScreen({
         ],
         {
             useNativeDriver: true,
-            listener: ({
-                nativeEvent: {
-                    contentOffset: { y },
-                },
-            }) => updatePostScreenOffset(y),
         }
     );
     const clampedScrollY = Animated.diffClamp(
@@ -62,8 +60,8 @@ function PostScreen({
         inputRange: [0, stickyHeaderHeight],
         outputRange: [0, -stickyHeaderHeight],
     });
-    const postData = [
-        { post: 'post' },
+    const data = [
+        { body, category, createdAt, owner, postID, title },
         { comment: 'comment' },
         { comment: 'comment' },
         { comment: 'comment' },
@@ -72,9 +70,21 @@ function PostScreen({
     const toggleCallToAuth = () => {
         setCallToAuthModalVisible((oldState) => !oldState);
     };
-    const effectiveBodyHeight = bodyHeight - tabBarHeight;
     const commentInputRef = useRef(null);
-    console.log(params);
+
+    useEffect(() => {
+        const listenToUpdatedData = () => {
+            const listener = onSnapshot(
+                doc(firestore, 'posts', postID),
+                (snapshot) => {
+                    console.log(snapshot.data());
+                }
+            );
+            return listener;
+        };
+        const listener = listenToUpdatedData();
+        return listener;
+    }, [postID]);
 
     return (
         <View
@@ -113,19 +123,17 @@ function PostScreen({
                         scrollEventThrottle={16}
                         onScroll={handleScroll}
                         contentContainerStyle={{
-                            minHeight: bodyHeight + headerSize,
+                            minHeight: effectiveBodyHeight + headerSize,
                             paddingTop: stickyHeaderHeight,
                             paddingBottom: headerSize,
                         }}
-                        data={postData}
+                        data={data}
                         bounces={false}
-                        renderItem={({ item, index }) => {
+                        renderItem={({ item }) => {
                             return (
                                 <PostDetail
                                     item={item}
-                                    lastComment={index === postData.length - 1}
                                     toggleCallToAuth={toggleCallToAuth}
-                                    index={index}
                                     scrollRef={scrollRef}
                                     containerRef={containerRef}
                                     effectiveBodyHeight={effectiveBodyHeight}
@@ -137,6 +145,10 @@ function PostScreen({
                         ref={scrollRef}
                         keyboardDismissMode={'none'}
                         keyboardShouldPersistTaps="never"
+                        ItemSeparatorComponent={() => (
+                            <RenderSeparator size={1} />
+                        )}
+                        ListHeaderComponent={() => <RenderSeparator size={1} />}
                     />
                     <CommentInput
                         headerSize={headerSize}
@@ -166,16 +178,14 @@ const mapStateToProps = ({
         fontFactor,
         headerSize,
         deviceWidthClass,
-        bodyHeight,
+        effectiveBodyHeight,
     },
 }) => ({
     margin,
     fontFactor,
     headerSize,
     deviceWidthClass,
-    bodyHeight,
+    effectiveBodyHeight,
 });
 
-export default connect(mapStateToProps, {
-    updatePostScreenOffset,
-})(PostScreen);
+export default connect(mapStateToProps, {})(PostScreen);

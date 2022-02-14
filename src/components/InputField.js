@@ -11,7 +11,6 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 function InputField({
     onChange,
@@ -25,7 +24,7 @@ function InputField({
     fontFactor,
     scrollRef,
     contactFormRef,
-    bodyHeight,
+    effectiveBodyHeight,
     ...props
 }) {
     const styles2 = {
@@ -50,8 +49,6 @@ function InputField({
         },
     };
     const mulitLineInputRef = useRef(null);
-    const tabBarHeight = useBottomTabBarHeight();
-    const effectiveBodyHeight = bodyHeight - tabBarHeight;
     const isIOS = Platform.OS === 'ios';
     const keyBoardAvoidingFn = () => {
         if (isIOS && megaSize) {
@@ -176,12 +173,12 @@ InputField.propTypes = {
     fontFactor: PropTypes.number,
     scrollRef: PropTypes.object,
     contactFormRef: PropTypes.object,
-    bodyHeight: PropTypes.number,
+    effectiveBodyHeight: PropTypes.number,
 };
 
 const mapStateToProps = (state) => ({
     fontFactor: state.settingsState.fontFactor,
-    bodyHeight: state.settingsState.bodyHeight,
+    effectiveBodyHeight: state.settingsState.effectiveBodyHeight,
 });
 
 export default connect(mapStateToProps)(InputField);
