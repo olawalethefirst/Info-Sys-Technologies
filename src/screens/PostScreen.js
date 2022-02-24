@@ -18,7 +18,6 @@ import PostDetail from '../components/PostDetail';
 import CallToAuth from '../components/CallToAuth';
 import SecondaryHeader from '../components/SecondaryHeader';
 import { stickyHeaderHeight } from '../constants';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { firestore } from '../helperFunctions/initializeFirebase';
 import { onSnapshot, doc } from 'firebase/firestore';
 import MarginVertical from '../components/MarginVertical';
@@ -35,7 +34,6 @@ function PostScreen({
         params: { body, category, createdAt, owner, postID, title },
     }, //maybe update postMini to send only this
 }) {
-    const [callToAuthModalVisible, setCallToAuthModalVisible] = useState(false);
     const scrollRef = useRef(null);
     const containerRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0));
@@ -67,9 +65,7 @@ function PostScreen({
         { comment: 'comment' },
     ];
     const { statusBarHeight } = Constants;
-    const toggleCallToAuth = () => {
-        setCallToAuthModalVisible((oldState) => !oldState);
-    };
+    
     const commentInputRef = useRef(null);
 
     useEffect(() => {
@@ -133,7 +129,6 @@ function PostScreen({
                             return (
                                 <PostDetail
                                     item={item}
-                                    toggleCallToAuth={toggleCallToAuth}
                                     scrollRef={scrollRef}
                                     containerRef={containerRef}
                                     effectiveBodyHeight={effectiveBodyHeight}
@@ -158,12 +153,7 @@ function PostScreen({
                         margin={margin}
                         commentInputRef={commentInputRef}
                     />
-                    <CallToAuth
-                        visible={callToAuthModalVisible}
-                        toggleCallToAuth={toggleCallToAuth}
-                        margin={margin}
-                        fontFactor={fontFactor}
-                    />
+                    <CallToAuth />
                 </SafeAreaView>
             </KeyboardAvoidingView>
         </View>

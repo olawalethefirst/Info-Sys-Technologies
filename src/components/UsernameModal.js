@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useReducer } from 'react';
 import {
     Text,
     View,
@@ -10,15 +10,18 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Keyboard,
+    TouchableOpacity,
 } from 'react-native';
 import { connect } from 'react-redux';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Constants from 'expo-constants';
 import KeyboardViewContainer from './KeyboardViewContainer';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-function UsernameModal({ headerSize, margin }) {
+function UsernameModal({ headerSize, margin, fontFactor }) {
     const { statusBarHeight } = Constants;
-    console.log(statusBarHeight);
+    const inputRef = useRef(null);
+    console.log(useReducer, 'snsjnsj');
 
     return (
         <View>
@@ -43,75 +46,155 @@ function UsernameModal({ headerSize, margin }) {
                         }}
                     >
                         <KeyboardViewContainer>
-                            <Pressable
-                                onPress={Keyboard.dismiss}
+                            <KeyboardAvoidingView
                                 style={{ flex: 1 }}
+                                behavior={
+                                    Platform.OS === 'ios' ? 'padding' : 'null'
+                                }
+                                keyboardVerticalOffset={
+                                    headerSize + statusBarHeight
+                                }
                             >
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        justifyContent: 'center',
-                                        marginHorizontal: margin,
+                                <ScrollView
+                                    contentContainerStyle={{
+                                        flexGrow: 1,
                                     }}
                                 >
-                                    <View
-                                        style={{
-                                            backgroundColor: 'blue',
-                                        }}
+                                    <Pressable
+                                        onPress={Keyboard.dismiss}
+                                        style={{ flex: 1 }}
                                     >
-                                        <Text>Please choose a name</Text>
-                                        <Text>
-                                            aware that BackHandler events will
-                                            not be emitted as long as the modal
-                                            is open. On iOS, this callback is
-                                            called when a Modal is being
-                                            dismissed using a drag gesture when
-                                            presentationStyle is pageSheet or
-                                            formSheetThe onRequestClose callback
-                                            is called when the user taps the
-                                            hardware back button on Android or
-                                            the menu button on Apple TV. Because
-                                            of this required prop, be aware that
-                                            BackHandler events will not be
-                                            emitted as long as the modal is
-                                            open. On iOS, this callback is
-                                            called when a Modal is being
-                                            dismissed using a drag gesture when
-                                            presentationStyle is pageSheet or
-                                            formSheetThe onRequestClose callback
-                                            is called when the user taps the
-                                            hardware back button on Android or
-                                            the menu button on Apple TV. Because
-                                            of this required prop, be aware that
-                                            BackHandler events will not be
-                                            emitted as long as the modal is
-                                            open. On iOS, this callback is
-                                            called when a Modal is being
-                                            dismissed using a drag gesture when
-                                            presentationStyle is pageSheet or
-                                            formSheetThe onRequestClose callback
-                                            is called when the user taps the
-                                            hardware back button on Android or
-                                            the menu button on Apple TV. Because
-                                            of this required prop, be aware that
-                                            BackHandler events will not be
-                                            emitted as long as the modal is
-                                            open. On iOS, this callback is
-                                            called when a Modal is being
-                                            dismissed using a drag gesture when
-                                            presentationStyle is pageSheet or
-                                            formSheet
-                                        </Text>
-                                        <Pressable>
-                                            <TextInput
+                                        <View
+                                            style={{
+                                                flex: 1,
+                                                justifyContent: 'center',
+                                                marginHorizontal: margin,
+                                            }}
+                                        >
+                                            <View
                                                 style={{
-                                                    backgroundColor: 'black',
+                                                    // backgroundColor: '#fff',
+                                                    padding: wp(2.2),
+                                                    // borderRadius: wp(1.35),
+                                                    marginBottom: wp(2.2),
                                                 }}
-                                            />
-                                        </Pressable>
-                                    </View>
-                                </View>
-                            </Pressable>
+                                            >
+                                                <Text
+                                                    style={{
+                                                        fontSize:
+                                                            fontFactor *
+                                                            wp(4.5),
+                                                        lineHeight:
+                                                            fontFactor *
+                                                            wp(5.72),
+                                                        fontFamily:
+                                                            'Karla_500Medium',
+                                                        textAlign: 'center',
+                                                        color: '#fff',
+                                                        textShadowOffset: {
+                                                            width: 0.1,
+                                                            height: 0.1,
+                                                        },
+                                                        textShadowColor: '#fff',
+                                                        textShadowRadius: 0.1,
+                                                    }}
+                                                >
+                                                    Welcome, please choose a
+                                                    forum name
+                                                </Text>
+                                            </View>
+                                            <Pressable
+                                                onPress={() =>
+                                                    inputRef.current.focus()
+                                                }
+                                                style={{
+                                                    backgroundColor: '#fff',
+                                                    padding: wp(4.4),
+                                                    marginBottom: wp(2.2),
+                                                }}
+                                            >
+                                                <TextInput
+                                                    autoCorrect={false}
+                                                    autoCapitalize={'words'}
+                                                    ref={inputRef}
+                                                    placeholder="input name"
+                                                    placeholderTextColor="#808080"
+                                                    style={{
+                                                        fontSize:
+                                                            fontFactor *
+                                                            wp(4.5),
+                                                        lineHeight:
+                                                            fontFactor *
+                                                            wp(5.72),
+                                                        fontFamily:
+                                                            'Karla_400Regular',
+                                                        textAlign: 'center',
+                                                        
+                                                    }}
+                                                />
+                                            </Pressable>
+                                            <TouchableOpacity
+                                                style={{
+                                                    width: '100%',
+                                                    justifyContent: 'center',
+                                                    backgroundColor: '#1A91D7',
+                                                    padding: wp(2.2),
+                                                    borderRadius: wp(1.35),
+                                                    marginBottom: wp(2.2),
+                                                }}
+                                                onPress={() => {}}
+                                            >
+                                                <Text
+                                                    style={{
+                                                        textAlign: 'center',
+                                                        color: '#fff',
+                                                        fontSize:
+                                                            fontFactor *
+                                                            wp(4.5),
+                                                        lineHeight:
+                                                            fontFactor *
+                                                            wp(5.72),
+                                                        fontFamily:
+                                                            'Karla_400Regular',
+                                                        
+                                                    }}
+                                                >
+                                                    Submit
+                                                </Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={{
+                                                    width: '100%',
+                                                    justifyContent: 'center',
+                                                    backgroundColor: '#ddd',
+                                                    padding: wp(2.2),
+                                                    borderRadius: wp(1.35),
+                                                    marginBottom: wp(2.2),
+                                                    alignSelf: 'center',
+                                                }}
+                                                onPress={() => {}}
+                                            >
+                                                <Text
+                                                    style={{
+                                                        textAlign: 'center',
+                                                        color: 'red',
+                                                        fontSize:
+                                                            fontFactor *
+                                                            wp(4.5),
+                                                        lineHeight:
+                                                            fontFactor *
+                                                            wp(5.72),
+                                                        fontFamily:
+                                                            'Karla_400Regular',
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </Pressable>
+                                </ScrollView>
+                            </KeyboardAvoidingView>
                         </KeyboardViewContainer>
                     </View>
                 </View>
@@ -120,9 +203,12 @@ function UsernameModal({ headerSize, margin }) {
     );
 }
 
-const mapStateToProps = ({ settingsState: { headerSize, margin } }) => ({
+const mapStateToProps = ({
+    settingsState: { headerSize, margin, fontFactor },
+}) => ({
     headerSize,
     margin,
+    fontFactor,
 });
 
 export default connect(mapStateToProps)(UsernameModal);

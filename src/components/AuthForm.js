@@ -19,8 +19,8 @@ const AuthForm = ({ fontFactor, createAccount }) => {
     const {
         control,
         handleSubmit,
-        watch,
-        formState: { errors },
+        formState: { errors, isSubmitSuccessful },
+        reset,
     } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onBlur',
@@ -67,12 +67,18 @@ const AuthForm = ({ fontFactor, createAccount }) => {
             useNativeDriver: true,
         }).start();
     };
-    const email = watch('email');
-    const password = watch('password');
+    const email = useWatch({ name: 'email', control });
+    const password = useWatch({ name: 'password', control })
 
     const onSubmitFailed = (errors) => {
         console.log('failed', errors);
     };
+
+    useEffect(() => {
+        if (isSubmitSuccessful) {
+            reset();
+        }
+    }, [isSubmitSuccessful, reset]);
 
     return (
         <View>

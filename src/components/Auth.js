@@ -4,9 +4,6 @@ import {
     Animated,
     View,
     Dimensions,
-    KeyboardAvoidingView,
-    Platform,
-    TextInput,
 } from 'react-native';
 import AuthTemplate from './AuthTemplate';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
@@ -36,7 +33,6 @@ const Auth = ({ minHeight, deviceWidthClass }) => {
         outputRange: [0, 1],
     });
     const animateViewToExistingUser = () => {
-        console.log('called');
         return Animated.timing(viewAnimatedNumber, {
             toValue: 1,
             duartion: 300,
@@ -44,7 +40,6 @@ const Auth = ({ minHeight, deviceWidthClass }) => {
         }).start();
     };
     const animateViewToNewUser = () => {
-        console.log('called');
         return Animated.timing(viewAnimatedNumber, {
             toValue: 0,
             duartion: 300,

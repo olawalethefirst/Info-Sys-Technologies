@@ -1,11 +1,19 @@
-import React, { useRef, useState } from 'react';
-import { StyleSheet, Pressable, Animated } from 'react-native';
+import React from 'react';
+import {
+    StyleSheet,
+    TouchableWithoutFeedback,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Foundation';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
-import CallToAuth from './CallToAuth';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-//switch to use react native reanimated v2? for native animation 
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+} from 'react-native-reanimated';
+import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
+import { connect } from 'react-redux';
+//switch to use react native reanimated v2? for native animation
 
 const AddPost = ({
     margin,
@@ -14,76 +22,56 @@ const AddPost = ({
     toggleModal,
     uid,
     disabled,
+    toggleCallToAuthModal,
 }) => {
-    const animatedValue = useRef(new Animated.Value(1)).current;
-    const [callToAuthVisible, setCallToAuthVisible] = useState(false);
-    const onPressIn = () => {
-        Animated.timing(animatedValue, {
-            toValue: 0.85,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
-    };
-
-    const onPressOut = () => {
-        Animated.timing(animatedValue, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
-    };
-    const toggleCallToAuthModal = () =>
-        setCallToAuthVisible((oldState) => !oldState);
+    const buttonAnimatedScale = useSharedValue(1);
+    const onPressIn = () => (buttonAnimatedScale.value = 0.8);
+    const onPressOut = () => (buttonAnimatedScale.value = 1);
+    const buttonAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [
+            { scale: withTiming(buttonAnimatedScale.value, { duration: 150 }) },
+        ],
+    }));
+    const styles2 = StyleSheet.create({
+        container: {
+            right: margin,
+            bottom: headerSize,
+            width: wp(20) * fontFactor,
+            height: wp(20) * fontFactor,
+            borderRadius: wp(10) * fontFactor,
+            elevation: wp(1) * fontFactor,
+            shadowOffset: {
+                width: wp(0.5) * fontFactor,
+                height: wp(0.5) * fontFactor,
+            },
+            shadowRadius: wp(0.5) * fontFactor,
+        },
+    });
 
     return (
-        <Pressable
-            // onPressIn={onPressIn}
-            // onPressOut={onPressOut}
+        <TouchableWithoutFeedback
             onPress={uid ? toggleModal : toggleCallToAuthModal}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
             disabled={disabled}
-            style={{
-                position: 'absolute',
-                right: margin,
-                bottom: headerSize,
-            }}
         >
-            {({ pressed }) => (
-                <>
-                    <Animated.View
-                        style={[
-                            styles.container,
-                            {
-                                width: wp(20) * fontFactor,
-                                height: wp(20) * fontFactor,
-                                borderRadius: wp(10),
-                                transform: [{ scale: pressed ? 0.9 : 1 }],
-                                elevation: wp(1) * fontFactor,
-                                shadowOffset: {
-                                    width: wp(0.5) * fontFactor,
-                                    height: wp(0.5) * fontFactor,
-                                },
-                                shadowRadius: wp(0.5) * fontFactor,
-                            },
-                        ]}
-                    >
-                        <Icon
-                            name="plus"
-                            style={{
-                                fontSize: fontFactor * wp(6),
-                                lineHeight: fontFactor * wp(7.7),
-                                color: '#fff',
-                            }}
-                        />
-                    </Animated.View>
-                    <CallToAuth
-                        toggleCallToAuth={toggleCallToAuthModal}
-                        visible={callToAuthVisible}
-                        margin={margin}
-                        fontFactor={fontFactor}
-                    />
-                </>
-            )}
-        </Pressable>
+            <Animated.View
+                style={[
+                    styles.container,
+                    styles2.container,
+                    buttonAnimatedStyle,
+                ]}
+            >
+                <Icon
+                    name="plus"
+                    style={{
+                        fontSize: fontFactor * wp(6),
+                        lineHeight: fontFactor * wp(7.7),
+                        color: '#fff',
+                    }}
+                />
+            </Animated.View>
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -94,9 +82,20 @@ AddPost.propTypes = {
     toggleModal: PropTypes.func,
     uid: PropTypes.string,
     disabled: PropTypes.bool,
+    toggleCallToAuthModal: PropTypes.func,
 };
 
-export default AddPost;
+const mapStateToProps = ({
+    forumTempState: { uid },
+    settingsState: { margin, headerSize, fontFactor },
+}) => ({
+    uid,
+    margin,
+    headerSize,
+    fontFactor,
+});
+
+export default connect(mapStateToProps, { toggleCallToAuthModal })(AddPost);
 
 const styles = StyleSheet.create({
     container: {
@@ -106,5 +105,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#1A91D7',
         shadowColor: 'black',
         shadowOpacity: 0.3,
+        position: 'absolute',
     },
 });

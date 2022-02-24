@@ -2,8 +2,19 @@ import * as React from 'react';
 import Svg, { Circle } from 'react-native-svg';
 import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
+import Animated, {
+    useAnimatedStyle,
+    withTiming,
+} from 'react-native-reanimated';
 
-export default function SliderCircle({ size, active }) {
+export default function SliderCircle({ size, index, pageNo }) {
+    const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+    const animatedCircleStyle = useAnimatedStyle(() => {
+        return {
+            opacity: withTiming((Math.round(pageNo.value) === index) + 0), //opacity = 1 when active
+        };
+    });
+
     return (
         <View
             style={{
@@ -22,9 +33,15 @@ export default function SliderCircle({ size, active }) {
                     cy={30}
                     r={27.5}
                     stroke="#fff"
-                    strokeWidth={5}
+                    strokeWidth={7}
                 />
-                {active && <Circle cx={30} cy={30} r={20} fill="#fff" />}
+                <AnimatedCircle
+                    cx={30}
+                    cy={30}
+                    r={20}
+                    fill="#fff"
+                    style={animatedCircleStyle}
+                />
             </Svg>
         </View>
     );
@@ -32,7 +49,8 @@ export default function SliderCircle({ size, active }) {
 
 SliderCircle.propTypes = {
     size: PropTypes.number,
-    active: PropTypes.bool,
+    index: PropTypes.number,
+    pageNo: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

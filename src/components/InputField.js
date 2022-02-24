@@ -1,16 +1,10 @@
 import React, { useRef } from 'react';
-import {
-    TextInput,
-    Text,
-    View,
-    Platform,
-    StyleSheet,
-    Keyboard,
-} from 'react-native';
+import { TextInput, Text, View, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import multilineKeyboardAvoidingFn from '../helperFunctions/multilineKeyboardAvoidingFn';
 
 function InputField({
     onChange,
@@ -49,39 +43,6 @@ function InputField({
         },
     };
     const mulitLineInputRef = useRef(null);
-    const isIOS = Platform.OS === 'ios';
-    const keyBoardAvoidingFn = () => {
-        if (isIOS && megaSize) {
-            let fieldFormOffset;
-            let fieldHeight;
-            if (mulitLineInputRef.current && contactFormRef.current) {
-                mulitLineInputRef.current.measureLayout(
-                    contactFormRef.current,
-                    (left, top, width, height) => {
-                        fieldFormOffset = top;
-                        fieldHeight = height;
-                    }
-                );
-            }
-            Keyboard.addListener(
-                'keyboardDidShow',
-                ({ endCoordinates: { height } }) => {
-                    if (fieldHeight && fieldFormOffset) {
-                        const offset =
-                            fieldFormOffset -
-                            (effectiveBodyHeight - //used effectiveBodyHeight as keyboard height ignores height of tab Bar in calculation
-                                height -
-                                fieldHeight);
-                        scrollRef?.current?.scrollToOffset({
-                            offset: offset,
-                            animated: true,
-                        });
-                    }
-                    Keyboard.removeAllListeners('keyboardDidShow');
-                }
-            );
-        }
-    };
 
     return (
         <View>
@@ -101,7 +62,15 @@ function InputField({
                 autoCapitalize={'none'}
                 autoCorrect={false}
                 multiline={megaSize ? true : false}
-                onFocus={keyBoardAvoidingFn}
+                onFocus={() =>
+                    multilineKeyboardAvoidingFn(
+                        megaSize,
+                        mulitLineInputRef,
+                        contactFormRef,
+                        scrollRef,
+                        effectiveBodyHeight
+                    )
+                }
                 onBlur={onBlur}
                 textAlignVertical={megaSize && 'top'}
                 value={value}

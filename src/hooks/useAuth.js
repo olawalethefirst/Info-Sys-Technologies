@@ -7,6 +7,7 @@ const useAuth = (createAccount) => {
     //states
     const [modalVisible, setModalVisible] = useState(false);
     const [error, setError] = useState('');
+    const [navigate, setNavigate] = useState(false);
     const [activityIndicator, setActivityIndicator] = useState(false);
     const firebaseNetworkError =
         'A network error (such as timeout, interrupted connection or unreachable host) has occurred.';
@@ -58,8 +59,8 @@ const useAuth = (createAccount) => {
     const connectAuth = async (email, password) => {
         try {
             await auth(email, password);
+            setNavigate(true);
             deactivateModal();
-            // navigate();
         } catch ({ message }) {
             processError(message, email);
         }
@@ -70,6 +71,11 @@ const useAuth = (createAccount) => {
         connectAuth(email, password);
     };
     const initiateAuth = (email, password) => {
+        setNavigate((oldValue) => {
+            if (oldValue) {
+                return !oldValue;
+            }
+        });
         resetError();
         setActivityIndicator(true);
         activateModal();
@@ -85,6 +91,7 @@ const useAuth = (createAccount) => {
         retryAbleError,
         retryAuth,
         initiateAuth,
+        navigate,
     ];
 };
 

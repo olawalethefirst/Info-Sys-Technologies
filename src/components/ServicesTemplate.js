@@ -1,34 +1,54 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
     StyleSheet,
     Text,
     View,
     ImageBackground,
-    ScrollView,
-    Animated,
     Pressable,
-    Platform,
     Dimensions,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
-import Modal from 'react-native-modal';
-import ModalCloseIcon from './ModalCloseIcon';
 import PropTypes from 'prop-types';
-import Constants from 'expo-constants';
+import Animated2, {
+    useAnimatedStyle,
+    withTiming,
+    useSharedValue,
+} from 'react-native-reanimated';
+import ServiceModal from './ServiceModal';
 
 function ServicesTemplate({
     headerSize,
     url,
     title,
     details,
-    menuIconWidth,
-    menuIconHeight,
     fontFactor,
     contentContainerWidth,
-    fadeIn,
-    fadeOut,
+    modalAwareAnimatedValue,
+    tabBarHeight,
 }) {
+    const modalAwareAnimatedValue2 = useSharedValue(0);
+    const modalAwareAnimatedStyle = useAnimatedStyle(() => {
+        ('worklet');
+        return {
+            transform: [
+                {
+                    translateY: withTiming(modalAwareAnimatedValue2.value),
+                },
+            ],
+        };
+    });
+    const onModalWillShow = () => {
+        ('worklet');
+        modalAwareAnimatedValue.value = -height;
+        modalAwareAnimatedValue2.value = -height;
+    };
+    const onModalWillHide = () => {
+        'worklet';
+        modalAwareAnimatedValue.value = 0;
+        modalAwareAnimatedValue2.value = 0;
+    };
+
     const styles2 = {
         heading: {
             fontSize: fontFactor * wp(8.5),
@@ -48,42 +68,14 @@ function ServicesTemplate({
         },
     };
     const { height } = Dimensions.get('window');
-    const translateY = useRef(new Animated.Value(0)).current;
-    const animateOut = useRef(
-        Animated.timing(translateY, {
-            toValue: -height,
-            duration: 300,
-            useNativeDriver: true,
-        })
-    ).current;
-    const animateIn = useRef(
-        Animated.timing(translateY, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-        })
-    ).current;
     const [modalOpen, setModalOpen] = useState(false);
-    const toggleModal = () => {
-        setModalOpen((state) => {
-            state
-                ? Animated.parallel([animateIn.start(), fadeIn.start()])
-                : Animated.parallel([animateOut.start(), fadeOut.start()]);
-            return !state;
-        });
-    };
-    const { statusBarHeight } = Constants;
+    const toggleModal = () => setModalOpen((state) => !state);
 
     return (
         <View style={[styles.container, {}]}>
             <ImageBackground source={url} style={[styles.container]}>
-                <Animated.View
-                    style={[
-                        styles.container,
-                        {
-                            transform: [{ translateY }],
-                        },
-                    ]}
+                <Animated2.View
+                    style={[styles.container, modalAwareAnimatedStyle]}
                 >
                     <View style={[styles2.contentContainer]}>
                         <MarginVertical size={4} />
@@ -127,65 +119,20 @@ function ServicesTemplate({
                             </Text>
                         </Pressable>
                     </View>
-                </Animated.View>
+                </Animated2.View>
             </ImageBackground>
-            <Modal
-                isVisible={modalOpen}
-                onBackButtonPress={toggleModal}
-                useNativeDriver
-                hideModalContentWhileAnimating
-                style={{
-                    margin: 0,
-                    marginTop: Platform.select({
-                        ios: headerSize + statusBarHeight,
-                        android: headerSize,
-                    }),
-                }}
-            >
-                <View style={{ flex: 1 }}>
-                    <View style={styles.iconContainer}>
-                        <ModalCloseIcon
-                            closeModal={toggleModal}
-                            iconHeight={menuIconHeight}
-                            iconWidth={menuIconWidth}
-                            color="#ffffff"
-                        />
-                    </View>
-
-                    <ScrollView
-                        bounces={false}
-                        showsVerticalScrollIndicator={false}
-                        style={[
-                            styles2.contentContainer,
-                            {
-                                marginVertical: menuIconHeight,
-                            },
-                        ]}
-                    >
-                        <View style={[styles.container]}>
-                            <Text
-                                style={[
-                                    styles.poppins600Font,
-                                    styles2.baseFont,
-                                    styles.lightBlueText,
-                                ]}
-                            >
-                                {title}
-                            </Text>
-                            <MarginVertical />
-                            <Text
-                                style={[
-                                    styles.karla400Font,
-                                    styles2.baseFont,
-                                    styles.whiteText,
-                                ]}
-                            >
-                                {details}
-                            </Text>
-                        </View>
-                    </ScrollView>
-                </View>
-            </Modal>
+            <ServiceModal
+                modalOpen={modalOpen}
+                onModalWillHide={onModalWillHide}
+                onModalWillShow={onModalWillShow}
+                toggleModal={toggleModal}
+                headerSize={headerSize}
+                tabBarHeight={tabBarHeight}
+                title={title}
+                details={details}
+                contentContainerWidth={contentContainerWidth}
+                fontFactor={fontFactor}
+            />
         </View>
     );
 }
@@ -195,12 +142,10 @@ ServicesTemplate.propTypes = {
     url: PropTypes.number,
     title: PropTypes.string,
     details: PropTypes.string,
-    menuIconWidth: PropTypes.number,
-    menuIconHeight: PropTypes.number,
     fontFactor: PropTypes.number,
     contentContainerWidth: PropTypes.number,
-    fadeIn: PropTypes.object,
-    fadeOut: PropTypes.object,
+    modalAwareAnimatedValue: PropTypes.object,
+    tabBarHeight: PropTypes.number,
 };
 
 export default React.memo(ServicesTemplate);

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     StyleSheet,
     SafeAreaView,
@@ -11,13 +11,10 @@ import {
 import Forum from '../components/Forum';
 import { connect } from 'react-redux';
 import AddPost from '../components/AddPost';
-
-import PostErrorModal from '../components/PostErrorModal';
-import PostSuccessfulModal from '../components/PostSuccessfulModal';
+import PostResultModal from '../components/PostResultModal';
 import CreatePost from '../components/CreatePost';
 import useCreatePost from '../hooks/useCreatePost';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import SecondaryHeader from '../components/SecondaryHeader';
 import { useScrollToTop } from '@react-navigation/native';
 import RenderPost from '../components/RenderPost';
@@ -38,9 +35,9 @@ import UsernameModal from '../components/UsernameModal';
 // import createPostAsync from '../helperFunctions/createPostAsync';
 // import { v4 as uuidv4 } from 'uuid';
 // import onUnlikePostAsync from '../helperFunctions/onUnlikePostAsync';
-
-import { LogBox } from 'react-native';
-LogBox.ignoreLogs(['[2022-01-']);
+import updateUsername from '../helperFunctions/updateUsername';
+import { auth } from '../helperFunctions/initializeFirebase';
+import CallToAuth from '../components/CallToAuth';
 
 function ForumScreen({
     uid,
@@ -60,22 +57,24 @@ function ForumScreen({
     showFooter,
     effectiveBodyHeight,
 }) {
+    //State related hooks
     const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
-    const toggleModal = () => {
-        setCreatePostModalVisible((prevState) => !prevState);
-    };
     const [
         postSuccessful,
         postError,
         activityIndicator,
-        createPost,
-        resetPostError,
-        resetPostSuccessful,
-        retryCreatePost,
-    ] = useCreatePost(toggleModal);
+        writePost,
+        resetFailedPostAction,
+        resetSuccessfulPostAction,
+        retryWrite,
+    ] = useCreatePost();
     const scrollRef = useRef(null);
-    useScrollToTop(scrollRef);
 
+    //Variables & Fns
+    useScrollToTop(scrollRef);
+    const toggleModal = useCallback(() => {
+        setCreatePostModalVisible((prevState) => !prevState);
+    }, []);
     const itemLength = wp(25) * fontFactor;
     const itemOffset = (wp(25) + wp(4.4)) * fontFactor;
     const columnMode = checkColumnMode(deviceWidthClass);
@@ -92,29 +91,38 @@ function ForumScreen({
             updateShowFooter(newShowFooter);
         }
     };
-    const onRefresh = () => !searching && refreshPosts(); //does nothing if search active
+    const onRefresh = useCallback(
+        () => !searching && refreshPosts(),
+        [searching, refreshPosts]
+    ); //does nothing if search active
     const immutableExtraData = Map({
         loadingPosts,
         loadingPostsError,
         searching,
     });
-    const onEndReached = () =>
-        onEndOfPostsReached(
-            loadingPosts,
-            loadingPostsError,
-            fetchPosts,
-            posts[posts.length - 1].postID,
-            searching,
-            true
-        ); //only loads more if certain conditions are met
-    const retryLoadMorePosts = () =>
-        onEndOfPostsReached(
-            loadingPosts,
-            loadingPostsError,
-            fetchPosts,
-            posts[posts.length - 1].postID,
-            searching
-        ); //retries to load more after encountering error
+    const onEndReached = useCallback(
+        () =>
+            onEndOfPostsReached(
+                loadingPosts,
+                loadingPostsError,
+                fetchPosts,
+                posts[posts.length - 1].postID,
+                searching,
+                true
+            ),
+        [loadingPosts, loadingPostsError, fetchPosts, posts, searching]
+    ); //only loads more if certain conditions are met
+    const retryLoadMorePosts = useCallback(
+        () =>
+            onEndOfPostsReached(
+                loadingPosts,
+                loadingPostsError,
+                fetchPosts,
+                posts[posts.length - 1].postID,
+                searching
+            ),
+        [loadingPosts, loadingPostsError, fetchPosts, posts, searching]
+    ); //retries to load more after encountering error
     const styles2 = StyleSheet.create({
         containerHeight: {
             height: effectiveBodyHeight,
@@ -126,7 +134,7 @@ function ForumScreen({
     });
 
     useEffect(() => {
-        // fetchPosts();
+        fetchPosts();
     }, [fetchPosts]);
 
     // const createPlentyPosts = async () => {
@@ -279,38 +287,32 @@ function ForumScreen({
                     onEndReached={onEndReached}
                 />
                 <AddPost
-                    margin={margin}
-                    headerSize={headerSize}
-                    fontFactor={fontFactor}
                     toggleModal={toggleModal}
-                    uid={uid}
-                    disabled={activityIndicator.current}
+                    disabled={activityIndicator}
                 />
                 {uid && (
                     <>
                         <CreatePost
                             toggleModal={toggleModal}
                             visible={createPostModalVisible}
-                            margin={margin}
-                            headerSize={headerSize}
-                            fontFactor={fontFactor}
-                            newPost={true}
-                            onSubmitSuccessful={createPost}
+                            onSubmitSuccessful={writePost}
+                            // deactivateActiveModal={deactivateActiveModal}
                         />
-                        <PostErrorModal
-                            visible={postError}
-                            toggleModal={resetPostError}
-                            retryCreatePost={retryCreatePost}
-                            fontFactor={fontFactor}
-                            margin={margin}
-                        />
-                        <PostSuccessfulModal
-                            visible={postSuccessful}
-                            toggleModal={resetPostSuccessful}
-                            fontFactor={fontFactor}
-                            margin={margin}
+                        <PostResultModal
+                            postSuccessful={postSuccessful}
+                            postError={postError}
+                            resetSuccessfulPostAction={
+                                resetSuccessfulPostAction
+                            }
+                            resetFailedPostAction={resetFailedPostAction}
+                            retryWrite={retryWrite}
                         />
                         {/* <UsernameModal /> */}
+                    </>
+                )}
+                {!uid && (
+                    <>
+                        <CallToAuth />
                     </>
                 )}
             </View>

@@ -37,8 +37,6 @@ export default function RenderPostsFooter({
     const showNoSearchResult =
         searching && loadingPostsError === errorMessages.noPost;
 
-    console.log(loadingPostsError);
-
     if (showNoSearchResult) {
         return (
             <View style={styles2.container}>

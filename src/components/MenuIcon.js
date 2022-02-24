@@ -4,14 +4,13 @@ import Svg, { Rect } from 'react-native-svg';
 import PropTypes from 'prop-types';
 
 export default function MenuIcon({ headerSize }) {
-    const svgHeight = 0.35 * headerSize;
+    const svgWidth = 0.5 * headerSize;
     const animatedValue = useRef(new Animated.Value(1)).current;
     const onPressModalIconIn = () => {
         Animated.spring(animatedValue, {
             toValue: 0.8,
             useNativeDriver: true,
         }).start();
-        3;
     };
     const onPressModalIconOut = () => {
         Animated.spring(animatedValue, {
@@ -40,7 +39,7 @@ export default function MenuIcon({ headerSize }) {
                 ]}
             >
                 <Svg
-                    height={svgHeight}
+                    width={svgWidth}
                     viewBox="0 0 200 130"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -79,13 +78,16 @@ MenuIcon.propTypes = {
 };
 
 const styles = StyleSheet.create({
-    container: { width: '100%', height: '100%', backgroundColor: '#fff' },
+    container: {
+        backgroundColor: '#fff',
+        aspectRatio: 1.1,
+    },
     animatedContainer: {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
     },
     icon: {
-        aspectRatio: 200 / 130,
+        aspectRatio: 1,
     },
 });

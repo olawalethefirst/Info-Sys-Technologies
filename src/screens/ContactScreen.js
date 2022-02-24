@@ -30,7 +30,7 @@ function ContactScreen({ margin, headerSize, fontFactor }) {
             behavior={Platform.select({ ios: 'padding', android: null })}
             style={styles.container}
             keyboardVerticalOffset={Platform.select({
-                ios: headerSize + statusBarHeight,
+                ios: Math.round(headerSize + statusBarHeight),
                 android: null,
             })}
         >

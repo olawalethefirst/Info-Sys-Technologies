@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -6,7 +6,6 @@ import {
     TextInput,
     Keyboard,
     TouchableWithoutFeedback,
-    Platform,
     Animated,
     TouchableOpacity,
 } from 'react-native';
@@ -15,11 +14,11 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ModalSelector from 'react-native-modal-selector';
 import DatePickerModal from 'react-native-modal-datetime-picker';
 import InputField from './InputField';
-import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
 import { useForm, Controller, useWatch } from 'react-hook-form';
+import { modalSelectorStyles } from '../constants';
 
-export default function ContactForm({ fontFactor, scrollRef }) {
+export default function ContactForm({ fontFactor, scrollRef, margin }) {
     const submitButtonAnimatedValue = useRef(new Animated.Value(1)).current;
     const styles2 = {
         baseFontSize: {
@@ -60,7 +59,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
             borderBottomWidth: wp(0.1) * fontFactor,
         },
     };
-    const { resetField, control, handleSubmit, formState } = useForm({
+    const { resetField, control, handleSubmit, formState, reset } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onBlur',
         defaultValues: {
@@ -76,7 +75,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
             contactDetails: '',
         },
     });
-    const { errors } = formState;
+    const { errors, isSubmitSuccessful } = formState;
     const contactOption = useWatch({ name: 'contactOption', control });
     const inquiry = contactOption === 'Inquiry';
     const hireUs = contactOption === 'Hire Us';
@@ -85,7 +84,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
     const referralChannelData = [
         {
             key: referralChannelIndex++,
-            label: 'How did you hear about us',
+            label: 'How did you hear about us?',
             section: true,
         },
         {
@@ -107,6 +106,11 @@ export default function ContactForm({ fontFactor, scrollRef }) {
     ];
     let contactOptionReference = 0;
     const contactOptionData = [
+        {
+            key: contactOptionReference++,
+            label: 'Do you want to get in touch or hire us?',
+            section: true,
+        },
         {
             key: contactOptionReference++,
             label: 'Hire Us',
@@ -167,10 +171,13 @@ export default function ContactForm({ fontFactor, scrollRef }) {
         setDatePickerVisible((oldState) => !oldState);
     };
     const contactOptionSelectorRef = useRef(null);
-    const { statusBarHeight } = Constants;
     const contactFormRef = useRef(null);
 
-    //console.log()
+    useEffect(() => {
+        if (isSubmitSuccessful) {
+            reset();
+        }
+    }, [isSubmitSuccessful, reset]);
 
     return (
         <View ref={contactFormRef}>
@@ -221,26 +228,8 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                             resetContactOptionState();
                                             onChange(label);
                                         }}
-                                        overlayStyle={{
-                                            backgroundColor: 'rgba(0,0,0,0.9)',
-                                            marginTop: Platform.select({
-                                                ios: statusBarHeight,
-                                                android: 0,
-                                            }),
-                                        }}
                                         backdropPressToClose={true}
-                                        optionTextStyle={{
-                                            color: 'black',
-                                            fontSize: fontFactor * wp(4.5),
-                                            lineHeight: fontFactor * wp(5.72),
-                                            fontFamily: 'Karla_400Regular',
-                                        }}
-                                        cancelTextStyle={{
-                                            color: 'red',
-                                            fontSize: fontFactor * wp(4.5),
-                                            lineHeight: fontFactor * wp(5.72),
-                                            fontFamily: 'Karla_500Medium',
-                                        }}
+                                        {...modalSelectorStyles(fontFactor)}
                                         customSelector={
                                             <>
                                                 <TouchableOpacity
@@ -399,30 +388,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                             onChange(label)
                                         }
                                         onModalClose={onBlur}
-                                        overlayStyle={{
-                                            backgroundColor: 'rgba(0,0,0,0.9)',
-                                            marginTop: Platform.select({
-                                                ios: statusBarHeight,
-                                                android: 0,
-                                            }),
-                                        }}
-                                        sectionTextStyle={{
-                                            fontSize: fontFactor * wp(4.5),
-                                            lineHeight: fontFactor * wp(5.72),
-                                            fontFamily: 'Karla_500Medium',
-                                        }}
-                                        optionTextStyle={{
-                                            color: 'black',
-                                            fontSize: fontFactor * wp(4.5),
-                                            lineHeight: fontFactor * wp(5.72),
-                                            fontFamily: 'Karla_400Regular',
-                                        }}
-                                        cancelTextStyle={{
-                                            color: 'red',
-                                            fontSize: fontFactor * wp(4.5),
-                                            lineHeight: fontFactor * wp(5.72),
-                                            fontFamily: 'Karla_500Medium',
-                                        }}
+                                        {...modalSelectorStyles(fontFactor)}
                                         backdropPressToClose={true}
                                     >
                                         <InputField
@@ -706,6 +672,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
 ContactForm.propTypes = {
     fontFactor: PropTypes.number,
     scrollRef: PropTypes.object,
+    margin: PropTypes.number,
 };
 
 const styles = StyleSheet.create({

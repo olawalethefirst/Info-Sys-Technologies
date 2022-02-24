@@ -1,40 +1,20 @@
-import React, { useRef, useEffect } from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-    ImageBackground,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    Button,
-    KeyboardAvoidingView,
-    Platform,
-    TextInput,
-    Keyboard,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import React, { useRef } from 'react';
+import { StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { connect } from 'react-redux';
 import SubScreeenTemplate from '../components/SubScreenTemplate';
-import Footer from '../components/Footer';
-import scrollToTop from '../helperFunctions/scrollToTop';
 import Auth from '../components/Auth';
 import Constants from 'expo-constants';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 const AuthScreen = ({
     headerSize,
     margin,
     fontFactor,
     bodyHeight,
-    navigation,
     deviceWidthClass,
-    uid,
+    tabBarHeight,
 }) => {
     const scrollRef = useRef(null);
     const { statusBarHeight } = Constants;
-    const tabBarHeight = useBottomTabBarHeight();
-
     const sectionComponents = [
         {
             data: (
@@ -46,11 +26,8 @@ const AuthScreen = ({
         },
     ];
 
-    useEffect(() => {
-        uid ? setTimeout(() => navigation.goBack(), 1200) : null;
-    }, [uid, navigation]);
-
     return (
+        //Implement a user already logged in screen when user signed in
         <KeyboardAvoidingView
             style={{ flex: 1, backgroundColor: 'white' }}
             behavior={Platform.select({ ios: 'height', android: null })}
@@ -79,8 +56,8 @@ const mapStateToProps = ({
         fontFactor,
         bodyHeight,
         deviceWidthClass,
+        tabBarHeight,
     },
-    forumTempState: { uid },
 }) => {
     return {
         headerSize,
@@ -88,7 +65,7 @@ const mapStateToProps = ({
         fontFactor,
         bodyHeight,
         deviceWidthClass,
-        uid,
+        tabBarHeight,
     };
 };
 

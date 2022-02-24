@@ -13,6 +13,7 @@ const GoogleAuthContainer = ({ createAccount, children, email, password }) => {
         retryAbleError,
         retryAuth,
         initiateAuth,
+        navigate,
     ] = useAuth(createAccount);
 
     const onPress = ({ email, password }) => {
@@ -30,6 +31,7 @@ const GoogleAuthContainer = ({ createAccount, children, email, password }) => {
                 dismissModal={dismissModal}
                 resetError={resetError}
                 retryAbleError={retryAbleError}
+                navigate={navigate}
             />
         </>
     );

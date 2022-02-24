@@ -11,6 +11,7 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useScrollToTop } from '@react-navigation/native';
 import updateEffectiveBodyHeight from '../redux/actions/updateEffectiveBodyHeight';
 
+
 function HomeScreen({
     margin,
     bodyHeight,
@@ -80,9 +81,9 @@ function HomeScreen({
     useEffect(() => {
         if (bodyHeight && tabBarHeight) {
             setEffectiveBodyHeight(() => {
-                const val = bodyHeight - tabBarHeight;
-                updateEffectiveBodyHeight(val);
-                return val;
+                const effectiveBodyHeight = bodyHeight - tabBarHeight;
+                updateEffectiveBodyHeight({effectiveBodyHeight, tabBarHeight});
+                return effectiveBodyHeight;
             });
         }
     }, [bodyHeight, tabBarHeight, updateEffectiveBodyHeight]);

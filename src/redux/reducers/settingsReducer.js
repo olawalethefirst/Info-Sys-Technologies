@@ -22,6 +22,7 @@ const initialState = {
     viewPostFooterPosition: 0,
     viewPostFlatListScreenHeight: 0,
     effectiveBodyHeight: 0,
+    tabBarHeight: 0,
 };
 
 export default function settingsReducer(state = initialState, action) {
@@ -52,7 +53,11 @@ export default function settingsReducer(state = initialState, action) {
                 fontFactor: action.payload,
             };
         case UPDATE_EFFECTIVE_BODY_HEIGHT:
-            return { ...state, effectiveBodyHeight: action.payload };
+            return {
+                ...state,
+                effectiveBodyHeight: action.payload.effectiveBodyHeight,
+                tabBarHeight: action.payload.tabBarHeight,
+            };
         default:
             return state;
     }

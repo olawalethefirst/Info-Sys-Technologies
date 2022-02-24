@@ -1,98 +1,85 @@
-import React, { PureComponent } from 'react';
-import { StyleSheet, Animated, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Pressable } from 'react-native';
 import DownArrowIcon from './DownArrowIcon';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
+import Animated, {
+    useAnimatedStyle,
+    withTiming,
+    withRepeat,
+    useSharedValue,
+} from 'react-native-reanimated';
 
-// export default function DancingDownArrow({ arrowWidth, menuIconWidth }) {
-//     const AnimatedView = Animated.createAnimatedComponent(View);
-//     const styles2 = {
-//         iconContainer: {
-//             position: 'absolute',
-//             width: arrowWidth,
-//             height: (arrowWidth * 125) / 42,
-//             right: (menuIconWidth - arrowWidth) / 2,
-//             bottom: wp(4),
-//             opacity: 0.8,
-//         },
-//     };
+export default function DancingDownArrow({
+    arrowWidth,
+    scrollToNextPage,
+    pageNo,
+    headerSize,
+    drawerIconWidth,
+    modalAwareAnimatedStyle,
+}) {
+    const animatedArrowValue = useSharedValue(0);
+    const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+    const animatedArrowStyle = useAnimatedStyle(() => ({
+        opacity: withTiming(Math.round(pageNo.value) != 7 + 0),
+        transform: [{ translateY: animatedArrowValue.value }],
+    }));
+    const styles2 = {
+        iconContainer: {
+            width: arrowWidth,
+            height: (arrowWidth * 125) / 42, //maintaining arrowImage aspectRatio
+        },
+        button: {
+            height: (arrowWidth * 125) / 42 + headerSize / 3, //covering complete arrow position during animation
+            bottom: headerSize / 2,
+            right: 0,
+            width: drawerIconWidth * 1.1,
+            alignItems: 'center',
+        },
+    };
+    const loopAnimation = withRepeat(withTiming(headerSize / 3), -1, true);
+    const initiateAnimation = () => {
+        animatedArrowValue.value = loopAnimation;
+    };
+    const stopAnimation = () => {
+        animatedArrowValue.value = withTiming(0, { duration: 50 });
+    };
+    const reInitiateAnimation = () => {
+        console.log(animatedArrowValue.value);
+        animatedArrowValue.value = loopAnimation;
+    };
 
-//     return (
-//         <AnimatedView style={styles2.iconContainer}>
-//             <DownArrowIcon />
-//         </AnimatedView>
-//     );
-// }
+    useEffect(() => {
+        initiateAnimation();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-export default class DancingDownArrow extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.animatedValue = new Animated.Value(0);
-        this.animateIcon = Animated.loop(
-            Animated.sequence([
-                Animated.timing(this.animatedValue, {
-                    toValue: wp(1.6),
-                    duration: 300,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(this.animatedValue, {
-                    toValue: 0,
-                    duration: 300,
-                    useNativeDriver: true,
-                }),
-            ])
-        );
-    }
-
-    componentDidMount() {
-        this.animateIcon.start();
-    }
-
-    render() {
-        const { arrowWidth, menuIconWidth, scrollToNextPage, animatedValue } =
-            this.props;
-        const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-        const styles2 = {
-            iconContainer: {
-                width: arrowWidth,
-                height: (arrowWidth * 125) / 42, //using arrow image aspect ratio
-                bottom: wp(4), //slightly above bottom
-                right: (menuIconWidth - arrowWidth) / 2,
-                opacity: animatedValue,
-            },
-        };
-
-        return (
-            <AnimatedPressable
-                onPress={scrollToNextPage}
-                // onPressIn={() => this.animateIcon.start()}
-                // onPressOut={() => this.animateIcon.start()}
-                hitSlop={wp(4)}
-                style={[
-                    styles.iconContainer,
-                    styles2.iconContainer,
-
-                    {
-                        transform: [{ translateY: this.animatedValue }],
-                    },
-                ]}
-            >
+    return (
+        <AnimatedPressable
+            onPress={scrollToNextPage}
+            onPressIn={stopAnimation}
+            onPressOut={reInitiateAnimation}
+            hitSlop={wp(4)}
+            style={[styles.button, styles2.button, modalAwareAnimatedStyle]}
+        >
+            <Animated.View style={[styles2.iconContainer, animatedArrowStyle]}>
                 <DownArrowIcon />
-            </AnimatedPressable>
-        );
-    }
+            </Animated.View>
+        </AnimatedPressable>
+    );
 }
 
 DancingDownArrow.propTypes = {
     arrowWidth: PropTypes.number,
-    menuIconWidth: PropTypes.number,
     scrollToNextPage: PropTypes.func,
-    animatedValue: PropTypes.object,
+    pageNo: PropTypes.object,
+    headerSize: PropTypes.number,
+    drawerIconWidth: PropTypes.number,
+    modalAwareAnimatedStyle: PropTypes.object,
 };
 
 const styles = StyleSheet.create({
-    iconContainer: {
+    button: {
         position: 'absolute',
-        opacity: 0.8,
     },
 });

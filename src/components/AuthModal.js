@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    Modal,
     Text,
     View,
     ActivityIndicator,
@@ -12,6 +11,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import processErrorString from '../helperFunctions/processErrorString';
+import Modal from 'react-native-modal';
+import { useNavigation } from '@react-navigation/native';
 
 // eslint-disable-next-line no-undef
 const AuthModal = ({
@@ -25,26 +26,30 @@ const AuthModal = ({
     fontFactor,
     margin,
     retryAbleError,
+    navigate,
 }) => {
     const { statusBarHeight } = Constants;
     const errorMessage = error ? processErrorString(error) : null;
+    const navigation = useNavigation();
+    console.log('error: ', error, 'retryAbleError: ', retryAbleError);
 
     return (
         <Modal //change modal to react-native-modal to enable us naivgate away from screen upon successful authentication
-            visible={modalVisible}
-            // visible={true}
-            onRequestClose={null}
-            supportedOrientations={['portrait']}
-            transparent={true}
-            animationType="fade"
+            isVisible={modalVisible}
+            hideModalContentWhileAnimating
             statusBarTranslucent={true}
+            useNativeDriver
+            style={{ margin: 0 }}
+            backdropOpacity={0.8}
+            onModalHide={() => {
+                navigate && navigation.goBack();
+            }}
         >
             <View
                 style={{
                     flex: 1,
                     justifyContent: 'center',
                     alignItems: 'center',
-                    backgroundColor: 'rgba(22, 27, 38, 0.8)',
                     marginTop: Platform.select({
                         ios: statusBarHeight,
                         android: 0,
@@ -52,121 +57,132 @@ const AuthModal = ({
                     paddingHorizontal: margin,
                 }}
             >
-                {activityIndicator ? (
-                    <ActivityIndicator color="#1A91D7" />
-                ) : (
+                {(navigate ||
+                    (error && !retryAbleError) ||
+                    activityIndicator) && (
                     <View
                         style={{
-                            opacity: error ? 0 : 1,
                             width: '100%',
-                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
                             alignItems: 'center',
                             padding: fontFactor * wp(2.2),
-                            borderRadius: fontFactor * wp(1.35),
                             marginBottom: fontFactor * wp(2.2),
                         }}
                     >
-                        <Text
-                            style={[
-                                {
-                                    fontSize: fontFactor * wp(4.5),
-                                    lineHeight: fontFactor * wp(5.72),
-                                    fontFamily: 'Karla_400Regular',
-                                    textAlign: 'center',
-                                },
-                                uid ? { color: 'black' } : { color: 'red' },
-                            ]}
-                        >
-                            {uid ? 'Successful!' : 'Failed!'}
-                        </Text>
+                        {activityIndicator ? (
+                            <ActivityIndicator color="#1A91D7" />
+                        ) : (
+                            <Text
+                                style={[
+                                    {
+                                        fontSize: fontFactor * wp(4.5),
+                                        lineHeight: fontFactor * wp(5.72),
+                                        fontFamily: 'Karla_500Medium',
+                                        textAlign: 'center',
+                                        textShadowOffset: {
+                                            width: 0.1,
+                                            height: 0.1,
+                                        },
+                                        textShadowColor: navigate
+                                            ? '#fff'
+                                            : 'red',
+                                        textShadowRadius: 0.1,
+                                        color: navigate ? '#fff' : 'red',
+                                    },
+                                ]}
+                            >
+                                {navigate ? 'Successful!' : 'Failed!'}
+                            </Text>
+                        )}
                     </View>
                 )}
 
-                <View
-                    style={{
-                        opacity: error ? 1 : 0,
-                        width: '100%',
-                    }}
-                >
+                {retryAbleError && (
                     <View
                         style={{
                             width: '100%',
-                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                            alignItems: 'center',
-                            padding: fontFactor * wp(2.2),
-                            borderRadius: fontFactor * wp(1.35),
-                            marginBottom: fontFactor * wp(2.2),
                         }}
                     >
-                        <Text
-                            style={[
-                                {
-                                    color: 'red',
-                                    fontSize: fontFactor * wp(4.5),
-                                    lineHeight: fontFactor * wp(5.72),
-                                    fontFamily: 'Karla_400Regular',
-                                    textAlign: 'center',
-                                },
-                            ]}
+                        <View
+                            style={{
+                                width: '100%',
+                                alignItems: 'center',
+                                padding: fontFactor * wp(2.2),
+                                marginBottom: fontFactor * wp(2.2),
+                            }}
                         >
-                            {errorMessage}
-                        </Text>
-                    </View>
-                    {retryAbleError && (
+                            <Text
+                                style={[
+                                    {
+                                        color: 'red',
+                                        fontSize: fontFactor * wp(4.5),
+                                        lineHeight: fontFactor * wp(5.72),
+                                        fontFamily: 'Karla_500Medium',
+                                        textAlign: 'center',
+                                        textShadowOffset: {
+                                            width: 0.1,
+                                            height: 0.1,
+                                        },
+                                        textShadowColor: 'red',
+                                        textShadowRadius: 0.1,
+                                    },
+                                ]}
+                            >
+                                {errorMessage}
+                            </Text>
+                        </View>
+
                         <TouchableOpacity
                             style={{
                                 width: '100%',
                                 justifyContent: 'center',
-                                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                backgroundColor: '#1A91D7',
                                 padding: fontFactor * wp(2.2),
                                 borderRadius: fontFactor * wp(1.35),
                                 marginBottom: fontFactor * wp(2.2),
-                                // opacity: retryAbleError ? 1 : 0,
                             }}
                             onPress={retryAuth}
-                            // disabled={retryAbleError ? false : true}
                         >
                             <Text
                                 style={{
                                     textAlign: 'center',
-                                    color: 'black',
+                                    color: '#fff',
                                     fontSize: fontFactor * wp(4.5),
                                     lineHeight: fontFactor * wp(5.72),
-                                    fontFamily: 'Karla_500Medium',
+                                    fontFamily: 'Karla_400Regular',
                                 }}
                             >
                                 Retry
                             </Text>
                         </TouchableOpacity>
-                    )}
-                    <TouchableOpacity
-                        style={{
-                            width: '100%',
-                            justifyContent: 'center',
-                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                            padding: fontFactor * wp(2.2),
-                            borderRadius: fontFactor * wp(1.35),
-                            marginBottom: fontFactor * wp(2.2),
-                        }}
-                        onPress={() => {
-                            dismissModal();
-                            resetError();
-                        }}
-                        disabled={error ? false : true}
-                    >
-                        <Text
+
+                        <TouchableOpacity
                             style={{
-                                textAlign: 'center',
-                                color: 'black',
-                                fontSize: fontFactor * wp(4.5),
-                                lineHeight: fontFactor * wp(5.72),
-                                fontFamily: 'Karla_500Medium',
+                                width: '100%',
+                                justifyContent: 'center',
+                                backgroundColor: '#ddd',
+                                padding: fontFactor * wp(2.2),
+                                borderRadius: fontFactor * wp(1.35),
+                                marginBottom: fontFactor * wp(2.2),
+                            }}
+                            onPress={() => {
+                                dismissModal();
+                                resetError();
                             }}
                         >
-                            Cancel
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                            <Text
+                                style={{
+                                    textAlign: 'center',
+                                    color: 'red',
+                                    fontSize: fontFactor * wp(4.5),
+                                    lineHeight: fontFactor * wp(5.72),
+                                    fontFamily: 'Karla_400Regular',
+                                }}
+                            >
+                                Cancel
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
         </Modal>
     );
@@ -184,10 +200,14 @@ AuthModal.propTypes = {
 };
 
 const mapStateToProps = ({
-    forumTempState,
+    forumTempState: { uid },
     settingsState: { fontFactor, margin },
 }) => {
-    return { uid:forumTempState, fontFactor, margin };
+    return {
+        uid,
+        fontFactor,
+        margin,
+    };
 };
 
 export default connect(mapStateToProps)(AuthModal);

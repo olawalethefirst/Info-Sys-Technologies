@@ -7,7 +7,6 @@ import VisionAndMission from '../components/VisionAndMission';
 import Objectives from '../components/Objectives';
 import Delivery from '../components/Delivery';
 import PropTypes from 'prop-types';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useScrollToTop } from '@react-navigation/native';
 
 function AboutScreen({

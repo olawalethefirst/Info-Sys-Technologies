@@ -14,7 +14,11 @@ function Contact({ margin, fontFactor, scrollRef }) {
                 },
             ]}
         >
-            <ContactForm fontFactor={fontFactor} scrollRef={scrollRef} />
+            <ContactForm
+                fontFactor={fontFactor}
+                scrollRef={scrollRef}
+                margin={margin}
+            />
         </View>
     );
 }

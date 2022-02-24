@@ -8,6 +8,7 @@ import { clientId } from '../../config';
 export default function useGoogleAuth(native) {
     //Universal States
     const [modalVisible, setModalVisible] = useState(false);
+    const [navigate, setNavigate] = useState(false);
     const [activityIndicator, setActivityIndicator] = useState(false);
     const [credential, setCredential] = useState(null);
     const [error, setError] = useState('');
@@ -17,16 +18,21 @@ export default function useGoogleAuth(native) {
 
     const resetError = () => setError('');
     const activateModal = () => {
+        setNavigate((oldValue) => {
+            if (oldValue) {
+                return !oldValue;
+            }
+        });
         resetError();
         setActivityIndicator(true);
         setModalVisible(true);
     };
-    const deactivateModal = useCallback(() => {
+    const deactivateModal = () => {
         setActivityIndicator(false);
         setTimeout(() => {
             setModalVisible(false);
         }, 1000);
-    }, []);
+    };
     const persistModalWithError = () => {
         setActivityIndicator(false);
     };
@@ -38,8 +44,8 @@ export default function useGoogleAuth(native) {
         setActivityIndicator(true);
         authWithCredentialAsync(credential)
             .then(() => {
+                setNavigate(true);
                 deactivateModal();
-                // navigate();
             })
             .catch((e) => {
                 if (e.message === firebaseNetworkError) {
@@ -50,29 +56,21 @@ export default function useGoogleAuth(native) {
                 }
             });
     };
-    const syncGoogleAuthWithFirebaseAsync = useCallback(
-        (credential) => {
-            authWithCredentialAsync(credential)
-                .then((res) => {
-                    console.log('successful: ', res);
+    const syncGoogleAuthWithFirebaseAsync = useCallback((credential) => {
+        authWithCredentialAsync(credential)
+            .then(() => {
+                setNavigate(true);
+                deactivateModal();
+            })
+            .catch((e) => {
+                setError(e.message);
+                if (e.message === firebaseNetworkError) {
+                    persistModalWithError();
+                } else {
                     deactivateModal();
-                    // navigate();
-                })
-                .catch((e) => {
-                    console.log('failed: ', e);
-                    if (e.message === firebaseNetworkError) {
-                        persistModalWithError();
-                        setError(e.message);
-                    } else {
-                        deactivateModal();
-                    }
-                });
-        },
-        [
-            deactivateModal, //navigate
-        ]
-    );
-    const initiatePromptAsync = () => promptAsync({ useProxy: true });
+                }
+            });
+    }, []);
 
     //RetryAble Error Update
     useEffect(() => setRetryAbleError(error === firebaseNetworkError), [error]);
@@ -85,6 +83,8 @@ export default function useGoogleAuth(native) {
           })
         : [null, null, null];
 
+    const initiatePromptAsync = () => promptAsync({ useProxy: true });
+
     !native &&
         // eslint-disable-next-line react-hooks/rules-of-hooks
         useEffect(() => {
@@ -96,7 +96,7 @@ export default function useGoogleAuth(native) {
             } else if (response) {
                 deactivateModal();
             }
-        }, [response, syncGoogleAuthWithFirebaseAsync, deactivateModal]);
+        }, [response, syncGoogleAuthWithFirebaseAsync]);
 
     // Native Approach
     const [initState, setInitState] = useState(null);
@@ -155,6 +155,7 @@ export default function useGoogleAuth(native) {
         dismissModal, //6
         resetError, //7
         retryAbleError, //8
+        navigate, //9
         ...extraArray,
     ];
 }

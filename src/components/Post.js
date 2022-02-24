@@ -18,18 +18,19 @@ import Username from './Username';
 import Created from './Created';
 import Likes from './Likes';
 import Category from './Category';
+import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal'
 
 const Post = ({
     fontFactor,
     margin,
     uid,
     deviceWidthClass,
-    toggleCallToAuth,
     containerRef,
     effectiveBodyHeight,
     commentInputRef,
     scrollRef,
     item,
+    toggleCallToAuthModal
 }) => {
     const [liked, setLiked] = useState(false);
     const columnMode = checkColumnMode(deviceWidthClass);
@@ -153,7 +154,7 @@ const Post = ({
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() =>
-                                uid ? onPress() : toggleCallToAuth()
+                                uid ? onPress() : toggleCallToAuthModal()
                             }
                             style={{
                                 padding: fontFactor * wp(1),
@@ -186,6 +187,6 @@ const mapStateToProps = ({
     effectiveBodyHeight
 });
 
-export default connect(mapStateToProps)(Post);
+export default connect(mapStateToProps, {toggleCallToAuthModal})(Post);
 
 const styles = StyleSheet.create({});

@@ -11,8 +11,15 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Constants from 'expo-constants';
 import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal';
+import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
+import { connect } from 'react-redux';
 
-const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
+const CalltoAuth = ({
+    margin,
+    fontFactor,
+    callToAuthModalVisible,
+    toggleCallToAuthModal,
+}) => {
     const { statusBarHeight } = Constants;
     const navigation = useNavigation();
     const [navigate, setNavigate] = useState(false);
@@ -20,10 +27,9 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
 
     return (
         <Modal
-            isVisible={visible}
-            animationIn="fadeIn"
-            animationOut="fadeOut"
-            animationOutTiming={navigate ? 150 : 300}
+            backdropOpacity={0.8}
+            isVisible={callToAuthModalVisible}
+            // animationOutTiming={300}
             useNativeDriver
             hideModalContentWhileAnimating
             onModalHide={() => {
@@ -40,16 +46,14 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                     ios: statusBarHeight,
                     android: 0,
                 }),
-                justifyContent: 'center',
             }}
-            onBackButtonPress={toggleCallToAuth}
-            onBackdropPress={toggleCallToAuth}
+            onBackButtonPress={toggleCallToAuthModal}
+            onBackdropPress={toggleCallToAuthModal}
         >
             <View style={{ paddingHorizontal: margin }}>
                 <View
                     style={{
                         width: '100%',
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
                         alignItems: 'center',
                         padding: wp(2.2),
                         borderRadius: wp(1.35),
@@ -60,8 +64,15 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                         style={{
                             fontSize: fontFactor * wp(4.5),
                             lineHeight: fontFactor * wp(5.72),
-                            fontFamily: 'Karla_400Regular',
+                            fontFamily: 'Karla_500Medium',
                             textAlign: 'center',
+                            color: '#fff',
+                            textShadowOffset: {
+                                width: 0.1,
+                                height: 0.1,
+                            },
+                            textShadowColor: '#fff',
+                            textShadowRadius: 0.1,
                         }}
                     >
                         You need to be logged in to perform this action
@@ -72,23 +83,23 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                     style={{
                         width: '100%',
                         justifyContent: 'center',
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        backgroundColor: '#1A91D7',
                         padding: wp(2.2),
                         borderRadius: wp(1.35),
                         marginBottom: wp(2.2),
                     }}
                     onPress={() => {
                         toggleNavigate();
-                        toggleCallToAuth();
+                        toggleCallToAuthModal();
                     }}
                 >
                     <Text
                         style={{
                             textAlign: 'center',
-                            color: 'black',
+                            color: '#fff',
                             fontSize: fontFactor * wp(4.5),
                             lineHeight: fontFactor * wp(5.72),
-                            fontFamily: 'Karla_500Medium',
+                            fontFamily: 'Karla_400Regular',
                         }}
                     >
                         Join now
@@ -98,12 +109,12 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                     style={{
                         width: '100%',
                         justifyContent: 'center',
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        backgroundColor: '#ddd',
                         padding: wp(2.2),
                         borderRadius: wp(1.35),
                         marginBottom: wp(2.2),
                     }}
-                    onPress={toggleCallToAuth}
+                    onPress={toggleCallToAuthModal}
                 >
                     <Text
                         style={{
@@ -111,7 +122,7 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
                             color: 'red',
                             fontSize: fontFactor * wp(4.5),
                             lineHeight: fontFactor * wp(5.72),
-                            fontFamily: 'Karla_500Medium',
+                            fontFamily: 'Karla_400Regular',
                         }}
                     >
                         Cancel
@@ -122,6 +133,11 @@ const CalltoAuth = ({ toggleCallToAuth, visible, margin, fontFactor }) => {
     );
 };
 
-export default CalltoAuth;
+const mapStateToProps = ({
+    settingsTempState: { callToAuthModalVisible },
+    settingsState: { margin, fontFactor },
+}) => ({ callToAuthModalVisible, margin, fontFactor });
+
+export default connect(mapStateToProps, { toggleCallToAuthModal })(CalltoAuth);
 
 const styles = StyleSheet.create({});

@@ -13,6 +13,7 @@ const GoogleAuthContainer = ({ native, children }) => {
         dismissModal, //6
         resetError, //7
         retryAbleError, //8
+        navigate, //9
         ...extraArray
         // eslint-disable-next-line react-hooks/rules-of-hooks
     ] = useGoogleAuth(native);
@@ -42,6 +43,7 @@ const GoogleAuthContainer = ({ native, children }) => {
                 resetError={resetError}
                 retryAuth={retryAuth}
                 retryAbleError={retryAbleError}
+                navigate={navigate}
             />
         </>
     );

@@ -18,6 +18,8 @@ import updateUID from './src/redux/actions/updateUID';
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs([
     'AsyncStorage has been extracted from react-native core and will be removed in a future release. ',
+    '[2022-',
+    'Setting a timer for a long period of time, i.e.',
 ]);
 
 function PreApp() {
@@ -65,7 +67,6 @@ function PreApp() {
                 !bodyHeight ||
                 !fontFactor
             ) {
-                console.log('triggered me');
                 triggerSynchronousActions();
             }
         }
