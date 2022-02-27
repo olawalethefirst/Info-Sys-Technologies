@@ -35,7 +35,7 @@ import UsernameModal from '../components/UsernameModal';
 // import createPostAsync from '../helperFunctions/createPostAsync';
 // import { v4 as uuidv4 } from 'uuid';
 // import onUnlikePostAsync from '../helperFunctions/onUnlikePostAsync';
-import updateUsername from '../helperFunctions/updateUsername';
+import updateUsernameAsync from '../helperFunctions/updateUsernameAsync';
 import { auth } from '../helperFunctions/initializeFirebase';
 import CallToAuth from '../components/CallToAuth';
 
@@ -56,6 +56,7 @@ function ForumScreen({
     updateShowFooter,
     showFooter,
     effectiveBodyHeight,
+    username,
 }) {
     //State related hooks
     const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
@@ -226,6 +227,7 @@ function ForumScreen({
     //     }
     // };
 
+    
     return (
         <SafeAreaView style={styles2.containerHeight}>
             <View style={styles.flex1}>
@@ -307,7 +309,7 @@ function ForumScreen({
                             resetFailedPostAction={resetFailedPostAction}
                             retryWrite={retryWrite}
                         />
-                        {/* <UsernameModal /> */}
+                        <UsernameModal />
                     </>
                 )}
                 {!uid && (
@@ -337,6 +339,7 @@ const mapStateToProps = ({
         searching,
         searchResult,
         showFooter,
+        username,
     },
 }) => ({
     uid,
@@ -352,6 +355,7 @@ const mapStateToProps = ({
     searchResult,
     showFooter,
     effectiveBodyHeight,
+    username,
 });
 
 ForumScreen.propTypes = {

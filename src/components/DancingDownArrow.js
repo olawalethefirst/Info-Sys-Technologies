@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, Pressable } from 'react-native';
 import DownArrowIcon from './DownArrowIcon';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -38,21 +38,13 @@ export default function DancingDownArrow({
         },
     };
     const loopAnimation = withRepeat(withTiming(headerSize / 3), -1, true);
-    const initiateAnimation = () => {
-        animatedArrowValue.value = loopAnimation;
-    };
+    animatedArrowValue.value = loopAnimation;
     const stopAnimation = () => {
         animatedArrowValue.value = withTiming(0, { duration: 50 });
     };
     const reInitiateAnimation = () => {
-        console.log(animatedArrowValue.value);
         animatedArrowValue.value = loopAnimation;
     };
-
-    useEffect(() => {
-        initiateAnimation();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     return (
         <AnimatedPressable

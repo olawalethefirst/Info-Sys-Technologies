@@ -1,5 +1,5 @@
 import {
-    UPDATE_UID,
+    UPDATE_USER,
     LOADING_POSTS_INITIATED,
     LOADING_POSTS_SUCCESSFUL,
     LOADING_POSTS_FAILED,
@@ -13,6 +13,7 @@ import {
     SEARCH_POSTS_INITIATED,
     SEARCH_POSTS_SUCCESSFUL,
     SEARCH_POSTS_FAILED,
+    UPDATE_USERNAME,
 } from '../actions/actionTypes';
 
 // inital State
@@ -25,12 +26,17 @@ const initialState = {
     searchResult: [],
     showFooter: false,
     searchString: '',
+    username: null,
 };
 
 const forumTempReducer = (state = initialState, action) => {
     switch (action.type) {
-        case UPDATE_UID:
-            return { ...state, uid: action.payload };
+        case UPDATE_USER:
+            return {
+                ...state,
+                uid: action.payload ? action.payload.uid : null,
+                username: action.payload ? action.payload.username : null,
+            };
         case LOADING_POSTS_INITIATED:
             return { ...state, loadingPosts: true };
         case LOADING_POSTS_FIRST_BATCH_SUCCESSFUL:
@@ -92,6 +98,8 @@ const forumTempReducer = (state = initialState, action) => {
                 loadingPostsError: action.payload,
                 searchResult: [],
             };
+        case UPDATE_USERNAME:
+            return { ...state, username: action.payload };
         default:
             return state;
     }

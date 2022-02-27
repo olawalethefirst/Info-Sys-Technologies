@@ -18,6 +18,10 @@ export default function generateError(message) {
             return 'Invalid username or password';
         case errorMessages.offline:
             return 'Error loading posts'
+        case 'auth/network-request-failed':
+            return 'Please check your internet connection'
+        case 'Minimum of three characters.':
+            return 'Choose minimum of three characters'
         default:
             return 'An error occured, please try again';
     }

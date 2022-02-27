@@ -1,15 +1,8 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import {
-    StyleSheet,
-    View,
-    Platform,
-    KeyboardAvoidingView,
-    ScrollView,
-} from 'react-native';
+import { StyleSheet, View, Platform, ScrollView } from 'react-native';
 import Constants from 'expo-constants';
 import ModalCloseIcon from './ModalCloseIcon';
 import Modal from 'react-native-modal';
-import KeyboardViewContainer from './KeyboardViewContainer';
 import { connect } from 'react-redux';
 import CreatePostForm from './CreatePostForm';
 import updateModalStatus from '../redux/actions/updateModalStatus';
@@ -50,6 +43,7 @@ const CreatePost = ({
 
     return (
         <Modal
+            useNativeDriverForBackdrop
             onShow={toggleModalPressables}
             onModalWillHide={toggleModalPressables}
             onModalHide={disableActiveModal}
@@ -65,6 +59,7 @@ const CreatePost = ({
                     android: headerSize / 3,
                 }),
             }}
+            avoidKeyboard
         >
             <View
                 ref={containerRef}
@@ -83,59 +78,44 @@ const CreatePost = ({
                         color="#000000"
                     />
                 </View>
-                <KeyboardViewContainer>
-                    <KeyboardAvoidingView
-                        behavior={Platform.select({
-                            ios: 'padding',
-                            android: undefined,
-                        })}
-                        keyboardVerticalOffset={Platform.select({
-                            ios: statusBarHeight + headerSize / 3,
-                            android: null,
-                        })}
-                        style={{ flex: 1 }}
+
+                <View
+                    style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                    }}
+                >
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        keyboardDismissMode={'none'}
+                        keyboardShouldPersistTaps="never"
+                        ref={scrollViewRef}
+                        bounces={false}
+                        contentContainerStyle={{
+                            alignItems: 'center',
+                            flexGrow: 1,
+                            justifyContent: 'center',
+                        }}
                     >
                         <View
                             style={{
-                                flex: 1,
-                                justifyContent: 'center',
+                                width: `${fontFactor * 100}%`,
                             }}
                         >
-                            <ScrollView
-                                showsVerticalScrollIndicator={false}
-                                keyboardDismissMode={'none'}
-                                keyboardShouldPersistTaps="never"
-                                ref={scrollViewRef}
-                                bounces={false}
-                                contentContainerStyle={{
-                                    alignItems: 'center',
-                                    flexGrow: 1,
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <View
-                                    style={{
-                                        width: `${fontFactor * 100}%`,
-                                    }}
-                                >
-                                    <CreatePostForm
-                                        fontFactor={fontFactor}
-                                        onSubmitSuccessful={onSubmitSuccessful}
-                                        toggleModal={toggleModal}
-                                        headerSize={headerSize}
-                                        disableModalPressables={
-                                            disableModalPressables
-                                        }
-                                        onCancel={onCancel}
-                                        modalVisible={visible}
-                                        containerRef={containerRef}
-                                        scrollViewRef={scrollViewRef}
-                                    />
-                                </View>
-                            </ScrollView>
+                            <CreatePostForm
+                                fontFactor={fontFactor}
+                                onSubmitSuccessful={onSubmitSuccessful}
+                                toggleModal={toggleModal}
+                                headerSize={headerSize}
+                                disableModalPressables={disableModalPressables}
+                                onCancel={onCancel}
+                                modalVisible={visible}
+                                containerRef={containerRef}
+                                scrollViewRef={scrollViewRef}
+                            />
                         </View>
-                    </KeyboardAvoidingView>
-                </KeyboardViewContainer>
+                    </ScrollView>
+                </View>
             </View>
         </Modal>
     );

@@ -1,9 +1,9 @@
-import { UPDATE_UID } from './actionTypes';
+import { UPDATE_USER } from './actionTypes';
 
 // eslint-disable-next-line no-undef
 const updateUser = (user) => {
     return {
-        type: UPDATE_UID,
+        type: UPDATE_USER,
         payload: user,
     };
 };

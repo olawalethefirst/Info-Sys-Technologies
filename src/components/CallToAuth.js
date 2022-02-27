@@ -27,6 +27,7 @@ const CalltoAuth = ({
 
     return (
         <Modal
+            useNativeDriverForBackdrop
             backdropOpacity={0.8}
             isVisible={callToAuthModalVisible}
             // animationOutTiming={300}

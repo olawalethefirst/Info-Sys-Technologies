@@ -68,6 +68,17 @@ export default function useCreatePost() {
         dispatch({ type: RESET_SUCCESSFUL_POST_ACTION });
         reduxDispatch(updateModalStatus());
     }, [reduxDispatch]);
+    const timedResetSuccessfulPostAction = useCallback(
+        (active) =>
+            setTimeout(
+                () =>
+                    active &&
+                    postSuccessfulRef.current &&
+                    resetSuccessfulPostAction(),
+                2000
+            ),
+        [resetSuccessfulPostAction]
+    );
     const resetFailedPostAction = () => {
         dispatch({ type: RESET_FAILED_POST_ACTION });
         reduxDispatch(updateModalStatus());
@@ -112,13 +123,14 @@ export default function useCreatePost() {
     };
 
     useEffect(() => {
+        let active = true;
         if (state.postSuccessful) {
-            setTimeout(() => {
-                postSuccessfulRef.current && console.log('I can be called');
-                postSuccessfulRef.current && resetSuccessfulPostAction();
-            }, 2000);
+            timedResetSuccessfulPostAction(active);
         }
-    }, [state.postSuccessful, resetSuccessfulPostAction]);
+        return () => {
+            active = false;
+        };
+    }, [state.postSuccessful, timedResetSuccessfulPostAction]);
 
     return [
         state.postSuccessful,

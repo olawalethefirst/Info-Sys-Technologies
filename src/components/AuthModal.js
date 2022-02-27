@@ -37,8 +37,8 @@ const AuthModal = ({
         <Modal //change modal to react-native-modal to enable us naivgate away from screen upon successful authentication
             isVisible={modalVisible}
             hideModalContentWhileAnimating
-            statusBarTranslucent={true}
             useNativeDriver
+            useNativeDriverForBackdrop
             style={{ margin: 0 }}
             backdropOpacity={0.8}
             onModalHide={() => {

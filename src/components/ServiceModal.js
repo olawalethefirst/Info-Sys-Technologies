@@ -46,6 +46,7 @@ export default function ServiceModal({
     return (
         <View>
             <Modal
+                useNativeDriverForBackdrop
                 isVisible={modalOpen}
                 onModalWillHide={onModalWillHide}
                 onModalWillShow={onModalWillShow}

@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-    StyleSheet,
-    TouchableWithoutFeedback,
-} from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/Foundation';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
@@ -13,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
 import { connect } from 'react-redux';
+import toggleOnUsernameModal from '../redux/actions/toggleOnUsernameModal';
 //switch to use react native reanimated v2? for native animation
 
 const AddPost = ({
@@ -23,6 +21,8 @@ const AddPost = ({
     uid,
     disabled,
     toggleCallToAuthModal,
+    username,
+    toggleOnUsernameModal,
 }) => {
     const buttonAnimatedScale = useSharedValue(1);
     const onPressIn = () => (buttonAnimatedScale.value = 0.8);
@@ -48,9 +48,20 @@ const AddPost = ({
         },
     });
 
+    const onPress = () => {
+        // if (!uid) {
+        //     return toggleCallToAuthModal();
+        // }
+        // if (!username) {
+        //     return toggleOnUsernameModal();
+        // }
+        // return toggleModal();
+        return toggleOnUsernameModal();
+    };
+
     return (
         <TouchableWithoutFeedback
-            onPress={uid ? toggleModal : toggleCallToAuthModal}
+            onPress={onPress}
             onPressIn={onPressIn}
             onPressOut={onPressOut}
             disabled={disabled}
@@ -86,16 +97,20 @@ AddPost.propTypes = {
 };
 
 const mapStateToProps = ({
-    forumTempState: { uid },
+    forumTempState: { uid, username },
     settingsState: { margin, headerSize, fontFactor },
 }) => ({
     uid,
     margin,
     headerSize,
     fontFactor,
+    username,
 });
 
-export default connect(mapStateToProps, { toggleCallToAuthModal })(AddPost);
+export default connect(mapStateToProps, {
+    toggleCallToAuthModal,
+    toggleOnUsernameModal,
+})(AddPost);
 
 const styles = StyleSheet.create({
     container: {

@@ -90,8 +90,8 @@ function PreApp() {
                 fontFactor &&
                 assetsLoaded
             ) {
-                updateAuthState((uid) => {
-                    dispatch(updateUID(uid));
+                updateAuthState((payload) => {
+                    dispatch(updateUID(payload));
                 });
                 setAppIsReady(async () => {
                     await SplashScreen.hideAsync();

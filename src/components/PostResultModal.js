@@ -56,6 +56,7 @@ const PostResultModal = ({
 
     return (
         <Modal
+            useNativeDriverForBackdrop
             isVisible={isVisible.current}
             onModalHide={deactivateActiveModal}
             animationIn={'fadeIn'}
