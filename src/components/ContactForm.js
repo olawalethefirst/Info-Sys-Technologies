@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { modalSelectorStyles } from '../constants';
 
-export default function ContactForm({ fontFactor, scrollRef, margin }) {
+export default function ContactForm({ fontFactor, scrollRef }) {
     const submitButtonAnimatedValue = useRef(new Animated.Value(1)).current;
     const styles2 = {
         baseFontSize: {
@@ -61,7 +61,7 @@ export default function ContactForm({ fontFactor, scrollRef, margin }) {
     };
     const { resetField, control, handleSubmit, formState, reset } = useForm({
         mode: 'onBlur',
-        reValidateMode: 'onBlur',
+        reValidateMode: 'onChange',
         defaultValues: {
             name: '',
             email: '',
@@ -175,7 +175,16 @@ export default function ContactForm({ fontFactor, scrollRef, margin }) {
 
     useEffect(() => {
         if (isSubmitSuccessful) {
-            reset();
+            reset(null, {
+                keepErrors: false,
+                keepDirty: false,
+                keepValues: false,
+                keepDefaultValues: true,
+                keepIsSubmitted: false,
+                keepTouched: false,
+                keepSubmitCount: false,
+                keepIsValid: false,
+            });
         }
     }, [isSubmitSuccessful, reset]);
 
@@ -373,7 +382,6 @@ export default function ContactForm({ fontFactor, scrollRef, margin }) {
                                     field: { onChange, onBlur, value, ref },
                                 }) => (
                                     <ModalSelector
-                                        touchableActiveOpacity={0.5}
                                         ref={ref}
                                         data={referralChannelData}
                                         supportedOrientations={['portrait']}

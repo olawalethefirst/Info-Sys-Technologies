@@ -4,14 +4,15 @@ import { connect } from 'react-redux';
 import SubScreeenTemplate from '../components/SubScreenTemplate';
 import Auth from '../components/Auth';
 import Constants from 'expo-constants';
+import AuthModal from '../components/AuthModal';
 
 const AuthScreen = ({
     headerSize,
     margin,
     fontFactor,
-    bodyHeight,
     deviceWidthClass,
-    tabBarHeight,
+    uid,
+    effectiveBodyHeight,
 }) => {
     const scrollRef = useRef(null);
     const { statusBarHeight } = Constants;
@@ -19,8 +20,10 @@ const AuthScreen = ({
         {
             data: (
                 <Auth
-                    minHeight={bodyHeight - tabBarHeight}
                     deviceWidthClass={deviceWidthClass}
+                    uid={uid}
+                    fontFactor={fontFactor}
+                    minHeight={effectiveBodyHeight}
                 />
             ),
         },
@@ -45,6 +48,7 @@ const AuthScreen = ({
                 scrollRef={scrollRef}
                 deeplyNestedScreen
             />
+            <AuthModal />
         </KeyboardAvoidingView>
     );
 };
@@ -57,15 +61,17 @@ const mapStateToProps = ({
         bodyHeight,
         deviceWidthClass,
         tabBarHeight,
+        effectiveBodyHeight,
     },
+    forumTempState: { uid },
 }) => {
     return {
         headerSize,
         margin,
         fontFactor,
-        bodyHeight,
+        effectiveBodyHeight,
         deviceWidthClass,
-        tabBarHeight,
+        uid,
     };
 };
 

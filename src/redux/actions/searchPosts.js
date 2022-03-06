@@ -4,7 +4,7 @@ import {
     SEARCH_POSTS_FAILED,
 } from './actionTypes';
 import Fuse from 'fuse.js';
-import { errorMessages } from '../../helperFunctions/fetchPostsAsync';
+import { noPost } from '../../helperFunctions/processErrorString';
 
 export default function searchPosts(str) {
     return (dispatch, getState) => {
@@ -29,7 +29,7 @@ export default function searchPosts(str) {
             if (!res.length) {
                 dispatch({
                     type: SEARCH_POSTS_FAILED,
-                    payload: errorMessages.noPost,
+                    payload: noPost,
                 });
             } else {
                 const latestStr = getState().forumTempState.searchString;

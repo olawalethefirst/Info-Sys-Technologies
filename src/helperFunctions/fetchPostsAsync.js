@@ -1,9 +1,5 @@
 import getPostsSnapshot from './getPostsSnapshot';
-
-const errorMessages = {
-    noPost: 'No Post',
-    offline: 'Failed to get document because the client is offline',
-};
+import { noPost } from './processErrorString';
 
 export default async function fetchPostsAsync(lastPost) {
     const postsSnapshot = await getPostsSnapshot(lastPost);
@@ -13,8 +9,6 @@ export default async function fetchPostsAsync(lastPost) {
             ...doc.data(),
         }));
     } else {
-        throw new Error(errorMessages.noPost);
+        throw new Error(noPost);
     }
 }
-
-export { errorMessages };

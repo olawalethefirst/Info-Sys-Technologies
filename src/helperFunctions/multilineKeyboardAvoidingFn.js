@@ -7,6 +7,13 @@ export default function keyBoardAvoidingFn(
     scrollRef,
     windowHeight
 ) {
+    console.log(
+        !!megaSize,
+        !!inputRef.current,
+        !!containerRef.current,
+        !!scrollRef.current,
+        !!windowHeight
+    );
     const isIOS = Platform.OS === 'ios';
 
     if (isIOS && megaSize) {

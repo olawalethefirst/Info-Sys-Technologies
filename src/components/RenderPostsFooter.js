@@ -7,8 +7,9 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { errorMessages } from '../helperFunctions/fetchPostsAsync';
-import processErrorString from '../helperFunctions/processErrorString';
+import processErrorString, {
+    noPost,
+} from '../helperFunctions/processErrorString';
 import PropTypes from 'prop-types';
 import MarginVertical from './MarginVertical';
 
@@ -31,11 +32,9 @@ export default function RenderPostsFooter({
     //only render footer when there's an intersection in the set of "length smaller than screen" and "not loading post"
     const showFooterSpacer = showFooter && !loadingPosts && !loadingPostsError;
     const showLoadingIndicator = loadingPosts;
-    const showError =
-        loadingPostsError && loadingPostsError !== errorMessages.noPost;
+    const showError = loadingPostsError && loadingPostsError !== noPost;
     const showIndicatorAndErroSpacer = loadingPosts && showError;
-    const showNoSearchResult =
-        searching && loadingPostsError === errorMessages.noPost;
+    const showNoSearchResult = searching && loadingPostsError === noPost;
 
     if (showNoSearchResult) {
         return (

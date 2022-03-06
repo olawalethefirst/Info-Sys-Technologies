@@ -227,7 +227,6 @@ function ForumScreen({
     //     }
     // };
 
-    
     return (
         <SafeAreaView style={styles2.containerHeight}>
             <View style={styles.flex1}>
@@ -312,7 +311,7 @@ function ForumScreen({
                         <UsernameModal />
                     </>
                 )}
-                {!uid && (
+                {true && (
                     <>
                         <CallToAuth />
                     </>

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import MarginVertical from './MarginVertical';
 import processErrorString from '../helperFunctions/processErrorString';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { errorMessages } from '../helperFunctions/fetchPostsAsync';
+import { noPost } from '../helperFunctions/processErrorString';
 import PropTypes from 'prop-types';
 
 export default function RenderPostsHeader({
@@ -23,8 +23,7 @@ export default function RenderPostsHeader({
             paddingVertical: wp(4) * fontFactor,
         },
     });
-    const showError =
-        loadingPostsError && loadingPostsError !== errorMessages.noPost;
+    const showError = loadingPostsError && loadingPostsError !== noPost;
 
     if (showHeader) {
         return (

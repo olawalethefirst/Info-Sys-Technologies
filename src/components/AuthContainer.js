@@ -2,8 +2,7 @@ import React from 'react';
 import useAuth from '../hooks/useAuth';
 import AuthModal from './AuthModal';
 
-// eslint-disable-next-line no-undef
-const GoogleAuthContainer = ({ createAccount, children, email, password }) => {
+const AuthContainer = ({ createAccount, children, email, password }) => {
     const [
         modalVisible,
         error,
@@ -37,4 +36,4 @@ const GoogleAuthContainer = ({ createAccount, children, email, password }) => {
     );
 };
 
-export default GoogleAuthContainer;
+export default AuthContainer;

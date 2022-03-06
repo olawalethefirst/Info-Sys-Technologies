@@ -6,6 +6,7 @@ import Modal from 'react-native-modal';
 import { connect } from 'react-redux';
 import CreatePostForm from './CreatePostForm';
 import updateModalStatus from '../redux/actions/updateModalStatus';
+import PropTypes from 'prop-types';
 
 const CreatePost = ({
     visible,
@@ -35,6 +36,21 @@ const CreatePost = ({
     const isVisible = useRef(false);
     isVisible.current = visible && (!activeModal || activeModal === modalName);
 
+    const styles2 = StyleSheet.create({
+        modalContainer: {
+            paddingHorizontal: margin,
+            paddingTop: headerSize,
+            margin: headerSize / 3,
+            marginTop: Platform.select({
+                ios: statusBarHeight + headerSize / 3,
+                android: headerSize / 3,
+            }),
+        },
+        formContainer:{
+            width: `${fontFactor * 100}%`,
+        }
+    });
+
     useEffect(() => {
         if (visible && !activeModal) {
             updateModalStatus(modalName);
@@ -52,25 +68,14 @@ const CreatePost = ({
             onBackButtonPress={toggleModal}
             useNativeDriver={true}
             hideModalContentWhileAnimating={true}
-            style={{
-                margin: headerSize / 3,
-                marginTop: Platform.select({
-                    ios: statusBarHeight + headerSize / 3,
-                    android: headerSize / 3,
-                }),
-            }}
+            style={styles.modal}
             avoidKeyboard
         >
             <View
                 ref={containerRef}
-                style={{
-                    flex: 1,
-                    backgroundColor: '#fff',
-                    paddingHorizontal: margin,
-                    paddingTop: headerSize,
-                }}
+                style={[styles.modalContainer, styles2.modalContainer]}
             >
-                <View style={{ position: 'absolute', right: 0, top: 0 }}>
+                <View style={styles.modalCloseIcon}>
                     <ModalCloseIcon
                         closeModal={onCancel}
                         iconHeight={headerSize}
@@ -79,46 +84,44 @@ const CreatePost = ({
                     />
                 </View>
 
-                <View
-                    style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                    }}
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    keyboardDismissMode={'none'}
+                    keyboardShouldPersistTaps="handled"
+                    ref={scrollViewRef}
+                    bounces={false}
+                    contentContainerStyle={styles.scrollViewContainer}
                 >
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        keyboardDismissMode={'none'}
-                        keyboardShouldPersistTaps="never"
-                        ref={scrollViewRef}
-                        bounces={false}
-                        contentContainerStyle={{
-                            alignItems: 'center',
-                            flexGrow: 1,
-                            justifyContent: 'center',
-                        }}
+                    <View
+                        style={styles2.formContainer}
                     >
-                        <View
-                            style={{
-                                width: `${fontFactor * 100}%`,
-                            }}
-                        >
-                            <CreatePostForm
-                                fontFactor={fontFactor}
-                                onSubmitSuccessful={onSubmitSuccessful}
-                                toggleModal={toggleModal}
-                                headerSize={headerSize}
-                                disableModalPressables={disableModalPressables}
-                                onCancel={onCancel}
-                                modalVisible={visible}
-                                containerRef={containerRef}
-                                scrollViewRef={scrollViewRef}
-                            />
-                        </View>
-                    </ScrollView>
-                </View>
+                        <CreatePostForm
+                            fontFactor={fontFactor}
+                            onSubmitSuccessful={onSubmitSuccessful}
+                            toggleModal={toggleModal}
+                            headerSize={headerSize}
+                            disableModalPressables={disableModalPressables}
+                            onCancel={onCancel}
+                            modalVisible={visible}
+                            containerRef={containerRef}
+                            scrollViewRef={scrollViewRef}
+                        />
+                    </View>
+                </ScrollView>
             </View>
         </Modal>
     );
+};
+
+CreatePost.propTypes = {
+    visible: PropTypes.bool,
+    headerSize: PropTypes.number,
+    margin: PropTypes.number,
+    fontFactor: PropTypes.number,
+    toggleModal: PropTypes.func,
+    onSubmitSuccessful: PropTypes.func,
+    activeModal: PropTypes.string,
+    updateModalStatus: PropTypes.func,
 };
 
 const mapStateToProps = ({
@@ -133,4 +136,15 @@ const mapStateToProps = ({
 
 export default connect(mapStateToProps, { updateModalStatus })(CreatePost);
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    scrollViewContainer: {
+        alignItems: 'center',
+        flexGrow: 1,
+        justifyContent: 'center',
+    },
+    modalCloseIcon: { position: 'absolute', right: 0, top: 0 },
+    modalContainer: { flex: 1, backgroundColor: '#fff' },
+    modal: {
+        margin: 0,
+    },
+});

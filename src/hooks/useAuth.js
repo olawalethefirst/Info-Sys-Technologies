@@ -1,9 +1,37 @@
-import { useState } from 'react';
+import { useState, useReducer } from 'react';
 import signUpWithEmailAsync from '../helperFunctions/signUpWithEmailAsync';
 import signInWithEmailAsync from '../helperFunctions/signInWIthEmailAsync';
 import fetchAccountProvider from '../helperFunctions/fetchAccountProviderAsync';
 
 const useAuth = (createAccount) => {
+    //Action Types
+    const CLEAR_STATE = 'CLEAR_STATE'
+    const UPDATE_MODAL_VISIBILITY = 'UPDATE_MODAL_VISIBILITY'
+    const UPDATE_AUTH_SUCCESSFUL = 'UPDATE_AUTH_SUCCESSFUL'
+    const UPDATE_AUTH_FAILURE = 'UPDATE_AUTH_FAILURE'
+    
+    //Reducer
+    const reducer = (state, action) => {
+        switch(action.type){
+            case UPDATE_MODAL_VISIBILITY: 
+            return {...state, modalVisible: action.payload}
+            case UPDATE_AUTH_SUCCESSFUL:
+                return {...state, authorized: true}
+            case UPDATE_AUTH_FAILURE:
+                return {...state, authorized: false, error: action.payload}
+            default:
+                return state
+        }
+    }
+
+    //State & Dispatch
+    const [state, dispatch] = useReducer(reducer, {
+        modalVisible: false,
+        authorized: false,
+        error: null,
+    })
+
+
     //states
     const [modalVisible, setModalVisible] = useState(false);
     const [error, setError] = useState('');

@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { StyleSheet, Animated, View, Platform } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import SecondaryHeader from './SecondaryHeader';
-import {stickyHeaderHeight} from '../constants'
+import { stickyHeaderHeight } from '../constants';
 
 function SubScreenTemplate({
     margin,
@@ -31,7 +31,11 @@ function SubScreenTemplate({
             },
         }
     );
-    const scrollYClamped = Animated.diffClamp(scrollY.current, 0, stickyHeaderHeight);
+    const scrollYClamped = Animated.diffClamp(
+        scrollY.current,
+        0,
+        stickyHeaderHeight
+    );
     const translateY = scrollYClamped.interpolate(
         {
             inputRange: [0, stickyHeaderHeight],
@@ -41,7 +45,8 @@ function SubScreenTemplate({
             useNativeDriver: true,
         }
     );
-    
+    const renderItem = useCallback(({ item }) => item.data, []);
+
     return (
         <View style={[styles.container]}>
             {!noHeader && (
@@ -66,7 +71,7 @@ function SubScreenTemplate({
                 }
                 data={sectionComponents}
                 bounces={false}
-                renderItem={({ item }) => item.data}
+                renderItem={renderItem}
                 keyExtractor={(item, index) => 'keyExtractor' + index}
                 ref={scrollRef}
                 keyboardDismissMode={Platform.select({

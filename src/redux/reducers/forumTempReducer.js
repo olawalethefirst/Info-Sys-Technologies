@@ -14,6 +14,11 @@ import {
     SEARCH_POSTS_SUCCESSFUL,
     SEARCH_POSTS_FAILED,
     UPDATE_USERNAME,
+    AUTH_WITH_EMAIL_INITIALIZED,
+    AUTH_WITH_EMAIL_SUCCESSFUL,
+    CLEAR_AUTH,
+    AUTH_WITH_EMAIL_FAILED,
+    RETRY_AUTH_WITH_EMAIL
 } from '../actions/actionTypes';
 
 // inital State
@@ -27,6 +32,10 @@ const initialState = {
     showFooter: false,
     searchString: '',
     username: null,
+    authData: null,
+    authorizing: false,
+    authSuccessful: false,
+    authError: null,
 };
 
 const forumTempReducer = (state = initialState, action) => {
@@ -100,6 +109,25 @@ const forumTempReducer = (state = initialState, action) => {
             };
         case UPDATE_USERNAME:
             return { ...state, username: action.payload };
+        case AUTH_WITH_EMAIL_INITIALIZED:
+            return { ...state, authData: action.payload, authorizing: true };
+        case AUTH_WITH_EMAIL_SUCCESSFUL:
+            return { ...state, authSuccessful: true, authorizing: false };
+        case CLEAR_AUTH:
+            return {
+                ...state,
+                authData: null,
+                authSuccessful: false,
+                authError: null,
+            };
+        case AUTH_WITH_EMAIL_FAILED:
+            return {
+                ...state,
+                authError: action.payload,
+                authorizing: false,
+            };
+        case RETRY_AUTH_WITH_EMAIL:
+            return {...state, authorizing: true, authError: null}
         default:
             return state;
     }

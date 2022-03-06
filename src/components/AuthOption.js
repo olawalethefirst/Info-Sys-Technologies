@@ -5,7 +5,6 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import GoogleAuthContainer from './GoogleAuthContainer';
-import { connect } from 'react-redux';
 import Constants from 'expo-constants';
 
 const Authoption = ({ fontFactor, animateView, uid }) => {
@@ -96,7 +95,6 @@ const Authoption = ({ fontFactor, animateView, uid }) => {
     );
 };
 
-const mapStateToProps = ({ forumTempState: { uid } }) => ({ uid });
-export default connect(mapStateToProps)(Authoption);
+export default Authoption;
 
 const styles = StyleSheet.create({});

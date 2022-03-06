@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import Constant from 'expo-constants';
-import { widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 const isIOS = Platform.OS === 'ios';
 const { statusBarHeight } = Constant;
@@ -41,5 +41,6 @@ export const modalSelectorStyles = (fontFactor) => {
             backgroundColor: 'rgba(0,0,0,0.9)',
             marginTop: isIOS ? statusBarHeight : 0,
         },
+        touchableActiveOpacity: 0.6,
     };
 };

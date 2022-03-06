@@ -16,10 +16,11 @@ import updateUsernameAsync from '../helperFunctions/updateUsernameAsync';
 import { auth } from '../helperFunctions/initializeFirebase';
 import updateUsername from '../redux/actions/updateUsername';
 import toggleOffUsernameModal from '../redux/actions/toggleOffUsernameModal';
-import processErrorString from '../helperFunctions/processErrorString';
+import processErrorString, {usernameMinLimit} from '../helperFunctions/processErrorString';
 import ModalTextBlock from './ModalTextBlock';
 import ModalButton from './ModalButton';
 import PropTypes from 'prop-types';
+
 
 function UsernameModal({
     margin,
@@ -99,7 +100,7 @@ function UsernameModal({
                 await updateUsernameAsync(state.input);
                 updateUsername(auth.currentUser.displayName);
                 dispatch({ type: SUBMITTED });
-            } else throw new Error('Minimum of three characters.');
+            } else throw new Error(usernameMinLimit);
         } catch (err) {
             const payload = err.code ? err.code : err.message;
             dispatch({ type: FAILED, payload });
@@ -213,7 +214,7 @@ function UsernameModal({
                     style={styles2.viewContainer}
                 >
                     <Pressable //disables backdrop from acting around content
-                    >
+                    > 
                         <ModalTextBlock text="Welcome, please choose a forum name" />
                         {isLoading.current && (
                             <ActivityIndicator

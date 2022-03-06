@@ -34,7 +34,7 @@ const GoogleAuthContainer = ({ native, children }) => {
     return (
         <>
             {children(onPress, disabled)}
-            <AuthModal
+            {/* <AuthModal
                 modalVisible={modalVisible}
                 activityIndicator={activityIndicator}
                 error={error}
@@ -44,7 +44,7 @@ const GoogleAuthContainer = ({ native, children }) => {
                 retryAuth={retryAuth}
                 retryAbleError={retryAbleError}
                 navigate={navigate}
-            />
+            /> */}
         </>
     );
 };

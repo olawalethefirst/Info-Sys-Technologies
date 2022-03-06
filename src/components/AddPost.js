@@ -7,6 +7,7 @@ import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withTiming,
+    Easing,
 } from 'react-native-reanimated';
 import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
 import { connect } from 'react-redux';
@@ -25,13 +26,20 @@ const AddPost = ({
     toggleOnUsernameModal,
 }) => {
     const buttonAnimatedScale = useSharedValue(1);
-    const onPressIn = () => (buttonAnimatedScale.value = 0.8);
-    const onPressOut = () => (buttonAnimatedScale.value = 1);
+    const onPressIn = () => {
+        'worklet';
+        buttonAnimatedScale.value = 0.8;
+    };
+    const onPressOut = () => {
+        'worklet';
+        buttonAnimatedScale.value = 1;
+    };
     const buttonAnimatedStyle = useAnimatedStyle(() => ({
         transform: [
             { scale: withTiming(buttonAnimatedScale.value, { duration: 150 }) },
         ],
     }));
+
     const styles2 = StyleSheet.create({
         container: {
             right: margin,
@@ -49,14 +57,13 @@ const AddPost = ({
     });
 
     const onPress = () => {
-        // if (!uid) {
-        //     return toggleCallToAuthModal();
-        // }
-        // if (!username) {
-        //     return toggleOnUsernameModal();
-        // }
-        // return toggleModal();
-        return toggleOnUsernameModal();
+        if (!uid) {
+            return toggleCallToAuthModal();
+        }
+        if (!username) {
+            return toggleOnUsernameModal();
+        }
+        return toggleModal();
     };
 
     return (
