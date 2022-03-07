@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-export default function Category({ fontFactor }) {
+export default function Category({ fontFactor, category }) {
     return (
         <Text
             style={{
@@ -10,10 +10,9 @@ export default function Category({ fontFactor }) {
                 lineHeight: fontFactor * wp(5.09),
                 fontFamily: 'Poppins_500Medium',
                 textAlign: 'left',
-                width: '100%',
             }}
         >
-            Category
+            {category}
         </Text>
     );
 }

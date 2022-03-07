@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -22,6 +22,11 @@ import { firestore } from '../helperFunctions/initializeFirebase';
 import { onSnapshot, doc } from 'firebase/firestore';
 import MarginVertical from '../components/MarginVertical';
 import RenderSeparator from '../components/RenderSeparator';
+import UsernameModal from '../components/UsernameModal';
+import Post from '../components/Post';
+import Comment from '../components/Comment';
+import { Timestamp } from 'firebase/firestore';
+import moment from 'moment';
 
 function PostScreen({
     margin,
@@ -30,12 +35,13 @@ function PostScreen({
     deviceWidthClass,
     navigation,
     effectiveBodyHeight,
-    route: {
-        params: { body, category, createdAt, owner, postID, title },
-    }, //maybe update postMini to send only this
+    route: { params }, //maybe update postMini to send only this
+    uid,
 }) {
     const scrollRef = useRef(null);
     const containerRef = useRef(null);
+    const commentInputRef = useRef(null);
+
     const scrollY = useRef(new Animated.Value(0));
     const handleScroll = Animated.event(
         [
@@ -58,29 +64,72 @@ function PostScreen({
         inputRange: [0, stickyHeaderHeight],
         outputRange: [0, -stickyHeaderHeight],
     });
-    const data = [
-        { body, category, createdAt, owner, postID, title },
-        { comment: 'comment' },
-        { comment: 'comment' },
-        { comment: 'comment' },
-    ];
+    const [data, setData] = useState([
+        { ...params },
+        // { comment: 'comment' },
+        // { comment: 'comment' },
+        // { comment: 'comment' },
+    ]);
     const { statusBarHeight } = Constants;
-    
-    const commentInputRef = useRef(null);
+
+    const renderItem = useCallback(
+        ({ item }) => {
+            const {
+                body,
+                category,
+                title,
+                username,
+                likes,
+                createdAt: { nanoseconds, seconds },
+                owner,
+                postID,
+                searchField,
+            } = item;
+            const timestampString = moment(
+                new Timestamp(seconds, nanoseconds).toDate()
+            ).fromNow();
+
+            if (category) {
+                return (
+                    <Post
+                        scrollRef={scrollRef}
+                        containerRef={containerRef}
+                        commentInputRef={commentInputRef}
+                        username={username}
+                        createdAt={timestampString}
+                        likes={likes}
+                        category={category}
+                        title={title}
+                        body={body}
+                    />
+                );
+            }
+            return (
+                <Comment
+                    scrollRef={scrollRef}
+                    containerRef={containerRef}
+                    commentInputRef={commentInputRef}
+                />
+            );
+        },
+        [scrollRef, containerRef, commentInputRef]
+    );
 
     useEffect(() => {
         const listenToUpdatedData = () => {
             const listener = onSnapshot(
-                doc(firestore, 'posts', postID),
+                doc(firestore, 'posts', params.postID),
                 (snapshot) => {
-                    console.log(snapshot.data());
+                    console.log('offlineSource: ', snapshot.metadata.fromCache);
                 }
             );
             return listener;
         };
         const listener = listenToUpdatedData();
         return listener;
-    }, [postID]);
+    }, [params.postID]);
+
+    console.log('params: ', params);
 
     return (
         <View
@@ -125,25 +174,13 @@ function PostScreen({
                         }}
                         data={data}
                         bounces={false}
-                        renderItem={({ item }) => {
-                            return (
-                                <PostDetail
-                                    item={item}
-                                    scrollRef={scrollRef}
-                                    containerRef={containerRef}
-                                    effectiveBodyHeight={effectiveBodyHeight}
-                                    commentInputRef={commentInputRef}
-                                />
-                            );
-                        }}
+                        renderItem={renderItem}
                         keyExtractor={(item, index) => 'keyExtractor' + index}
                         ref={scrollRef}
                         keyboardDismissMode={'none'}
                         keyboardShouldPersistTaps="never"
-                        ItemSeparatorComponent={() => (
-                            <RenderSeparator size={1} />
-                        )}
-                        ListHeaderComponent={() => <RenderSeparator size={1} />}
+                        ItemSeparatorComponent={RenderSeparator}
+                        ListHeaderComponent={RenderSeparator}
                     />
                     <CommentInput
                         headerSize={headerSize}
@@ -153,7 +190,10 @@ function PostScreen({
                         margin={margin}
                         commentInputRef={commentInputRef}
                     />
-                    <CallToAuth />
+                    {!uid && <CallToAuth />}
+                    {
+                        uid && <UsernameModal /> //switch to availabilty of username
+                    }
                 </SafeAreaView>
             </KeyboardAvoidingView>
         </View>
@@ -170,12 +210,14 @@ const mapStateToProps = ({
         deviceWidthClass,
         effectiveBodyHeight,
     },
+    forumTempState: { uid },
 }) => ({
     margin,
     fontFactor,
     headerSize,
     deviceWidthClass,
     effectiveBodyHeight,
+    uid,
 });
 
 export default connect(mapStateToProps, {})(PostScreen);

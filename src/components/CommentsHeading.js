@@ -18,7 +18,7 @@ function CommentsHeading({ fontFactor, deviceWidthClass, margin }) {
         >
             <View
                 style={{
-                    width: columnMode ? '90%' : '100%',
+                    width: columnMode ? '90%' : '100%', 
                     alignSelf: 'center',
                 }}
             >

@@ -5,6 +5,7 @@ import {
     View,
     TouchableOpacity,
     Keyboard,
+    Pressable,
 } from 'react-native';
 import moment from 'moment';
 import MarginVertical from './MarginVertical';
@@ -15,10 +16,14 @@ import checkColumnMode from '../helperFunctions/checkColumnMode';
 import { connect } from 'react-redux';
 import CommentsHeading from './CommentsHeading';
 import Username from './Username';
-import Created from './Created';
+import CreatedAt from './CreatedAt';
 import Likes from './Likes';
 import Category from './Category';
-import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal'
+import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
+import Title from './Title';
+import Body from './Body';
+import LikeButton from './LikeButton';
+import ReplyButton from './ReplyButton';
 
 const Post = ({
     fontFactor,
@@ -29,8 +34,13 @@ const Post = ({
     effectiveBodyHeight,
     commentInputRef,
     scrollRef,
-    item,
-    toggleCallToAuthModal
+    toggleCallToAuthModal,
+    body,
+    category,
+    title,
+    username,
+    likes,
+    createdAt,
 }) => {
     const [liked, setLiked] = useState(false);
     const columnMode = checkColumnMode(deviceWidthClass);
@@ -65,6 +75,7 @@ const Post = ({
             }
         );
     };
+    console.log(typeof fontFactor);
 
     return (
         <View>
@@ -83,44 +94,24 @@ const Post = ({
                     }}
                 >
                     <View>
-                        <Username fontFactor={fontFactor} />
+                        <Username username={username} fontFactor={fontFactor} />
                         <MarginVertical size={0.2} />
 
-                        <Created fontFactor={fontFactor} />
+                        <CreatedAt
+                            createdAt={createdAt}
+                            fontFactor={fontFactor}
+                        />
                         <MarginVertical size={0.2} />
                         <Likes fontFactor={fontFactor} />
                     </View>
                     <MarginVertical />
 
                     <View>
-                        <Category Category fontFactor={fontFactor} />
+                        <Category category={category} fontFactor={fontFactor} />
                         <MarginVertical size={0.5} />
-                        <Text
-                            style={{
-                                fontSize: fontFactor * wp(4),
-                                lineHeight: fontFactor * wp(5.09),
-                                fontFamily: 'Poppins_400Regular',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}
-                        >
-                            Post Title
-                        </Text>
+                        <Title fontFactor={fontFactor} title={title} />
                         <MarginVertical size={0.3} />
-                        <Text
-                            style={{
-                                fontSize: fontFactor * wp(4),
-                                lineHeight: fontFactor * wp(5.09),
-                                fontFamily: 'Poppins_400Regular',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}
-                        >
-                            Post Body Post Body Post Body Post Body Post Body
-                            Post Body Post Body Post Body Post Body Post Body
-                            Post Body Post Body Post Body Post Body Post Body
-                            Post Body Post Body Post Body Post Body Post{' '}
-                        </Text>
+                        <Body fontFactor={fontFactor} body={body} />
                     </View>
                     <MarginVertical />
                     <View
@@ -129,43 +120,19 @@ const Post = ({
                             justifyContent: 'space-between',
                         }}
                     >
-                        <TouchableOpacity
-                            onPress={() =>
-                                uid
-                                    ? setLiked((liked) => !liked)
-                                    : toggleCallToAuth()
-                            }
-                            style={{
-                                padding: fontFactor * wp(1),
-                                margin: -fontFactor * wp(1),
-                            }}
-                        >
-                            <HeartIcon
-                                containerProp={{
-                                    width: fontFactor * wp(6.36),
-                                    height: fontFactor * wp(6.36),
-                                }}
-                                iconProp={
-                                    liked
-                                        ? { fill: 'red', stroke: 'red' }
-                                        : { fill: 'none', stroke: 'black' }
-                                }
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() =>
-                                uid ? onPress() : toggleCallToAuthModal()
-                            }
-                            style={{
-                                padding: fontFactor * wp(1),
-                                margin: -fontFactor * wp(1),
-                            }}
-                        >
-                            <ReplyIcon
-                                width={fontFactor * wp(6.36)}
-                                height={fontFactor * wp(6.36)}
-                            />
-                        </TouchableOpacity>
+                        <LikeButton
+                            fontFactor={fontFactor}
+                            uid={uid}
+                            setLiked={setLiked}
+                            toggleCallToAuthModal={toggleCallToAuthModal}
+                            liked={liked}
+                        />
+                        <ReplyButton
+                            fontFactor={fontFactor}
+                            uid={uid}
+                            toggleCallToAuthModal={toggleCallToAuthModal}
+                            onPress={onPress}
+                        />
                     </View>
                     <MarginVertical />
                 </View>
@@ -177,16 +144,21 @@ const Post = ({
 };
 
 const mapStateToProps = ({
-    settingsState: { fontFactor, margin, deviceWidthClass, effectiveBodyHeight },
+    settingsState: {
+        fontFactor,
+        margin,
+        deviceWidthClass,
+        effectiveBodyHeight,
+    },
     forumTempState: { uid },
 }) => ({
     fontFactor,
     margin,
     deviceWidthClass,
     uid,
-    effectiveBodyHeight
+    effectiveBodyHeight,
 });
 
-export default connect(mapStateToProps, {toggleCallToAuthModal})(Post);
+export default connect(mapStateToProps, { toggleCallToAuthModal })(Post);
 
 const styles = StyleSheet.create({});

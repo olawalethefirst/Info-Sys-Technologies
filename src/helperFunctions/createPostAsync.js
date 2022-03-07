@@ -9,7 +9,7 @@ const createPostAsync = (data) => {
         title,
         body,
         category,
-        searchField: category + '. ' + title + '. ' + body,
+        username: auth.currentUser.displayName,
     });
 };
 

@@ -32,8 +32,8 @@ import updateShowFooter from '../redux/actions/updateShowFooter';
 import PropTypes from 'prop-types';
 import UsernameModal from '../components/UsernameModal';
 // import onLikePostAsync from '../helperFunctions/onLikePostAsync';
-// import createPostAsync from '../helperFunctions/createPostAsync';
-// import { v4 as uuidv4 } from 'uuid';
+import createPostAsync from '../helperFunctions/createPostAsync';
+import { v4 as uuidv4 } from 'uuid';
 // import onUnlikePostAsync from '../helperFunctions/onUnlikePostAsync';
 import updateUsernameAsync from '../helperFunctions/updateUsernameAsync';
 import { auth } from '../helperFunctions/initializeFirebase';
@@ -96,11 +96,6 @@ function ForumScreen({
         () => !searching && refreshPosts(),
         [searching, refreshPosts]
     ); //does nothing if search active
-    const immutableExtraData = Map({
-        loadingPosts,
-        loadingPostsError,
-        searching,
-    });
     const onEndReached = useCallback(
         () =>
             onEndOfPostsReached(
@@ -174,12 +169,12 @@ function ForumScreen({
     //             body.push(wordsArray[i]);
     //         }
 
-    //         createPostAsync(
-    //             i + '',
-    //             body.join(' '),
-    //             categories[catgRandNo],
-    //             uuidv4()
-    //         )
+    //         createPostAsync({
+    //             title: i + '',
+    //             body: body.join(' '),
+    //             category: categories[catgRandNo],
+    //             postID: uuidv4(),
+    //         })
     //             .then((doc) => console.log(doc, ' added successfully'))
     //             .catch((doc) => console.log(doc, 'add failed'));
     //     }
@@ -242,7 +237,11 @@ function ForumScreen({
                 <FlatList
                     contentContainerStyle={styles2.flatlistContentContainer}
                     data={searching ? searchResult : posts} //switch between data source
-                    extraData={immutableExtraData}
+                    extraData={Map({
+                        loadingPosts,
+                        loadingPostsError,
+                        searching,
+                    })}
                     renderItem={RenderPost}
                     keyExtractor={(item, index) => 'keyExtractor' + index}
                     ref={scrollRef}
@@ -308,10 +307,10 @@ function ForumScreen({
                             resetFailedPostAction={resetFailedPostAction}
                             retryWrite={retryWrite}
                         />
-                        <UsernameModal />
+                        <UsernameModal initialAction={toggleModal} />
                     </>
                 )}
-                {true && (
+                {!uid && (
                     <>
                         <CallToAuth />
                     </>
