@@ -26,15 +26,18 @@ import RenderPostsFooter from '../components/RenderPostsFooter';
 import { Map } from 'immutable';
 import RenderPostsHeader from '../components/RenderPostsHeader';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
-import onEndOfPostsReached from '../helperFunctions/onEndOfPostsReached';
+import loadMorePosts, {
+    ON_END_REACHED,
+    RETRY_LOAD_MORE_POSTS,
+} from '../helperFunctions/loadMorePosts';
 import { store } from '../redux/store';
 import updateShowFooter from '../redux/actions/updateShowFooter';
 import PropTypes from 'prop-types';
 import UsernameModal from '../components/UsernameModal';
-// import onLikePostAsync from '../helperFunctions/onLikePostAsync';
+import onLikePostAsync from '../helperFunctions/onLikePostAsync';
 import createPostAsync from '../helperFunctions/createPostAsync';
 import { v4 as uuidv4 } from 'uuid';
-// import onUnlikePostAsync from '../helperFunctions/onUnlikePostAsync';
+import onUnlikePostAsync from '../helperFunctions/onUnlikePostAsync';
 import updateUsernameAsync from '../helperFunctions/updateUsernameAsync';
 import { auth } from '../helperFunctions/initializeFirebase';
 import CallToAuth from '../components/CallToAuth';
@@ -98,19 +101,20 @@ function ForumScreen({
     ); //does nothing if search active
     const onEndReached = useCallback(
         () =>
-            onEndOfPostsReached(
+            loadMorePosts(
+                ON_END_REACHED,
                 loadingPosts,
                 loadingPostsError,
                 fetchPosts,
                 posts[posts.length - 1].postID,
-                searching,
-                true
+                searching
             ),
         [loadingPosts, loadingPostsError, fetchPosts, posts, searching]
     ); //only loads more if certain conditions are met
     const retryLoadMorePosts = useCallback(
         () =>
-            onEndOfPostsReached(
+            loadMorePosts(
+                RETRY_LOAD_MORE_POSTS,
                 loadingPosts,
                 loadingPostsError,
                 fetchPosts,
@@ -179,48 +183,58 @@ function ForumScreen({
     //             .catch((doc) => console.log(doc, 'add failed'));
     //     }
     // };
+    // let [successfulLikes, setSuccessfulLikes] = useState([]);
     // const createPostLikes = async () => {
-    //     // console.log('mo beere o');
-    //     // const postsNew = posts.splice(40, 60);
-    //     // const usersArray = [
-    //     //     'qllAFZtSkqX7GuaZ9oW97zPhWKT2',
-    //     //     'f7Rk6WbGnUYwuD9oZO6gJiufWQ32',
-    //     //     'IW4GkxsLm9giSV18tnkOjvPrNXr1',
-    //     //     'BNfIHiYJuCQFcgxLhTipUQ6SXx82',
-    //     //     'sEQjfFZdlVbMpUwAASv5lzhj8vs2',
-    //     //     'F8mr2nPWVoOethu5S5JvQZAqPk92',
-    //     //     'EDWbWh3Y64aPYFGzMrPiKNqoCJD3',
-    //     //     '2dEkCa3zkYRR0kZm7Z8ceKKy4Ua2',
-    //     //     'x3laHuM1UPRt2KODV7qUXju3WMW2',
-    //     //     'ZwM019QIzmcoF0sqDFA42ZS1u3X2',
-    //     //     '1nGrqRqTIfRhaJS5k4eo26B2iZf1',
-    //     //     '5KayyblP7CNUFYGfUoFKVwdJ0kr1',
-    //     //     'hNuhIlPkrMTDGcePSn1TYMsT8bk2',
-    //     //     'AMDhHJ23XSaQXmEUzWzI6ve8aL03',
-    //     //     'lxiPfnbvixarHzg7vk4zF2drlZi1',
-    //     // ];
+    //     const postsNew = posts.slice(0, 5);
+    //     const usersArray = [
+    //         'VoYc7W6H3oRbw5BjT3JYnw9DUoG2',
+    //         'P4qMLAPr1WeSxrbQQTbYM6WgHQT2',
+    //         'LkxUCko4UGTZgMcp8orfNd8dZz72',
+    //         'SsJ1ya4qyOMDsknQMwLYGIZzXlk2',
+    //         'pjj2dQRdIYMCIJB2JxQoTnl0NTE2',
+    //         'haepGhJypbht0oHbHApyKfivvA62',
+    //         'aK7O1suSWrS29VvYZUZNfDUFxZJ2',
+    //         'pB0JrJQVhHbJS8CUojeq5kwpFg93',
+    //         'eKNlvbNMUjh8yD8yirV7UIB3xDr1',
+    //         'IJ7zgq586xU4vE4AD2rCjCAcmD13',
+    //         'VAfSwYuG7xSrCvcDYnreFETED1z1',
+    //         's0FfZE2Gt9bSnCn7MxdXVa3nEJ93',
+    //         '8hJaaU7pEweuw1axytUV3bvgfBg1',
+    //         'H9ipzu2DUrMphFTh4ZbnM2FT5UR2',
+    //         'Wfjh4Lbf2VdW3jTKVCuHneu4YrV2',
+    //         'wgxecR5YwdUqpc4Cq0BSDgpBA5h1',
+    //         'cu7m1C2Q84X9GOwAhRbIFIQbAYd2',
+    //         'V7ieKSKNRDXdMITzZYu5wSuspxF3',
+    //         'uC27AtsRs1Xc7HCFqNuWO5yygxt2',
+    //     ];
 
-    //     // for (let i in postsNew) {
-    //     //     const postID = postsNew[i].postID;
-    //     //     const randomNoOfLikes = Math.floor(
-    //     //         Math.random() * usersArray.length
-    //     //     );
-    //     //     for (let j = 0; j < randomNoOfLikes; j++) {
-    //     //         const userID = usersArray[j];
-    //     //         onLikePostAsync(postID, userID);
-    //     //     }
-    //     // }
-
-    //     try {
-    //         await onLikePostAsync(
-    //             '6d6c129a-bfba-4ef9-89b0-ab0540dcfd5c',
-    //             'AMDhHJ23XSaQXmEUzWzI6ve8aL03'
+    //     for (let i in postsNew) {
+    //         const { postID, title } = postsNew[i];
+    //         const randomNoOfLikes = Math.floor(
+    //             Math.random() * usersArray.length
     //         );
-    //         console.log('passed');
-    //     } catch (err) {
-    //         console.log('failed', err.message);
+    //         for (let j = 0; j <= randomNoOfLikes; j++) {
+    //             const userID = usersArray[j];
+    //             console.log(
+    //                 `posting like for UID: ${userID} in post title: ${title} with postID: ${postID}`
+    //             );
+    //             onLikePostAsync(postID, 'post', userID)
+    //                 .then(() =>
+    //                     setSuccessfulLikes((oldState) => [
+    //                         ...oldState,
+    //                         `posting like for UID: ${userID} in post title: ${title} with postID: ${postID} successful`,
+    //                     ])
+    //                 )
+    //                 .catch((e) =>
+    //                     console.log(
+    //                         `posting like for UID: ${userID} in post title: ${title} with postID: ${postID} failed`,
+    //                         e.message
+    //                     )
+    //                 );
+    //         }
     //     }
     // };
+    // console.log('successfulLikes: ', successfulLikes.length);
 
     return (
         <SafeAreaView style={styles2.containerHeight}>
@@ -236,7 +250,7 @@ function ForumScreen({
                 </Pressable>
                 <FlatList
                     contentContainerStyle={styles2.flatlistContentContainer}
-                    data={searching ? searchResult : posts} //switch between data source
+                    data={searching ? searchResult : posts} //switch data source
                     extraData={Map({
                         loadingPosts,
                         loadingPostsError,

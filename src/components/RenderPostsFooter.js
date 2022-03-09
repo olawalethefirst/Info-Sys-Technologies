@@ -20,6 +20,8 @@ export default function RenderPostsFooter({
     searching,
     showFooter,
     retryLoadMorePosts,
+    posts,
+    searchResult,
 }) {
     const styles2 = StyleSheet.create({
         container: {
@@ -30,44 +32,23 @@ export default function RenderPostsFooter({
         fontSizeL2: { fontSize: fontFactor * wp(5) },
     });
     //only render footer when there's an intersection in the set of "length smaller than screen" and "not loading post"
-    const showFooterSpacer = showFooter && !loadingPosts && !loadingPostsError;
-    const showLoadingIndicator = loadingPosts;
-    const showError = loadingPostsError && loadingPostsError !== noPost;
-    const showIndicatorAndErroSpacer = loadingPosts && showError;
-    const showNoSearchResult = searching && loadingPostsError === noPost;
 
-    if (showNoSearchResult) {
+    const noPostError = loadingPostsError === noPost;
+    const showError = loadingPostsError && !noPostError;
+    const noSearchResult = searching && noPostError && !searchResult.length;
+    const noPostResult = !posts.length && noPostError;
+
+    if (loadingPosts) {
         return (
             <View style={styles2.container}>
-                <Text
-                    style={[
-                        styles2.fontSizeL2,
-                        styles.karla400Font,
-                        styles.alignTextCenter,
-                    ]}
-                >
-                    No search result
-                </Text>
+                <ActivityIndicator size="small" color="#1A91D7" />
             </View>
         );
     }
 
-    if (showFooterSpacer) {
-        return <View style={styles2.container} />;
-    }
-
-    return (
-        <View style={styles2.container}>
-            {showLoadingIndicator && (
-                <ActivityIndicator size="small" color="#1A91D7" />
-            )}
-            {showIndicatorAndErroSpacer && (
-                <MarginVertical
-                    // only renders spacer when both components are rendered
-                    size={0.2}
-                />
-            )}
-            {showError && (
+    if (showError) {
+        return (
+            <View style={styles2.container}>
                 <>
                     <Text
                         style={[
@@ -95,9 +76,47 @@ export default function RenderPostsFooter({
                         </Text>
                     </TouchableOpacity>
                 </>
-            )}
-        </View>
-    );
+            </View>
+        );
+    }
+
+    if (noSearchResult) {
+        return (
+            <View style={styles2.container}>
+                <Text
+                    style={[
+                        styles2.fontSizeL2,
+                        styles.karla400Font,
+                        styles.alignTextCenter,
+                    ]}
+                >
+                    No search result
+                </Text>
+            </View>
+        );
+    }
+
+    if (noPostResult) {
+        return (
+            <View style={styles2.container}>
+                <Text
+                    style={[
+                        styles2.fontSizeL2,
+                        styles.karla400Font,
+                        styles.alignTextCenter,
+                    ]}
+                >
+                    No post
+                </Text>
+            </View>
+        );
+    }
+
+    if (showFooter) {
+        return <View style={styles2.container} />;
+    }
+
+    return <></>;
 }
 
 RenderPostsFooter.propTypes = {
@@ -107,6 +126,8 @@ RenderPostsFooter.propTypes = {
     searching: PropTypes.bool,
     showFooter: PropTypes.bool,
     retryLoadMorePosts: PropTypes.func,
+    posts: PropTypes.array,
+    searchResult: PropTypes.array,
 };
 
 const styles = StyleSheet.create({

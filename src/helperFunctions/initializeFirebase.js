@@ -23,7 +23,6 @@ const firestore = getFirestore();
 
 function updateAuthState(actionCreator) {
     onAuthStateChanged(auth, (user) => {
-        console.log('auth changed', user);
         actionCreator(
             user ? { uid: user.uid, username: user.displayName } : user
         );

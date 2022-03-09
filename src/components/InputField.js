@@ -4,7 +4,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import multilineKeyboardAvoidingFn from '../helperFunctions/multilineKeyboardAvoidingFn';
+import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
 
 function InputField({
     onChange,
@@ -62,14 +62,16 @@ function InputField({
                 autoCapitalize={'none'}
                 autoCorrect={false}
                 multiline={megaSize ? true : false}
-                onFocus={() =>
-                    multilineKeyboardAvoidingFn(
-                        megaSize,
-                        mulitLineInputRef,
-                        contactFormRef,
-                        scrollRef,
-                        effectiveBodyHeight
-                    )
+                onFocus={
+                    megaSize
+                        ? () =>
+                              scrollToComponentBottom(
+                                  mulitLineInputRef,
+                                  contactFormRef,
+                                  scrollRef,
+                                  effectiveBodyHeight
+                              )
+                        : null
                 }
                 onBlur={onBlur}
                 textAlignVertical={megaSize && 'top'}

@@ -20,7 +20,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import { useForm, Controller } from 'react-hook-form';
 import ModalSelector from 'react-native-modal-selector';
-import multilineKeyboardAvoidingFn from '../helperFunctions/multilineKeyboardAvoidingFn';
+import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
 import { modalSelectorStyles } from '../constants';
 import PropTypes from 'prop-types';
 
@@ -38,7 +38,7 @@ export default function CreatePostForm({
     const AnimatedTouchableWithoutFeedback = Animated.createAnimatedComponent(
         TouchableWithoutFeedback
     );
-    
+
     const {
         control,
         handleSubmit,
@@ -56,7 +56,7 @@ export default function CreatePostForm({
 
     const modalSelectorRef = useRef(null);
     const multilineInputRef = useRef(null);
-    
+
     const animatedTitle = useSharedValue(0);
     const animatedCategory = useSharedValue(0);
     const animatedBody = useSharedValue(0);
@@ -206,11 +206,11 @@ export default function CreatePostForm({
         Keyboard.dismiss();
         console.log(errors);
     };
-    const onSubmit =handleSubmit((data) => {
+    const onSubmit = handleSubmit((data) => {
         Keyboard.dismiss();
         toggleModal();
         onSubmitSuccessful(data);
-    }, onSubmitFailed)
+    }, onSubmitFailed);
 
     const styles2 = StyleSheet.create({
         buttonText: {
@@ -429,8 +429,7 @@ export default function CreatePostForm({
                             <TextInput
                                 ref={multilineInputRef}
                                 onFocus={() => {
-                                    multilineKeyboardAvoidingFn(
-                                        true,
+                                    scrollToComponentBottom(
                                         multilineInputRef,
                                         containerRef,
                                         scrollViewRef,

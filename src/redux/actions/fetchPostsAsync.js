@@ -1,7 +1,8 @@
-import getPostsSnapshot from './getPostsSnapshot';
-import { noPost } from './processErrorString';
+import getPostsSnapshot from '../../helperFunctions/getPostsSnapshot';
+import { noPost } from '../../helperFunctions/processErrorString';
+import { EMPTY_POSTS_DATABASE } from './actionTypes';
 
-export default async function fetchPostsAsync(lastPost) {
+export default async function fetchPostsAsync(lastPost, dispatch) {
     const postsSnapshot = await getPostsSnapshot(lastPost);
     if (postsSnapshot.size) {
         return postsSnapshot.docs.map((doc) => {
@@ -14,6 +15,9 @@ export default async function fetchPostsAsync(lastPost) {
             };
         });
     } else {
+        if (!lastPost) {
+            dispatch({ type: EMPTY_POSTS_DATABASE });
+        }
         throw new Error(noPost);
     }
 }

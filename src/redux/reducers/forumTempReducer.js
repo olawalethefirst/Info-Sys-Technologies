@@ -18,7 +18,7 @@ import {
     AUTH_WITH_EMAIL_SUCCESSFUL,
     CLEAR_AUTH,
     AUTH_WITH_EMAIL_FAILED,
-    RETRY_AUTH_WITH_EMAIL
+    RETRY_AUTH_WITH_EMAIL,
 } from '../actions/actionTypes';
 
 // inital State
@@ -47,11 +47,11 @@ const forumTempReducer = (state = initialState, action) => {
                 username: action.payload ? action.payload.username : null,
             };
         case LOADING_POSTS_INITIATED:
-            return { ...state, loadingPosts: true };
+            return { ...state, loadingPosts: true, loadingPostsError: null };
         case LOADING_POSTS_FIRST_BATCH_SUCCESSFUL:
-            return { ...state, loadingPosts: false, loadingPostsError: null };
+            return { ...state, loadingPosts: false };
         case LOADING_POSTS_SUCCESSFUL:
-            return { ...state, loadingPosts: false, loadingPostsError: null };
+            return { ...state, loadingPosts: false };
         case LOADING_POSTS_FAILED:
             return {
                 ...state,
@@ -59,12 +59,11 @@ const forumTempReducer = (state = initialState, action) => {
                 loadingPostsError: action.payload,
             };
         case REFRESHING_POSTS_INITIATED:
-            return { ...state, refreshingPosts: true };
+            return { ...state, refreshingPosts: true, loadingPostsError: null };
         case REFRESHING_POSTS_SUCCESSFUL: {
             return {
                 ...state,
                 refreshingPosts: false,
-                loadingPostsError: null,
             };
         }
         case REFRESHING_POSTS_FAILED:
@@ -74,7 +73,7 @@ const forumTempReducer = (state = initialState, action) => {
                 loadingPostsError: action.payload,
             };
         case SEARCH_ACTIVE: {
-            return { ...state, searching: true, searchResult: [] };
+            return { ...state, searching: true, };
         }
         case SEARCH_NOT_ACTIVE:
             return {
@@ -127,7 +126,7 @@ const forumTempReducer = (state = initialState, action) => {
                 authorizing: false,
             };
         case RETRY_AUTH_WITH_EMAIL:
-            return {...state, authorizing: true, authError: null}
+            return { ...state, authorizing: true, authError: null };
         default:
             return state;
     }

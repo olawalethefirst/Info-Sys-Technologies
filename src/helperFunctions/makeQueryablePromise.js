@@ -1,6 +1,6 @@
 const makeQueryablePromise = (promise) => {
     let isFulfilled = false;
-    let isRejeceted = false;
+    let isRejected = false;
 
     const result = promise.then(
         (res) => {
@@ -8,19 +8,19 @@ const makeQueryablePromise = (promise) => {
             return res;
         },
         (e) => {
-            isRejeceted = true;
+            isRejected = true;
             throw e;
         }
     );
 
     result.isPending = () => {
-        return !(isFulfilled || isRejeceted);
+        return !(isFulfilled || isRejected);
     };
     result.isFulfilled = () => {
         return isFulfilled;
     };
     result.isRejected = () => {
-        return isRejeceted;
+        return isRejected;
     };
 
     return result;

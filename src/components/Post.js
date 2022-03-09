@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -7,11 +7,8 @@ import {
     Keyboard,
     Pressable,
 } from 'react-native';
-import moment from 'moment';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import ReplyIcon from './ReplyIcon';
-import HeartIcon from './HeartIcon';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 import { connect } from 'react-redux';
 import CommentsHeading from './CommentsHeading';
@@ -24,6 +21,7 @@ import Title from './Title';
 import Body from './Body';
 import LikeButton from './LikeButton';
 import ReplyButton from './ReplyButton';
+import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
 
 const Post = ({
     fontFactor,
@@ -47,35 +45,28 @@ const Post = ({
     const postRef = useRef(null);
     // console.log(item);
 
-    const onPress = () => {
-        commentInputRef.current?.focus();
-        let itemTopOffset;
-        let itemHeight;
-        if (containerRef.current && postRef.current) {
-            postRef.current.measureLayout(
-                containerRef.current,
-                (left, top, width, height) => {
-                    itemTopOffset = top;
-                    itemHeight = height;
-                }
+    const onReply = useCallback(() => {
+        if (uid) {
+            commentInputRef.current?.focus();
+            scrollToComponentBottom(
+                postRef,
+                containerRef,
+                scrollRef,
+                effectiveBodyHeight
             );
+        } else {
+            toggleCallToAuthModal();
         }
-        Keyboard.addListener(
-            'keyboardDidShow',
-            ({ endCoordinates: { height } }) => {
-                if (itemTopOffset && itemHeight) {
-                    const offset =
-                        itemTopOffset -
-                        (effectiveBodyHeight - height - itemHeight);
-                    scrollRef.current.scrollToOffset({
-                        offset,
-                    });
-                }
-                Keyboard.removeAllListeners('keyboardDidShow');
-            }
-        );
-    };
-    console.log(typeof fontFactor);
+    }, [
+        uid,
+        toggleCallToAuthModal,
+        commentInputRef,
+        containerRef,
+        postRef,
+        effectiveBodyHeight,
+        scrollRef,
+    ]);
+    
 
     return (
         <View>
@@ -129,9 +120,7 @@ const Post = ({
                         />
                         <ReplyButton
                             fontFactor={fontFactor}
-                            uid={uid}
-                            toggleCallToAuthModal={toggleCallToAuthModal}
-                            onPress={onPress}
+                            onReply={onReply}
                         />
                     </View>
                     <MarginVertical />

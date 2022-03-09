@@ -1,26 +1,18 @@
 import { Platform, Keyboard } from 'react-native';
 
-export default function keyBoardAvoidingFn(
-    megaSize,
-    inputRef,
+export default function scrollToComponentBottom(
+    componentRef,
     containerRef,
     scrollRef,
     windowHeight
 ) {
-    console.log(
-        !!megaSize,
-        !!inputRef.current,
-        !!containerRef.current,
-        !!scrollRef.current,
-        !!windowHeight
-    );
     const isIOS = Platform.OS === 'ios';
 
-    if (isIOS && megaSize) {
+    if (isIOS) {
         let fieldFormOffset;
         let fieldHeight;
-        if (inputRef.current && containerRef.current) {
-            inputRef.current.measureLayout(
+        if (componentRef.current && containerRef.current) {
+            componentRef.current.measureLayout(
                 containerRef.current,
                 (left, top, width, height) => {
                     fieldFormOffset = top;
@@ -33,10 +25,7 @@ export default function keyBoardAvoidingFn(
             ({ endCoordinates: { height } }) => {
                 if (fieldHeight && fieldFormOffset) {
                     const offset =
-                        fieldFormOffset -
-                        (windowHeight - //can be effectiveBodyHeight if tabBar and header present or window heightwhen both absent. Keyboard height ignores height of tabBar in calculation of keyboardHeight when tabBar present
-                            height -
-                            fieldHeight);
+                        fieldFormOffset - (windowHeight - height - fieldHeight);
                     scrollRef?.current?.scrollToOffset
                         ? scrollRef.current.scrollToOffset({
                               offset: Math.round(offset),
