@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, {
+    useRef,
+    useState,
+    useEffect,
+    useCallback,
+    useReducer,
+} from 'react';
 import {
     StyleSheet,
     Text,
@@ -14,7 +20,6 @@ import {
 import { connect } from 'react-redux';
 import CommentInput from '../components/CommentInput';
 import Constants from 'expo-constants';
-import PostDetail from '../components/PostDetail';
 import CallToAuth from '../components/CallToAuth';
 import SecondaryHeader from '../components/SecondaryHeader';
 import { stickyHeaderHeight } from '../constants';
@@ -27,6 +32,11 @@ import Post from '../components/Post';
 import Comment from '../components/Comment';
 import { Timestamp } from 'firebase/firestore';
 import moment from 'moment';
+import { auth } from '../helperFunctions/initializeFirebase';
+import onLikeAsync from '../helperFunctions/onLikeAsync';
+import onUnlikeAsync from '../helperFunctions/onUnlikeAsync';
+import { List } from 'immutable';
+import PostResultModal from '../components/PostResultModal';
 
 function PostScreen({
     margin,
@@ -64,16 +74,98 @@ function PostScreen({
         inputRange: [0, stickyHeaderHeight],
         outputRange: [0, -stickyHeaderHeight],
     });
-    const [data, setData] = useState([
-        { ...params },
-        // { comment: 'comment' },
-        // { comment: 'comment' },
-        // { comment: 'comment' },
-    ]);
+
+    //action types
+    const UPDATE_POST = 'UPDATE_POST';
+    const REMOVE_LIKE = 'REMOVE_LIKE';
+    const ADD_LIKE = 'ADD_LIKE';
+    const TOGGLE_NAVIGATION_FOCUSSED = 'TOGGLE_NAVIGATION_FOCUSSED';
+
+    //reducer
+    const reducer = (state, action) => {
+        switch (action.type) {
+            case UPDATE_POST:
+                return {
+                    ...state,
+                    data: state.data.map((el, ind) => {
+                        if (ind === 0) {
+                            return action.payload;
+                        }
+                        return el;
+                    }),
+                };
+            case ADD_LIKE:
+                return {
+                    ...state,
+                    data: state.data.map((el, index) => {
+                        if (index === action.payload) {
+                            return {
+                                ...el,
+                                likes: [...el.likes, auth.currentUser.uid],
+                            };
+                        }
+                        return el;
+                    }),
+                };
+            case REMOVE_LIKE:
+                return {
+                    ...state,
+                    data: state.data.map((el, index) => {
+                        if (index === action.payload) {
+                            return {
+                                ...el,
+                                likes: el.likes.filter(
+                                    (uid) => uid !== auth.currentUser.uid
+                                ),
+                            };
+                        }
+                        return el;
+                    }),
+                };
+            case TOGGLE_NAVIGATION_FOCUSSED:
+                return { ...state, navigationFocussed: action.payload };
+            default:
+                return state;
+        }
+    };
+
+    //state & dispatch
+    const [state, dispatch] = useReducer(reducer, {
+        data: [{ ...params }],
+        shouldRefreshList: false,
+        navigationFocussed: false,
+    });
+
+    //actions
+    const updateLike = async (liked, payload, postID) => {
+        if (liked) {
+            try {
+                dispatch({ type: REMOVE_LIKE, payload });
+                await onUnlikeAsync(postID);
+            } catch {
+                dispatch({ type: ADD_LIKE, payload });
+            }
+        } else {
+            try {
+                dispatch({ type: ADD_LIKE, payload });
+                await onLikeAsync(postID);
+            } catch {
+                dispatch({ type: REMOVE_LIKE, payload });
+            }
+        }
+    };
+    const updatePost = (payload) => {
+        dispatch({ type: UPDATE_POST, payload });
+    };
+    const toggleNavigationFocussed = (payload) => {
+        dispatch({ type: TOGGLE_NAVIGATION_FOCUSSED, payload });
+    };
+
     const { statusBarHeight } = Constants;
+    const post = state.data[0];
 
     const renderItem = useCallback(
-        ({ item }) => {
+        ({ item, index }) => {
             const {
                 body,
                 category,
@@ -81,8 +173,8 @@ function PostScreen({
                 username,
                 likes,
                 createdAt: { nanoseconds, seconds },
-                owner,
                 postID,
+                owner,
                 searchField,
             } = item;
             const timestampString = moment(
@@ -101,6 +193,9 @@ function PostScreen({
                         category={category}
                         title={title}
                         body={body}
+                        postID={postID}
+                        index={index}
+                        updateLike={updateLike}
                     />
                 );
             }
@@ -120,16 +215,42 @@ function PostScreen({
             const listener = onSnapshot(
                 doc(firestore, 'posts', params.postID),
                 (snapshot) => {
-                    console.log('offlineSource: ', snapshot.metadata.fromCache);
+                    const data = snapshot.data();
+                    if (data) {
+                        if (!List(data.likes).equals(List(post.likes))) {
+                            const { category, title, body } = data;
+                            const updatedPost = {
+                                postID: snapshot.id,
+                                searchField:
+                                    category + '. ' + title + '. ' + body,
+                                ...data,
+                            }; //may be updated to only include required data
+                            updatePost(updatedPost);
+                        } else {
+                            console.log('failed update test');
+                        }
+                    }
                 }
             );
             return listener;
         };
         const listener = listenToUpdatedData();
         return listener;
-    }, [params.postID]);
+    }, [params.postID, post]);
 
-    console.log('params: ', params);
+    useEffect(() => {
+        const events = ['focus', 'blur'];
+        
+        const unsubscribers = events.map((event) =>
+            navigation.addListener(event, () =>
+                toggleNavigationFocussed(event === events[0])
+            )
+        );
+
+        return () => {
+            unsubscribers.forEach((unsubscribe) => unsubscribe());
+        };
+    }, [navigation]);
 
     return (
         <View
@@ -168,11 +289,12 @@ function PostScreen({
                         scrollEventThrottle={16}
                         onScroll={handleScroll}
                         contentContainerStyle={{
-                            minHeight: effectiveBodyHeight + headerSize,
-                            paddingTop: stickyHeaderHeight,
+                            minHeight: effectiveBodyHeight + stickyHeaderHeight,
+                            marginTop: stickyHeaderHeight,
                             paddingBottom: headerSize,
                         }}
-                        data={data}
+                        extraData={state.shouldRefreshList}
+                        data={state.data}
                         bounces={false}
                         renderItem={renderItem}
                         keyExtractor={(item, index) => 'keyExtractor' + index}
@@ -184,15 +306,23 @@ function PostScreen({
                     />
                     <CommentInput
                         headerSize={headerSize}
-                        scrollY={scrollY}
-                        scrollRef={scrollRef}
                         fontFactor={fontFactor}
                         margin={margin}
                         commentInputRef={commentInputRef}
                     />
                     {!uid && <CallToAuth />}
                     {
-                        uid && <UsernameModal /> //switch to availabilty of username
+                        uid && (
+                            <>
+                                <UsernameModal />
+                                <PostResultModal
+                                    name={'postResultModal2'}
+                                    navigationFocussed={
+                                        state.navigationFocussed
+                                    }
+                                />
+                            </>
+                        ) //switch to availabilty of username
                     }
                 </SafeAreaView>
             </KeyboardAvoidingView>

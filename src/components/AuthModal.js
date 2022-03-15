@@ -13,7 +13,6 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import processErrorString from '../helperFunctions/processErrorString';
 import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
-import toggleOffAuthModal from '../redux/actions/toggleOffAuthModal';
 import clearAuth from '../redux/actions/clearAuth';
 import ModalTextBlock from './ModalTextBlock';
 import ModalButton from './ModalButton';
@@ -27,7 +26,6 @@ const AuthModal = ({
     fontFactor,
     margin,
     authSuccessful,
-    toggleOffAuthModal,
     clearAuth,
     authorizing,
     authError,
@@ -46,7 +44,7 @@ const AuthModal = ({
         uid && isInAuthScreen && navigation.goBack(); //navigates back to previous screen
     }, [uid, navigation]);
     const retryAbleError = authError === AuthErrorCodes.NETWORK_REQUEST_FAILED;
-    console.log('authModalVisible: ', authModalVisible, authError, uid);
+
 
     return (
         <Modal //change modal to react-native-modal to enable us naivgate away from screen upon successful authentication
@@ -130,7 +128,6 @@ const mapStateToProps = ({
 };
 
 export default connect(mapStateToProps, {
-    toggleOffAuthModal,
     clearAuth,
     retryAuthUserWithEmail,
 })(AuthModal);

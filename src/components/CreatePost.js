@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import CreatePostForm from './CreatePostForm';
 import updateModalStatus from '../redux/actions/updateModalStatus';
 import PropTypes from 'prop-types';
+import writePost from '../redux/actions/writePost';
 
 const CreatePost = ({
     visible,
@@ -14,11 +15,12 @@ const CreatePost = ({
     margin,
     fontFactor,
     toggleModal,
-    onSubmitSuccessful,
+    writePost,
     activeModal,
     updateModalStatus,
 }) => {
     const [disableModalPressables, setDisableModalPressables] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
     const containerRef = useRef(null);
     const { statusBarHeight } = Constants;
     const onCancel = useCallback(() => {
@@ -27,15 +29,20 @@ const CreatePost = ({
     const toggleModalPressables = useCallback(() => {
         setDisableModalPressables((oldValue) => !oldValue);
     }, []);
+    const activateActiveModal = useCallback(
+        () => updateModalStatus(modalName),
+        [updateModalStatus]
+    );
     const disableActiveModal = useCallback(
         () => updateModalStatus(null),
         [updateModalStatus]
     );
     const scrollViewRef = useRef(null);
     const modalName = 'createPost';
-    const isVisible = useRef(false);
-    isVisible.current = visible && (!activeModal || activeModal === modalName);
-
+    const toggleIsVisible = useCallback(
+        () => setIsVisible((oldValue) => !oldValue),
+        []
+    );
     const styles2 = StyleSheet.create({
         modalContainer: {
             paddingHorizontal: margin,
@@ -46,25 +53,32 @@ const CreatePost = ({
                 android: headerSize / 3,
             }),
         },
-        formContainer:{
+        formContainer: {
             width: `${fontFactor * 100}%`,
-        }
+        },
     });
 
     useEffect(() => {
-        if (visible && !activeModal) {
-            updateModalStatus(modalName);
+        if (visible && !isVisible) {
+            if (!activeModal || activeModal === modalName) {
+                toggleIsVisible();
+            }
         }
-    }, [activeModal, visible, updateModalStatus]);
+
+        if (!visible && isVisible) {
+            toggleIsVisible();
+        }
+    }, [visible, isVisible, toggleIsVisible, activeModal]);
 
     return (
         <Modal
             useNativeDriverForBackdrop
+            onModalWillShow={activateActiveModal}
             onShow={toggleModalPressables}
             onModalWillHide={toggleModalPressables}
             onModalHide={disableActiveModal}
             propagateSwipe
-            isVisible={isVisible.current}
+            isVisible={isVisible}
             onBackButtonPress={toggleModal}
             useNativeDriver={true}
             hideModalContentWhileAnimating={true}
@@ -92,12 +106,10 @@ const CreatePost = ({
                     bounces={false}
                     contentContainerStyle={styles.scrollViewContainer}
                 >
-                    <View
-                        style={styles2.formContainer}
-                    >
+                    <View style={styles2.formContainer}>
                         <CreatePostForm
                             fontFactor={fontFactor}
-                            onSubmitSuccessful={onSubmitSuccessful}
+                            onSubmitSuccessful={writePost}
                             toggleModal={toggleModal}
                             headerSize={headerSize}
                             disableModalPressables={disableModalPressables}
@@ -119,7 +131,7 @@ CreatePost.propTypes = {
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
     toggleModal: PropTypes.func,
-    onSubmitSuccessful: PropTypes.func,
+    writePost: PropTypes.func,
     activeModal: PropTypes.string,
     updateModalStatus: PropTypes.func,
 };
@@ -134,7 +146,9 @@ const mapStateToProps = ({
     activeModal,
 });
 
-export default connect(mapStateToProps, { updateModalStatus })(CreatePost);
+export default connect(mapStateToProps, { updateModalStatus, writePost })(
+    CreatePost
+);
 
 const styles = StyleSheet.create({
     scrollViewContainer: {

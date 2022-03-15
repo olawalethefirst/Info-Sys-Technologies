@@ -1,9 +1,11 @@
 import { auth } from './initializeFirebase';
-import { Timestamp } from 'firebase/firestore';
+import { arrayUnion } from 'firebase/firestore';
 import NetInfo from '@react-native-community/netinfo';
 import createLikeAsync from './createLikeAsync';
 
-const onLikePostAsync = async (parentID, parentType, tempUID) => {
+
+
+const onLikeAsync = async (parentID, parentType, tempUID) => {
     const docPath = () => {
         switch (parentType) {
             case 'comment':
@@ -15,13 +17,10 @@ const onLikePostAsync = async (parentID, parentType, tempUID) => {
     return NetInfo.fetch().then((state) => {
         if (state.isConnected) {
             const docMap = {};
-            const createdAt = new Date();
-            docMap[
-                `likes.${
-                    // auth.currentUser.uid
-                    tempUID
-                }`
-            ] = Timestamp.fromDate(createdAt);
+            docMap['likes'] = arrayUnion(
+                auth.currentUser.uid
+                // tempUID
+            );
             return createLikeAsync(docPath(), docMap);
         } else {
             throw new Error('network test failed');
@@ -29,4 +28,4 @@ const onLikePostAsync = async (parentID, parentType, tempUID) => {
     });
 };
 
-export default onLikePostAsync;
+export default onLikeAsync;

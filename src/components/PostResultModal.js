@@ -1,177 +1,130 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-    Pressable,
-    Platform,
-    TouchableOpacity,
-} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, Platform } from 'react-native';
 import { connect } from 'react-redux';
 import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import updateModalStatus from '../redux/actions/updateModalStatus';
+import ModalButton from './ModalButton';
+import ModalTextBlock from './ModalTextBlock';
+import rewritePost from '../redux/actions/rewritePost';
+import closePostResultModal from '../redux/actions/closePostResultModal';
+import PropTypes from 'prop-types'
 
 const PostResultModal = ({
     postSuccessful,
-    postError,
-    resetSuccessfulPostAction,
-    resetFailedPostAction,
-    retryWrite,
-    fontFactor,
+    postFailed,
     margin,
     activeModal,
     updateModalStatus,
+    name,
+    postResultModalVisible,
+    rewritePost,
+    navigationFocussed,
+    closePostResultModal,
 }) => {
-    const visible = useRef(false);
-    const isVisible = useRef(false);
+    const [isVisible, setIsVisible] = useState(false);
 
     const { statusBarHeight } = Constants;
-    const cancelAction = postSuccessful
-        ? resetSuccessfulPostAction
-        : postError
-        ? resetFailedPostAction
-        : null;
     const modalNotificationString = postSuccessful
         ? 'Posted successfully'
-        : postError
+        : postFailed
         ? 'Post failed'
         : null;
-    const fontColor = postSuccessful ? '#fff' : postError ? 'red' : null;
-    const modalName = 'postResult';
+    const fontColor = postSuccessful ? '#fff' : postFailed ? 'red' : null;
     const deactivateActiveModal = useCallback(
         () => updateModalStatus(null),
         [updateModalStatus]
     );
-    visible.current = postError || postSuccessful;
-    isVisible.current =
-        visible.current && (!activeModal || activeModal === modalName);
+    const activateActiveModal = useCallback(
+        () => updateModalStatus(name),
+        [updateModalStatus, name]
+    );
+
+    const styles2 = StyleSheet.create({
+        modal: {
+            marginTop: Platform.select({
+                ios: statusBarHeight,
+                android: 0,
+            }),
+            paddingHorizontal: margin,
+        },
+    });
 
     useEffect(() => {
-        if (visible.current && !activeModal) {
-            updateModalStatus(modalName);
+        if (navigationFocussed) {
+            if (
+                postResultModalVisible &&
+                (!activeModal || activeModal === name) &&
+                !isVisible
+            ) {
+                setIsVisible(true);
+            }
         }
-    }, [postSuccessful, postError, isVisible, activeModal, updateModalStatus]);
+        if (!postResultModalVisible && isVisible) {
+            setIsVisible(false);
+        }
+    }, [
+        navigationFocussed,
+        postResultModalVisible,
+        isVisible,
+        activeModal,
+        name,
+    ]);
 
     return (
         <Modal
             useNativeDriverForBackdrop
-            isVisible={isVisible.current}
+            isVisible={isVisible}
+            onModalWillShow={activateActiveModal}
             onModalHide={deactivateActiveModal}
             animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            onBackdropPress={cancelAction}
-            onBackButtonPress={cancelAction}
+            onBackButtonPress={closePostResultModal}
             useNativeDriver
             hideModalContentWhileAnimating
             backdropOpacity={0.8}
-            style={{
-                padding: 0,
-                margin: 0,
-                marginTop: Platform.select({
-                    ios: statusBarHeight,
-                    android: 0,
-                }),
-            }}
+            style={[styles.modal, styles2.modal]}
         >
-            <View
-                style={{
-                    paddingHorizontal: margin,
-                    flex: 1,
-                    justifyContent: 'center',
-                }}
-            >
-                <View
-                    style={{
-                        width: '100%',
-                        alignItems: 'center',
-                        padding: wp(2.2),
-                        marginBottom: wp(2.2),
-                    }}
-                >
-                    <Text
-                        style={{
-                            fontSize: fontFactor * wp(4.5),
-                            lineHeight: fontFactor * wp(5.72),
-                            fontFamily: 'Karla_400Regular',
-                            textAlign: 'center',
-                            textShadowOffset: {
-                                width: 0.1,
-                                height: 0.1,
-                            },
-                            textShadowColor: fontColor,
-                            textShadowRadius: 0.1,
-                            color: fontColor,
-                        }}
-                    >
-                        {modalNotificationString}
-                    </Text>
-                </View>
-                {postError && (
-                    <>
-                        <TouchableOpacity
-                            style={{
-                                width: '100%',
-                                justifyContent: 'center',
-                                backgroundColor: '#1A91D7',
-                                padding: wp(2.2),
-                                borderRadius: wp(1.35),
-                                marginBottom: wp(2.2),
-                            }}
-                            onPress={() => {
-                                retryWrite();
-                            }}
-                            activeOpacity={0.7}
-                        >
-                            <Text
-                                style={{
-                                    textAlign: 'center',
-                                    color: '#fff',
-                                    fontSize: fontFactor * wp(4.5),
-                                    lineHeight: fontFactor * wp(5.72),
-                                    fontFamily: 'Karla_400Regular',
-                                }}
-                            >
-                                Retry
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={{
-                                width: '100%',
-                                justifyContent: 'center',
-                                backgroundColor: '#ddd',
-                                padding: wp(2.2),
-                                borderRadius: wp(1.35),
-                                marginBottom: wp(2.2),
-                            }}
-                            onPress={resetFailedPostAction}
-                            activeOpacity={0.7}
-                        >
-                            <Text
-                                style={{
-                                    textAlign: 'center',
-                                    color: 'red',
-                                    fontSize: fontFactor * wp(4.5),
-                                    lineHeight: fontFactor * wp(5.72),
-                                    fontFamily: 'Karla_400Regular',
-                                }}
-                            >
-                                Cancel
-                            </Text>
-                        </TouchableOpacity>
-                    </>
-                )}
-            </View>
+            <ModalTextBlock text={modalNotificationString} color={fontColor} />
+            {postFailed && (
+                <ModalButton text="retry" submit onPress={rewritePost} />
+            )}
+            <ModalButton text="close" onPress={closePostResultModal} />
         </Modal>
     );
 };
 
+PostResultModal.propTypes= {
+    postSuccessful: PropTypes.bool,
+    postFailed: PropTypes.bool,
+    margin: PropTypes.number,
+    activeModal: PropTypes.string,
+    updateModalStatus: PropTypes.func,
+    name: PropTypes.string,
+    postResultModalVisible: PropTypes.bool,
+    rewritePost: PropTypes.func,
+    navigationFocussed: PropTypes.bool,
+    closePostResultModal: PropTypes.func,
+}
+
 const mapStateToProps = ({
-    settingsState: { fontFactor, margin },
-    settingsTempState: { activeModal },
-}) => ({ fontFactor, margin, activeModal });
+    settingsState: { margin },
+    settingsTempState: { activeModal, postResultModalVisible },
+    forumTempState: { postSuccessful, postFailed },
+}) => ({
+    margin,
+    activeModal,
+    postResultModalVisible,
+    postSuccessful,
+    postFailed,
+});
 
-export default connect(mapStateToProps, { updateModalStatus })(PostResultModal);
+export default connect(mapStateToProps, {
+    updateModalStatus,
+    rewritePost,
+    closePostResultModal,
+})(PostResultModal);
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    modal: { padding: 0, margin: 0 },
+});

@@ -10,6 +10,7 @@ const createPostAsync = (data) => {
         body,
         category,
         username: auth.currentUser.displayName,
+        likes: []
     });
 };
 

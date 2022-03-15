@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View, Dimensions, Text } from 'react-native';
 import AuthTemplate from './AuthTemplate';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
@@ -9,13 +9,15 @@ import Animated, {
     interpolate,
     withTiming,
     useAnimatedStyle,
+    FadeOut,
 } from 'react-native-reanimated';
+import PropTypes from 'prop-types';
 
 const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
     const {
         params: { viewAnimatedValue },
     } = useRoute();
-    const columnMode = checkColumnMode(deviceWidthClass);
+
     const authAnimatedView = useSharedValue(
         viewAnimatedValue ? viewAnimatedValue : 0 //if passed down, use value, else use 0 as default
     );
@@ -39,22 +41,32 @@ const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
         authAnimatedView.value = authAnimatedView.value === 0 ? 1 : 0;
     }, [authAnimatedView]);
 
+    const columnMode = checkColumnMode(deviceWidthClass);
+
+    const styles2 = StyleSheet.create({
+        animatedView: {
+            minHeight: minHeight,
+            width: 2 * deviceWidth,
+        },
+        responsiveContainerParent: {
+            width: deviceWidth,
+        },
+        responsiveContainer: {
+            width: columnMode ? '90%' : '100%',
+        },
+        signedInText: {
+            fontSize: fontFactor * wp(4.5),
+            lineHeight: fontFactor * wp(5.72),
+        },
+        signedInContainer: {
+            minHeight: minHeight,
+        },
+    });
+
     if (uid) {
         return (
-            <View
-                style={{
-                    minHeight: minHeight,
-                    justifyContent: 'center',
-                }}
-            >
-                <Text
-                    style={{
-                        textAlign: 'center',
-                        fontSize: fontFactor * wp(4.5),
-                        lineHeight: fontFactor * wp(5.72),
-                        fontFamily: 'Poppins_400Regular',
-                    }}
-                >
+            <View style={[styles.signedInContainer, styles2.signedInContainer]}>
+                <Text style={[styles2.signedInText, styles.signedInText]}>
                     User logged in
                 </Text>
             </View>
@@ -63,21 +75,20 @@ const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
 
     return (
         <Animated.View
+            exiting={FadeOut} //feels hacky but fixes the unmounted unInspectable persistent child el
             style={[
-                {
-                    flexDirection: 'row',
-                    minHeight: minHeight,
-                },
                 authAnimatedViewStyle,
+                styles.animatedView,
+                styles2.animatedView,
             ]}
         >
             <View
-                style={{
-                    width: '100%',
-                    alignContent: 'center',
-                }}
+                style={[
+                    styles2.responsiveContainerParent,
+                    styles.responsiveContainerParent,
+                ]}
             >
-                <View style={{ width: columnMode ? '90%' : '100%' }}>
+                <View style={styles2.responsiveContainer}>
                     <AuthTemplate
                         createAccount
                         toggleAuthView={toggleAuthAnimatedView}
@@ -85,12 +96,12 @@ const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
                 </View>
             </View>
             <View
-                style={{
-                    width: '100%',
-                    alignContent: 'center',
-                }}
+                style={[
+                    styles2.responsiveContainerParent,
+                    styles.responsiveContainerParent,
+                ]}
             >
-                <View style={{ width: columnMode ? '90%' : '100%' }}>
+                <View style={styles2.responsiveContainer}>
                     <AuthTemplate toggleAuthView={toggleAuthAnimatedView} />
                 </View>
             </View>
@@ -98,6 +109,22 @@ const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
     );
 };
 
+Auth.propTypes = {
+    minHeight: PropTypes.number,
+    deviceWidthClass: PropTypes.string,
+    uid: PropTypes.string,
+    fontFactor: PropTypes.number,
+};
+
 export default Auth;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    animatedView: { flexDirection: 'row' },
+    signedInText: { textAlign: 'center', fontFamily: 'Poppins_400Regular' },
+    signedInContainer: {
+        justifyContent: 'center',
+    },
+    responsiveContainerParent: {
+        alignContent: 'center',
+    },
+});

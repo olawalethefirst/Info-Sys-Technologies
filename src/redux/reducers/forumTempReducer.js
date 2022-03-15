@@ -19,6 +19,12 @@ import {
     CLEAR_AUTH,
     AUTH_WITH_EMAIL_FAILED,
     RETRY_AUTH_WITH_EMAIL,
+    INITIATE_POST,
+    POST_SUCCESSFUL,
+    POST_FAILED,
+    CLEAR_POST_SUCCESSFUL,
+    RESET_POST_FAILED,
+    CLEAR_POST_FAILED,
 } from '../actions/actionTypes';
 
 // inital State
@@ -36,6 +42,10 @@ const initialState = {
     authorizing: false,
     authSuccessful: false,
     authError: null,
+    postData: null,
+    postSuccessful: false,
+    postFailed: false,
+    posting: false,
 };
 
 const forumTempReducer = (state = initialState, action) => {
@@ -73,7 +83,7 @@ const forumTempReducer = (state = initialState, action) => {
                 loadingPostsError: action.payload,
             };
         case SEARCH_ACTIVE: {
-            return { ...state, searching: true, };
+            return { ...state, searching: true };
         }
         case SEARCH_NOT_ACTIVE:
             return {
@@ -127,6 +137,31 @@ const forumTempReducer = (state = initialState, action) => {
             };
         case RETRY_AUTH_WITH_EMAIL:
             return { ...state, authorizing: true, authError: null };
+        case INITIATE_POST:
+            return { ...state, postData: action.payload, posting: true };
+        case POST_SUCCESSFUL:
+            return {
+                ...state,
+                postSuccessful: true,
+                posting: false,
+            };
+        case POST_FAILED:
+            return { ...state, postFailed: true, posting: false };
+        case CLEAR_POST_SUCCESSFUL:
+            return {
+                ...state,
+                postSuccessful: false,
+                postData: null,
+            };
+        case RESET_POST_FAILED:
+            return { ...state, postFailed: false, posting: true };
+        case CLEAR_POST_FAILED:
+            return {
+                ...state,
+                postFailed: false,
+                posting: false,
+                postData: null,
+            };
         default:
             return state;
     }

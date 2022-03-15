@@ -1,9 +1,9 @@
 import { auth } from './initializeFirebase';
-import { deleteField } from 'firebase/firestore';
+import { arrayRemove } from 'firebase/firestore';
 import NetInfo from '@react-native-community/netinfo';
 import createLikeAsync from './createLikeAsync';
 
-const onUnlikePostAsync = async (parentID, parentType, tempUID) => {
+const onUnlikeAsync = async (parentID, parentType, tempUID) => {
     const docPath = () => {
         switch (parentType) {
             case 'comment':
@@ -16,12 +16,10 @@ const onUnlikePostAsync = async (parentID, parentType, tempUID) => {
     return NetInfo.fetch().then((state) => {
         if (state.isConnected) {
             const docMap = {};
-            docMap[
-                `likes.${
-                    auth.currentUser.uid
-                    // tempUID
-                }`
-            ] = deleteField();
+            docMap['likes'] = arrayRemove(
+                auth.currentUser.uid
+                // tempUID
+            );
             return createLikeAsync(docPath(), docMap);
         } else {
             throw new Error('failed');
@@ -29,4 +27,4 @@ const onUnlikePostAsync = async (parentID, parentType, tempUID) => {
     });
 };
 
-export default onUnlikePostAsync;
+export default onUnlikeAsync;

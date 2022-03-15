@@ -13,15 +13,7 @@ import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { store } from '../redux/store';
 
-const CommentInput = ({
-    bodyHeight,
-    headerSize,
-    scrollY,
-    fontFactor,
-    margin,
-    scrollRef,
-    commentInputRef,
-}) => {
+const CommentInput = ({ headerSize, fontFactor, margin, commentInputRef }) => {
     const [comment, setComment] = useState('');
 
     return (
@@ -32,12 +24,10 @@ const CommentInput = ({
                 bottom: 0,
                 left: 0,
                 right: 0,
-                width: '100%',
-                // backgroundColor: 'red',
                 height: headerSize,
                 borderColor: '#1A91D7',
-                backgroundColor: '#f7f7f7',
-                borderWidth: 3,
+                borderWidth: wp(0.75) * fontFactor,
+                backgroundColor: '#fff',
             }}
         >
             <TextInput
@@ -56,13 +46,13 @@ const CommentInput = ({
                 onChangeText={(text) => setComment(text)}
                 placeholder="Type your comment"
                 placeholderTextColor="#808080"
-               textAlignVertical="center"
+                textAlignVertical="center"
             />
             <TouchableOpacity
                 style={{
-                    width: headerSize * 1.2,
-                    alignSelf: 'center',
-                    padding: wp(0.5),
+                    width: headerSize * 1.1,
+                    height: '100%',
+                    justifyContent: 'center',
                 }}
                 disabled={!comment}
             >
@@ -73,6 +63,7 @@ const CommentInput = ({
                         fontSize: fontFactor * wp(4),
                         lineHeight: fontFactor * wp(5.1),
                         fontFamily: 'Poppins_600SemiBold',
+                        opacity: !comment ? 0.7 : 1,
                     }}
                 >
                     Post

@@ -17,8 +17,7 @@ export default function ReplyButton({ fontFactor, onReply }) {
             onPress={onReply}
         >
             <ReplyIcon
-                width={fontFactor * wp(6.36)}
-                height={fontFactor * wp(6.36)}
+                fontFactor={fontFactor}
             />
         </TouchableOpacity>
     );

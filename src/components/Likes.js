@@ -3,7 +3,7 @@ import { Text, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 
-export default function Likes({ fontFactor }) {
+export default function Likes({ fontFactor, likesCount }) {
     const styles2 = StyleSheet.create({
         text: {
             fontSize: fontFactor * wp(3.75),
@@ -11,11 +11,12 @@ export default function Likes({ fontFactor }) {
         },
     });
 
-    return <Text style={[styles.text, styles2.text]}>0 likes</Text>;
+    return <Text style={[styles.text, styles2.text]}>{likesCount} likes</Text>;
 }
 
 Likes.propTypes = {
     fontFactor: PropTypes.number,
+    likesCount: PropTypes.number,
 };
 
 const styles = StyleSheet.create({

@@ -60,7 +60,7 @@ export default function RenderPostsFooter({
                         {processErrorString(loadingPostsError)}
                     </Text>
                     <MarginVertical size={0.2} />
-                    <TouchableOpacity
+                    {<TouchableOpacity
                         activeOpacity={0.7}
                         onPress={retryLoadMorePosts}
                     >
@@ -74,7 +74,7 @@ export default function RenderPostsFooter({
                         >
                             Retry
                         </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity>}
                 </>
             </View>
         );

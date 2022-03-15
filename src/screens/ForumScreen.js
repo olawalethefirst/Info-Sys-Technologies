@@ -13,7 +13,6 @@ import { connect } from 'react-redux';
 import AddPost from '../components/AddPost';
 import PostResultModal from '../components/PostResultModal';
 import CreatePost from '../components/CreatePost';
-import useCreatePost from '../hooks/useCreatePost';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import SecondaryHeader from '../components/SecondaryHeader';
 import { useScrollToTop } from '@react-navigation/native';
@@ -34,10 +33,10 @@ import { store } from '../redux/store';
 import updateShowFooter from '../redux/actions/updateShowFooter';
 import PropTypes from 'prop-types';
 import UsernameModal from '../components/UsernameModal';
-import onLikePostAsync from '../helperFunctions/onLikePostAsync';
+import onLikePostAsync from '../helperFunctions/onLikeAsync';
 import createPostAsync from '../helperFunctions/createPostAsync';
 import { v4 as uuidv4 } from 'uuid';
-import onUnlikePostAsync from '../helperFunctions/onUnlikePostAsync';
+import onUnlikePostAsync from '../helperFunctions/onUnlikeAsync';
 import updateUsernameAsync from '../helperFunctions/updateUsernameAsync';
 import { auth } from '../helperFunctions/initializeFirebase';
 import CallToAuth from '../components/CallToAuth';
@@ -60,18 +59,11 @@ function ForumScreen({
     showFooter,
     effectiveBodyHeight,
     username,
+    navigation,
 }) {
     //State related hooks
     const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
-    const [
-        postSuccessful,
-        postError,
-        activityIndicator,
-        writePost,
-        resetFailedPostAction,
-        resetSuccessfulPostAction,
-        retryWrite,
-    ] = useCreatePost();
+    const [navigationFocussed, setNavigationFocussed] = useState(false);
     const scrollRef = useRef(null);
 
     //Variables & Fns
@@ -111,18 +103,18 @@ function ForumScreen({
             ),
         [loadingPosts, loadingPostsError, fetchPosts, posts, searching]
     ); //only loads more if certain conditions are met
-    const retryLoadMorePosts = useCallback(
-        () =>
-            loadMorePosts(
-                RETRY_LOAD_MORE_POSTS,
-                loadingPosts,
-                loadingPostsError,
-                fetchPosts,
-                posts[posts.length - 1].postID,
-                searching
-            ),
-        [loadingPosts, loadingPostsError, fetchPosts, posts, searching]
-    ); //retries to load more after encountering error
+    const retryLoadMorePosts = useCallback(() => {
+        posts.length
+            ? loadMorePosts(
+                  RETRY_LOAD_MORE_POSTS,
+                  loadingPosts,
+                  loadingPostsError,
+                  fetchPosts,
+                  posts[posts.length - 1].postID,
+                  searching
+              )
+            : fetchPosts();
+    }, [loadingPosts, loadingPostsError, fetchPosts, posts, searching]); //retries to load more after encountering error
     const styles2 = StyleSheet.create({
         containerHeight: {
             height: effectiveBodyHeight,
@@ -137,55 +129,69 @@ function ForumScreen({
         fetchPosts();
     }, [fetchPosts]);
 
-    // const createPlentyPosts = async () => {
-    //     const wordsArray = [
-    //         'To',
-    //         'is',
-    //         'Has',
-    //         'And',
-    //         'in',
-    //         'About',
-    //         'inside',
-    //         'From',
-    //         'without',
-    //         'Within',
-    //         'under',
-    //         'deeply',
-    //         'Below',
-    //         'Adapt',
-    //         'transform',
-    //     ];
-    //     // check firebase to enforce field value to one of a catgeroies array
-    //     const categories = [
-    //         'Computer Maintenance',
-    //         'Audit',
-    //         'Accounting',
-    //         'Networking',
-    //     ];
-    //     let i = 0;
-    //     while (i < 300) {
-    //         i++;
+    useEffect(() => {
+        const events = ['focus', 'blur'];
 
-    //         const wordsRandomNo = Math.floor(Math.random() * wordsArray.length);
-    //         const catgRandNo = Math.floor(Math.random() * categories.length);
-    //         const body = [];
-    //         for (let i = 0; i <= wordsRandomNo; i++) {
-    //             body.push(wordsArray[i]);
-    //         }
+        const unsubscribers = events.map((event) =>
+            navigation.addListener(event, () =>
+                setNavigationFocussed(event === events[0])
+            )
+        );
 
-    //         createPostAsync({
-    //             title: i + '',
-    //             body: body.join(' '),
-    //             category: categories[catgRandNo],
-    //             postID: uuidv4(),
-    //         })
-    //             .then((doc) => console.log(doc, ' added successfully'))
-    //             .catch((doc) => console.log(doc, 'add failed'));
-    //     }
-    // };
+        return () => {
+            unsubscribers.forEach((unsubscribe) => unsubscribe());
+        };
+    }, [navigation]);
+
+    const createPlentyPosts = async () => {
+        const wordsArray = [
+            'To',
+            'is',
+            'Has',
+            'And',
+            'in',
+            'About',
+            'inside',
+            'From',
+            'without',
+            'Within',
+            'under',
+            'deeply',
+            'Below',
+            'Adapt',
+            'transform',
+        ];
+        // check firebase to enforce field value to one of a catgeroies array
+        const categories = [
+            'Computer Maintenance',
+            'Audit',
+            'Accounting',
+            'Networking',
+        ];
+        let i = 0;
+        while (i < 300) {
+            i++;
+
+            const wordsRandomNo = Math.floor(Math.random() * wordsArray.length);
+            const catgRandNo = Math.floor(Math.random() * categories.length);
+            const body = [];
+            for (let i = 0; i <= wordsRandomNo; i++) {
+                body.push(wordsArray[i]);
+            }
+
+            createPostAsync({
+                title: i + '',
+                body: body.join(' '),
+                category: categories[catgRandNo],
+                postID: uuidv4(),
+            })
+                .then((doc) => console.log(doc, ' added successfully'))
+                .catch((doc) => console.log(doc, 'add failed'));
+        }
+    };
     // let [successfulLikes, setSuccessfulLikes] = useState([]);
     // const createPostLikes = async () => {
-    //     const postsNew = posts.slice(0, 5);
+    //     const postsNew = posts.slice(0, 2);
     //     const usersArray = [
     //         'VoYc7W6H3oRbw5BjT3JYnw9DUoG2',
     //         'P4qMLAPr1WeSxrbQQTbYM6WgHQT2',
@@ -237,7 +243,7 @@ function ForumScreen({
     // console.log('successfulLikes: ', successfulLikes.length);
 
     return (
-        <SafeAreaView style={styles2.containerHeight}>
+        <SafeAreaView style={[styles2.containerHeight]}>
             <View style={styles.flex1}>
                 <Pressable onPress={() => Keyboard.dismiss()}>
                     <SecondaryHeader
@@ -300,26 +306,17 @@ function ForumScreen({
                     onEndReachedThreshold={2}
                     onEndReached={onEndReached}
                 />
-                <AddPost
-                    toggleModal={toggleModal}
-                    disabled={activityIndicator}
-                />
+                <AddPost toggleModal={createPlentyPosts} />
                 {uid && (
                     <>
                         <CreatePost
                             toggleModal={toggleModal}
                             visible={createPostModalVisible}
-                            onSubmitSuccessful={writePost}
-                            // deactivateActiveModal={deactivateActiveModal}
+                            onSubmitSuccessful={null}
                         />
                         <PostResultModal
-                            postSuccessful={postSuccessful}
-                            postError={postError}
-                            resetSuccessfulPostAction={
-                                resetSuccessfulPostAction
-                            }
-                            resetFailedPostAction={resetFailedPostAction}
-                            retryWrite={retryWrite}
+                            name="postResultModal1"
+                            navigationFocussed={navigationFocussed}
                         />
                         <UsernameModal initialAction={toggleModal} />
                     </>

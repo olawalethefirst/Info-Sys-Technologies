@@ -6,10 +6,12 @@ export default async function fetchPostsAsync(lastPost, dispatch) {
     const postsSnapshot = await getPostsSnapshot(lastPost);
     if (postsSnapshot.size) {
         return postsSnapshot.docs.map((doc) => {
-            const data = doc.data();
+            const data = doc.data({
+                serverTimestamps: 'estimate',
+            });
             const { category, title, body } = data;
             return {
-                postID: doc.ref.id,
+                postID: doc.id,
                 searchField: category + '. ' + title + '. ' + body,
                 ...data,
             };

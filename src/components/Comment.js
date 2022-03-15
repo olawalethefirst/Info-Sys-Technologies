@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef,  useCallback  } from 'react';
 import {
     StyleSheet,
     Text,
@@ -13,6 +13,18 @@ import ReplyIcon from './ReplyIcon';
 import HeartIcon from './HeartIcon';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 import { connect } from 'react-redux';
+import CommentsHeading from './CommentsHeading';
+import Username from './Username';
+import CreatedAt from './CreatedAt';
+import Likes from './Likes';
+import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
+import Title from './Title';
+import Body from './Body';
+import LikeButton from './LikeButton';
+import ReplyButton from './ReplyButton';
+import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
+import { auth } from '../helperFunctions/initializeFirebase';
+import PropTypes from 'prop-types'
 
 const Comment = ({
     fontFactor,

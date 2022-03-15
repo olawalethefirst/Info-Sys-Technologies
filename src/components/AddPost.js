@@ -1,17 +1,21 @@
 import React from 'react';
-import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import Icon from 'react-native-vector-icons/Foundation';
+import {
+    StyleSheet,
+    TouchableWithoutFeedback,
+    View,
+} from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withTiming,
-    Easing,
 } from 'react-native-reanimated';
 import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
 import { connect } from 'react-redux';
 import toggleOnUsernameModal from '../redux/actions/toggleOnUsernameModal';
+import PlusICon from './PlusIcon';
+import ActivityIndicatorIcon from './ActivityIndicatorIcon';
 //switch to use react native reanimated v2? for native animation
 
 const AddPost = ({
@@ -20,10 +24,10 @@ const AddPost = ({
     fontFactor,
     toggleModal,
     uid,
-    disabled,
     toggleCallToAuthModal,
     username,
     toggleOnUsernameModal,
+    posting,
 }) => {
     const buttonAnimatedScale = useSharedValue(1);
     const onPressIn = () => {
@@ -71,7 +75,7 @@ const AddPost = ({
             onPress={onPress}
             onPressIn={onPressIn}
             onPressOut={onPressOut}
-            disabled={disabled}
+            disabled={posting}
         >
             <Animated.View
                 style={[
@@ -80,14 +84,26 @@ const AddPost = ({
                     buttonAnimatedStyle,
                 ]}
             >
-                <Icon
-                    name="plus"
+                <View
                     style={{
-                        fontSize: fontFactor * wp(6),
-                        lineHeight: fontFactor * wp(7.7),
-                        color: '#fff',
+                        height: fontFactor * wp(5),
+                        width: fontFactor * wp(5),
                     }}
-                />
+                >
+                    {!posting && (
+                        <PlusICon
+                            height={fontFactor * wp(5)}
+                            width={fontFactor * wp(5)}
+                            posting={posting}
+                        />
+                    )}
+                    {posting && (
+                        <ActivityIndicatorIcon
+                            height={fontFactor * wp(5)}
+                            width={fontFactor * wp(5)}
+                        />
+                    )}
+                </View>
             </Animated.View>
         </TouchableWithoutFeedback>
     );
@@ -99,12 +115,12 @@ AddPost.propTypes = {
     fontFactor: PropTypes.number,
     toggleModal: PropTypes.func,
     uid: PropTypes.string,
-    disabled: PropTypes.bool,
+    posting: PropTypes.bool,
     toggleCallToAuthModal: PropTypes.func,
 };
 
 const mapStateToProps = ({
-    forumTempState: { uid, username },
+    forumTempState: { uid, username, posting },
     settingsState: { margin, headerSize, fontFactor },
 }) => ({
     uid,
@@ -112,6 +128,7 @@ const mapStateToProps = ({
     headerSize,
     fontFactor,
     username,
+    posting,
 });
 
 export default connect(mapStateToProps, {

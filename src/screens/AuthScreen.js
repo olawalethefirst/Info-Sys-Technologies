@@ -47,6 +47,7 @@ const AuthScreen = ({
                 sectionComponents={sectionComponents}
                 scrollRef={scrollRef}
                 deeplyNestedScreen
+                
             />
             <AuthModal />
         </KeyboardAvoidingView>

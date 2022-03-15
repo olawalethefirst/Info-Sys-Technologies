@@ -1,11 +1,7 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef,  useCallback } from 'react';
 import {
     StyleSheet,
-    Text,
     View,
-    TouchableOpacity,
-    Keyboard,
-    Pressable,
 } from 'react-native';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -22,6 +18,8 @@ import Body from './Body';
 import LikeButton from './LikeButton';
 import ReplyButton from './ReplyButton';
 import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
+import { auth } from '../helperFunctions/initializeFirebase';
+import PropTypes from 'prop-types'
 
 const Post = ({
     fontFactor,
@@ -39,11 +37,12 @@ const Post = ({
     username,
     likes,
     createdAt,
+    index,
+    updateLike,
+    postID,
 }) => {
-    const [liked, setLiked] = useState(false);
     const columnMode = checkColumnMode(deviceWidthClass);
     const postRef = useRef(null);
-    // console.log(item);
 
     const onReply = useCallback(() => {
         if (uid) {
@@ -66,24 +65,32 @@ const Post = ({
         effectiveBodyHeight,
         scrollRef,
     ]);
-    
+    const liked = likes.includes(auth.currentUser.uid);
+    const onLike = useCallback(() => {
+        if (uid) {
+            updateLike(liked, index, postID);
+        } else {
+            toggleCallToAuthModal();
+        }
+    }, [updateLike, index, liked, uid, toggleCallToAuthModal, postID]);
+
+    const styles2 = StyleSheet.create({
+        postContainer: {
+            borderBottomWidth: wp(0.25),
+            paddingHorizontal: margin,
+        },
+        columnMode: {
+            width: columnMode ? '90%' : '100%',
+        },
+    });
 
     return (
         <View>
             <View
                 ref={postRef}
-                style={{
-                    borderBottomColor: '#cecece',
-                    borderBottomWidth: wp(0.25),
-                    paddingHorizontal: margin,
-                }}
+                style={[styles.postContainer, styles2.postContainer]}
             >
-                <View
-                    style={{
-                        width: columnMode ? '90%' : '100%',
-                        alignSelf: 'center',
-                    }}
-                >
+                <View style={[styles.columnMode, styles2.columnMode]}>
                     <View>
                         <Username username={username} fontFactor={fontFactor} />
                         <MarginVertical size={0.2} />
@@ -93,7 +100,10 @@ const Post = ({
                             fontFactor={fontFactor}
                         />
                         <MarginVertical size={0.2} />
-                        <Likes fontFactor={fontFactor} />
+                        <Likes
+                            likesCount={likes.length}
+                            fontFactor={fontFactor}
+                        />
                     </View>
                     <MarginVertical />
 
@@ -113,10 +123,8 @@ const Post = ({
                     >
                         <LikeButton
                             fontFactor={fontFactor}
-                            uid={uid}
-                            setLiked={setLiked}
-                            toggleCallToAuthModal={toggleCallToAuthModal}
                             liked={liked}
+                            onLike={onLike}
                         />
                         <ReplyButton
                             fontFactor={fontFactor}
@@ -131,6 +139,25 @@ const Post = ({
         </View>
     );
 };
+
+Post.propTypes = { fontFactor: PropTypes.number,
+    margin: PropTypes.number,
+    uid: PropTypes.string,
+    deviceWidthClass: PropTypes.string,
+    containerRef: PropTypes.object,
+    effectiveBodyHeight: PropTypes.number,
+    commentInputRef: PropTypes.object,
+    scrollRef: PropTypes.object,
+    toggleCallToAuthModal: PropTypes.func,
+    body: PropTypes.string,
+    category: PropTypes.string,
+    title: PropTypes.string,
+    username: PropTypes.string,
+    likes: PropTypes.array,
+    createdAt: PropTypes.string,
+    index: PropTypes.number,
+    updateLike: PropTypes.func,
+    postID: PropTypes.string,}
 
 const mapStateToProps = ({
     settingsState: {
@@ -150,4 +177,11 @@ const mapStateToProps = ({
 
 export default connect(mapStateToProps, { toggleCallToAuthModal })(Post);
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    postContainer: {
+        borderBottomColor: '#cecece',
+    },
+    columnMode: {
+        alignSelf: 'center',
+    },
+});
