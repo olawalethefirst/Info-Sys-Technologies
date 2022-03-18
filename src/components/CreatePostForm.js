@@ -4,7 +4,6 @@ import {
     View,
     Platform,
     TextInput,
-    Keyboard,
     Dimensions,
     TouchableWithoutFeedback,
     StyleSheet,
@@ -203,11 +202,9 @@ export default function CreatePostForm({
     ];
     const disableCreatePost = !!Object.keys(errors).length;
     const onSubmitFailed = (errors) => {
-        Keyboard.dismiss();
         console.log(errors);
     };
     const onSubmit = handleSubmit((data) => {
-        Keyboard.dismiss();
         toggleModal();
         onSubmitSuccessful(data);
     }, onSubmitFailed);

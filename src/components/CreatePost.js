@@ -100,11 +100,12 @@ const CreatePost = ({
 
                 <ScrollView
                     showsVerticalScrollIndicator={false}
-                    keyboardDismissMode={'none'}
-                    keyboardShouldPersistTaps="handled"
+                    keyboardDismissMode={Platform.select({android: 'none', ios:'interactive'})}
+                    keyboardShouldPersistTaps="never"
                     ref={scrollViewRef}
                     bounces={false}
                     contentContainerStyle={styles.scrollViewContainer}
+
                 >
                     <View style={styles2.formContainer}>
                         <CreatePostForm

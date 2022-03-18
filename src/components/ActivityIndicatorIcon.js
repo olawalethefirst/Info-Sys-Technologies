@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import Svg, { Path } from 'react-native-svg';
 import PropTypes from 'prop-types';
 import Animated, {
@@ -10,14 +10,14 @@ import Animated, {
     ZoomOut,
 } from 'react-native-reanimated';
 
-export default function ActivityIndicatorIcon(props) {
+function ActivityIndicatorIcon(props) {
     const AnimatedSvg = Animated.createAnimatedComponent(Svg);
     const animatedRotation = useSharedValue(0);
     const animatedRotationStyle = useAnimatedStyle(() => {
         return { transform: [{ rotate: `${animatedRotation.value}deg` }] };
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
         animatedRotation.value = withRepeat(
             withTiming(360, {
                 duration: 600,
@@ -50,3 +50,5 @@ export default function ActivityIndicatorIcon(props) {
 ActivityIndicatorIcon.propTypes = {
     fontFactor: PropTypes.number,
 };
+
+export default React.memo(ActivityIndicatorIcon);

@@ -1,11 +1,10 @@
-import * as React from 'react';
+import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 import PropTypes from 'prop-types';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
-export default function PlusICon({ posting, ...props }) {
+function PlusICon(props) {
     const AnimatedSvg = Animated.createAnimatedComponent(Svg);
-    console.log(posting);
 
     return (
         <AnimatedSvg
@@ -14,7 +13,7 @@ export default function PlusICon({ posting, ...props }) {
             xmlns="http://www.w3.org/2000/svg"
             {...props}
             exiting={ZoomOut.duration(150)}
-            entering={posting && ZoomIn.delay(150).duration(150)}
+            entering={ZoomIn.delay(150).duration(150)}
         >
             <Path
                 fill-rule="evenodd"
@@ -35,3 +34,5 @@ export default function PlusICon({ posting, ...props }) {
 PlusICon.propTypes = {
     fontFactor: PropTypes.number,
 };
+
+export default React.memo(PlusICon);

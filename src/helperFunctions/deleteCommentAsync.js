@@ -1,7 +1,8 @@
-// import { firebase } from './initializeFirebase';
+import { firestore } from './initializeFirebase';
+import { deleteDoc, doc } from 'firebase/firestore';
 
 const deleteCommentAsync = (commentID) => {
-    // return firebase.firestore().doc(`comments/${commentID}`).delete();
+    return deleteDoc(doc(firestore, 'comments', commentID));
 };
 
 export default deleteCommentAsync;

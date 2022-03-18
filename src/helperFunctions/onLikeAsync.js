@@ -18,8 +18,8 @@ const onLikeAsync = async (parentID, parentType, tempUID) => {
         if (state.isConnected) {
             const docMap = {};
             docMap['likes'] = arrayUnion(
-                auth.currentUser.uid
-                // tempUID
+                // auth.currentUser.uid
+                tempUID
             );
             return createLikeAsync(docPath(), docMap);
         } else {

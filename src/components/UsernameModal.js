@@ -7,7 +7,6 @@ import {
     TextInput,
     ScrollView,
     Keyboard,
-    ActivityIndicator,
 } from 'react-native';
 import { connect } from 'react-redux';
 import Constants from 'expo-constants';
@@ -16,11 +15,13 @@ import updateUsernameAsync from '../helperFunctions/updateUsernameAsync';
 import { auth } from '../helperFunctions/initializeFirebase';
 import updateUsername from '../redux/actions/updateUsername';
 import toggleOffUsernameModal from '../redux/actions/toggleOffUsernameModal';
-import processErrorString, {usernameMinLimit} from '../helperFunctions/processErrorString';
+import processErrorString, {
+    usernameMinLimit,
+} from '../helperFunctions/processErrorString';
 import ModalTextBlock from './ModalTextBlock';
 import ModalButton from './ModalButton';
+import ModalActivityIndicator from './ModalActivityIndicator';
 import PropTypes from 'prop-types';
-
 
 function UsernameModal({
     margin,
@@ -145,11 +146,11 @@ function UsernameModal({
         textInput: {
             fontSize: fontFactor * wp(4.5),
             lineHeight: fontFactor * wp(5.72),
+            height: fontFactor * wp(5.72),
         },
-        inputButton: { padding: wp(4.4), marginBottom: wp(2.2) },
-        activityIndicator: {
-            marginBottom: wp(2.2),
-            paddingVertical: wp(0.61), //maintain similar bottom margin to text(lineHeight-fontSize)
+        inputButton: {
+            padding: fontFactor * wp(4.4),
+            marginBottom: fontFactor * wp(2.2),
         },
         modal: {
             margin: 0,
@@ -206,7 +207,7 @@ function UsernameModal({
             avoidKeyboard
         >
             <ScrollView
-                keyboardShouldPersistTaps="handled"
+                keyboardShouldPersistTaps="never"
                 contentContainerStyle={styles2.scrollView}
             >
                 <Pressable // acts like backdrop
@@ -214,15 +215,9 @@ function UsernameModal({
                     style={styles2.viewContainer}
                 >
                     <Pressable //disables backdrop from acting around content
-                    > 
+                    >
                         <ModalTextBlock text="Welcome, please choose a forum name" />
-                        {isLoading.current && (
-                            <ActivityIndicator
-                                size="small"
-                                color="#fff"
-                                style={styles.activityIndicator}
-                            />
-                        )}
+                        {isLoading.current && <ModalActivityIndicator />}
                         {isSubmitted.current && (
                             <ModalTextBlock text="Successful!" />
                         )}

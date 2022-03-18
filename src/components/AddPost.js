@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-    StyleSheet,
-    TouchableWithoutFeedback,
-    View,
-} from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 import Animated, {
@@ -16,7 +12,6 @@ import { connect } from 'react-redux';
 import toggleOnUsernameModal from '../redux/actions/toggleOnUsernameModal';
 import PlusICon from './PlusIcon';
 import ActivityIndicatorIcon from './ActivityIndicatorIcon';
-//switch to use react native reanimated v2? for native animation
 
 const AddPost = ({
     margin,
@@ -84,26 +79,19 @@ const AddPost = ({
                     buttonAnimatedStyle,
                 ]}
             >
-                <View
-                    style={{
-                        height: fontFactor * wp(5),
-                        width: fontFactor * wp(5),
-                    }}
-                >
-                    {!posting && (
-                        <PlusICon
-                            height={fontFactor * wp(5)}
-                            width={fontFactor * wp(5)}
-                            posting={posting}
-                        />
-                    )}
-                    {posting && (
-                        <ActivityIndicatorIcon
-                            height={fontFactor * wp(5)}
-                            width={fontFactor * wp(5)}
-                        />
-                    )}
-                </View>
+                {!posting && (
+                    <PlusICon
+                        height={fontFactor * wp(5)}
+                        width={fontFactor * wp(5)}
+                        posting={posting}
+                    />
+                )}
+                {posting && (
+                    <ActivityIndicatorIcon
+                        height={fontFactor * wp(5)}
+                        width={fontFactor * wp(5)}
+                    />
+                )}
             </Animated.View>
         </TouchableWithoutFeedback>
     );
@@ -117,6 +105,8 @@ AddPost.propTypes = {
     uid: PropTypes.string,
     posting: PropTypes.bool,
     toggleCallToAuthModal: PropTypes.func,
+    username: PropTypes.string,
+    toggleOnUsernameModal: PropTypes.func,
 };
 
 const mapStateToProps = ({

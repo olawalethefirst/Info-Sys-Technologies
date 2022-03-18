@@ -1,11 +1,5 @@
 import React, { useCallback } from 'react';
-import {
-    Text,
-    View,
-    ActivityIndicator,
-    Platform,
-    TouchableOpacity,
-} from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -45,6 +39,20 @@ const AuthModal = ({
     }, [uid, navigation]);
     const retryAbleError = authError === AuthErrorCodes.NETWORK_REQUEST_FAILED;
 
+    const styles = StyleSheet.create({
+        activityIndicator: {
+            marginBottom: fontFactor * wp(2.2),
+            paddingVertical: fontFactor * wp(0.61), //maintain similar lineHeight / fontSize ratio as texts
+        },
+        modal: {
+            margin: 0,
+            marginTop: Platform.select({
+                ios: statusBarHeight,
+                android: 0,
+            }),
+            paddingHorizontal: margin,
+        },
+    });
 
     return (
         <Modal //change modal to react-native-modal to enable us naivgate away from screen upon successful authentication
@@ -52,26 +60,15 @@ const AuthModal = ({
             hideModalContentWhileAnimating
             useNativeDriver
             useNativeDriverForBackdrop
-            style={{
-                margin: 0,
-                marginTop: Platform.select({
-                    ios: statusBarHeight,
-                    android: 0,
-                }),
-                paddingHorizontal: margin,
-            }}
-            backdropOpacity={0.9}
+            style={styles.modal}
+            backdropOpacity={0.8}
             onModalHide={navigateAway}
             onBackButtonPress={backAction}
-            onBackdropPress={backAction}
         >
             {authorizing && (
                 <ActivityIndicator
                     color="#1A91D7"
-                    style={{
-                        marginBottom: wp(2.2),
-                        paddingVertical: wp(0.61), //maintain similar bottom margin to text(lineHeight-fontSize)
-                    }}
+                    style={styles.activityIndicator}
                 />
             )}
             {(authSuccessful || authError) && (
@@ -102,13 +99,15 @@ const AuthModal = ({
 };
 
 AuthModal.propTypes = {
-    modalVisible: PropTypes.bool,
-    activityIndicator: PropTypes.bool,
-    error: PropTypes.string,
-    firebaseNetworkError: PropTypes.string,
-    retryFirebaseAuth: PropTypes.func,
-    dismissModal: PropTypes.func,
+    authModalVisible: PropTypes.bool,
     uid: PropTypes.string,
+    fontFactor: PropTypes.number,
+    margin: PropTypes.number,
+    authSuccessful: PropTypes.bool,
+    clearAuth: PropTypes.func,
+    authorizing: PropTypes.bool,
+    authError: PropTypes.string,
+    retryAuthUserWithEmail: PropTypes.func,
 };
 
 const mapStateToProps = ({

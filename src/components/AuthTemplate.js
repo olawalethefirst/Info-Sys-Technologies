@@ -20,6 +20,7 @@ import Animated, {
     interpolate,
     withTiming,
 } from 'react-native-reanimated';
+import PropTypes from 'prop-types';
 
 const AuthTemplate = ({
     fontFactor,
@@ -72,6 +73,24 @@ const AuthTemplate = ({
         animatedView.value = animatedView.value === 0 ? 1 : 0;
     }, [animatedView]);
 
+    const styles2 = StyleSheet.create({
+        fontStyle1: {
+            fontSize: fontFactor * wp(3.75),
+            lineHeight: fontFactor * wp(4.77),
+        },
+        animatedViewParent: {
+            height: animatedViewHeight,
+        },
+        fontStyle2: {
+            fontSize: fontFactor * wp(4),
+            lineHeight: fontFactor * wp(5.09),
+        },
+        fontStyle3: {
+            fontSize: fontFactor * wp(6),
+            lineHeight: fontFactor * wp(7.7),
+        },
+    });
+
     return (
         <View>
             <Pressable
@@ -81,40 +100,18 @@ const AuthTemplate = ({
                 }}
             >
                 <MarginVertical size={2} />
-                <Text
-                    style={{
-                        fontSize: fontFactor * wp(6),
-                        lineHeight: fontFactor * wp(7.7),
-                        fontFamily: 'Poppins_500Medium',
-                    }}
-                >
+                <Text style={[styles.fontStyle2, styles2.fontStyle3]}>
                     {createAccount ? 'Create Account' : 'Sign In'}
                 </Text>
                 <MarginVertical size={0.3} />
-                <Text
-                    style={{
-                        fontSize: fontFactor * wp(4),
-                        lineHeight: fontFactor * wp(5.09),
-                        fontFamily: 'Poppins_400Regular',
-                        color: '#808080',
-                    }}
-                >
+                <Text style={[styles.fontStyle1, styles2.fontStyle2]}>
                     Share your thoughts with us today.
                 </Text>
                 <MarginVertical size={2} />
-                <View
-                    style={{
-                        height: animatedViewHeight,
-                    }}
-                >
+                <View style={styles2.animatedViewParent}>
                     <Animated.View
                         style={[
-                            {
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                            },
+                            styles.animatedViewContainer,
                             animatedView1Style,
                         ]}
                         onLayout={({
@@ -127,14 +124,7 @@ const AuthTemplate = ({
                                 : null
                         }
                     >
-                        <Text
-                            style={{
-                                fontSize: fontFactor * wp(3.75),
-                                lineHeight: fontFactor * wp(4.77),
-                                fontFamily: 'Poppins_400Regular',
-                                color: '#808080',
-                            }}
-                        >
+                        <Text style={[styles.fontStyle1, styles2.fontStyle1]}>
                             Continue with...
                         </Text>
                         <MarginVertical size={0.3} />
@@ -153,13 +143,7 @@ const AuthTemplate = ({
 
                     <Animated.View
                         style={[
-                            {
-                                width: '100%',
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                            },
+                            styles.animatedViewContainer,
                             animatedView2Style,
                         ]}
                         onLayout={({
@@ -186,6 +170,16 @@ const AuthTemplate = ({
     );
 };
 
+AuthTemplate.propTypes = {
+    fontFactor: PropTypes.number,
+    margin: PropTypes.number,
+    createAccount: PropTypes.bool,
+    toggleAuthView: PropTypes.func,
+    authUserWithEmail: PropTypes.func,
+    uid: PropTypes.string,
+    authSuccessful: PropTypes.bool,
+};
+
 const mapStateToProps = ({
     settingsState: { fontFactor, margin },
     forumTempState: { uid, authSuccessful },
@@ -198,4 +192,18 @@ const mapStateToProps = ({
 
 export default connect(mapStateToProps, { authUserWithEmail })(AuthTemplate);
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    animatedViewContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+    },
+    fontStyle1: {
+        fontFamily: 'Poppins_400Regular',
+        color: '#808080',
+    },
+    fontStyle2: {
+        fontFamily: 'Poppins_500Medium',
+    },
+});

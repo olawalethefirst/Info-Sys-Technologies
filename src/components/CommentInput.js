@@ -3,7 +3,6 @@ import {
     StyleSheet,
     Text,
     View,
-    Animated,
     TextInput,
     Keyboard,
     TouchableOpacity,
@@ -13,7 +12,13 @@ import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { store } from '../redux/store';
 
-const CommentInput = ({ headerSize, fontFactor, margin, commentInputRef }) => {
+const CommentInput = ({
+    headerSize,
+    fontFactor,
+    margin,
+    commentInputRef,
+    onComment,
+}) => {
     const [comment, setComment] = useState('');
 
     return (
@@ -54,7 +59,8 @@ const CommentInput = ({ headerSize, fontFactor, margin, commentInputRef }) => {
                     height: '100%',
                     justifyContent: 'center',
                 }}
-                disabled={!comment}
+                disabled={!comment.trim()}
+                onPress={() => onComment(comment)}
             >
                 <Text
                     style={{
@@ -63,10 +69,10 @@ const CommentInput = ({ headerSize, fontFactor, margin, commentInputRef }) => {
                         fontSize: fontFactor * wp(4),
                         lineHeight: fontFactor * wp(5.1),
                         fontFamily: 'Poppins_600SemiBold',
-                        opacity: !comment ? 0.7 : 1,
+                        opacity: !comment.trim() ? 0.7 : 1,
                     }}
                 >
-                    Post
+                    send
                 </Text>
             </TouchableOpacity>
         </View>

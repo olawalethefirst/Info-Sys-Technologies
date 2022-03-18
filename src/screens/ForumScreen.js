@@ -189,58 +189,58 @@ function ForumScreen({
                 .catch((doc) => console.log(doc, 'add failed'));
         }
     };
-    // let [successfulLikes, setSuccessfulLikes] = useState([]);
-    // const createPostLikes = async () => {
-    //     const postsNew = posts.slice(0, 2);
-    //     const usersArray = [
-    //         'VoYc7W6H3oRbw5BjT3JYnw9DUoG2',
-    //         'P4qMLAPr1WeSxrbQQTbYM6WgHQT2',
-    //         'LkxUCko4UGTZgMcp8orfNd8dZz72',
-    //         'SsJ1ya4qyOMDsknQMwLYGIZzXlk2',
-    //         'pjj2dQRdIYMCIJB2JxQoTnl0NTE2',
-    //         'haepGhJypbht0oHbHApyKfivvA62',
-    //         'aK7O1suSWrS29VvYZUZNfDUFxZJ2',
-    //         'pB0JrJQVhHbJS8CUojeq5kwpFg93',
-    //         'eKNlvbNMUjh8yD8yirV7UIB3xDr1',
-    //         'IJ7zgq586xU4vE4AD2rCjCAcmD13',
-    //         'VAfSwYuG7xSrCvcDYnreFETED1z1',
-    //         's0FfZE2Gt9bSnCn7MxdXVa3nEJ93',
-    //         '8hJaaU7pEweuw1axytUV3bvgfBg1',
-    //         'H9ipzu2DUrMphFTh4ZbnM2FT5UR2',
-    //         'Wfjh4Lbf2VdW3jTKVCuHneu4YrV2',
-    //         'wgxecR5YwdUqpc4Cq0BSDgpBA5h1',
-    //         'cu7m1C2Q84X9GOwAhRbIFIQbAYd2',
-    //         'V7ieKSKNRDXdMITzZYu5wSuspxF3',
-    //         'uC27AtsRs1Xc7HCFqNuWO5yygxt2',
-    //     ];
+    let [successfulLikes, setSuccessfulLikes] = useState([]);
+    const createPostLikes = async () => {
+        const postsNew = posts.slice(0, 5);
+        const usersArray = [
+            'VoYc7W6H3oRbw5BjT3JYnw9DUoG2',
+            'P4qMLAPr1WeSxrbQQTbYM6WgHQT2',
+            'LkxUCko4UGTZgMcp8orfNd8dZz72',
+            'SsJ1ya4qyOMDsknQMwLYGIZzXlk2',
+            'pjj2dQRdIYMCIJB2JxQoTnl0NTE2',
+            'haepGhJypbht0oHbHApyKfivvA62',
+            'aK7O1suSWrS29VvYZUZNfDUFxZJ2',
+            'pB0JrJQVhHbJS8CUojeq5kwpFg93',
+            'eKNlvbNMUjh8yD8yirV7UIB3xDr1',
+            'IJ7zgq586xU4vE4AD2rCjCAcmD13',
+            'VAfSwYuG7xSrCvcDYnreFETED1z1',
+            's0FfZE2Gt9bSnCn7MxdXVa3nEJ93',
+            '8hJaaU7pEweuw1axytUV3bvgfBg1',
+            'H9ipzu2DUrMphFTh4ZbnM2FT5UR2',
+            'Wfjh4Lbf2VdW3jTKVCuHneu4YrV2',
+            'wgxecR5YwdUqpc4Cq0BSDgpBA5h1',
+            'cu7m1C2Q84X9GOwAhRbIFIQbAYd2',
+            'V7ieKSKNRDXdMITzZYu5wSuspxF3',
+            'uC27AtsRs1Xc7HCFqNuWO5yygxt2',
+        ];
 
-    //     for (let i in postsNew) {
-    //         const { postID, title } = postsNew[i];
-    //         const randomNoOfLikes = Math.floor(
-    //             Math.random() * usersArray.length
-    //         );
-    //         for (let j = 0; j <= randomNoOfLikes; j++) {
-    //             const userID = usersArray[j];
-    //             console.log(
-    //                 `posting like for UID: ${userID} in post title: ${title} with postID: ${postID}`
-    //             );
-    //             onLikePostAsync(postID, 'post', userID)
-    //                 .then(() =>
-    //                     setSuccessfulLikes((oldState) => [
-    //                         ...oldState,
-    //                         `posting like for UID: ${userID} in post title: ${title} with postID: ${postID} successful`,
-    //                     ])
-    //                 )
-    //                 .catch((e) =>
-    //                     console.log(
-    //                         `posting like for UID: ${userID} in post title: ${title} with postID: ${postID} failed`,
-    //                         e.message
-    //                     )
-    //                 );
-    //         }
-    //     }
-    // };
-    // console.log('successfulLikes: ', successfulLikes.length);
+        for (let i in postsNew) {
+            const { postID, title } = postsNew[i];
+            const randomNoOfLikes = Math.floor(
+                Math.random() * usersArray.length
+            );
+            for (let j = 0; j <= randomNoOfLikes; j++) {
+                const userID = usersArray[j];
+                console.log(
+                    `posting like for UID: ${userID} in post title: ${title} with postID: ${postID}`
+                );
+                onLikePostAsync(postID, 'post', userID)
+                    .then(() =>
+                        setSuccessfulLikes((oldState) => [
+                            ...oldState,
+                            `posting like for UID: ${userID} in post title: ${title} with postID: ${postID} successful`,
+                        ])
+                    )
+                    .catch((e) =>
+                        console.log(
+                            `posting like for UID: ${userID} in post title: ${title} with postID: ${postID} failed`,
+                            e.message
+                        )
+                    );
+            }
+        }
+    };
+    console.log('successfulLikes: ', successfulLikes.length);
 
     return (
         <SafeAreaView style={[styles2.containerHeight]}>
@@ -306,7 +306,7 @@ function ForumScreen({
                     onEndReachedThreshold={2}
                     onEndReached={onEndReached}
                 />
-                <AddPost toggleModal={createPlentyPosts} />
+                <AddPost toggleModal={toggleModal} />
                 {uid && (
                     <>
                         <CreatePost

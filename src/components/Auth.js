@@ -10,6 +10,7 @@ import Animated, {
     withTiming,
     useAnimatedStyle,
     FadeOut,
+    FadeIn,
 } from 'react-native-reanimated';
 import PropTypes from 'prop-types';
 
@@ -65,17 +66,20 @@ const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
 
     if (uid) {
         return (
-            <View style={[styles.signedInContainer, styles2.signedInContainer]}>
+            <Animated.View
+                entering={FadeIn.delay(150).duration(150)} //failed text on expoGO
+                style={[styles.signedInContainer, styles2.signedInContainer]}
+            >
                 <Text style={[styles2.signedInText, styles.signedInText]}>
                     User logged in
                 </Text>
-            </View>
+            </Animated.View>
         );
     }
 
     return (
         <Animated.View
-            exiting={FadeOut} //feels hacky but fixes the unmounted unInspectable persistent child el
+            exiting={FadeOut.duration(150)} //feels hacky but fixes the unmounted unInspectable persistent child el
             style={[
                 authAnimatedViewStyle,
                 styles.animatedView,

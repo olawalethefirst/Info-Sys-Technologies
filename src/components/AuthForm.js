@@ -5,7 +5,6 @@ import {
     View,
     TextInput,
     TouchableWithoutFeedback,
-    Keyboard,
     TouchableOpacity,
     Animated as Animated2,
     Easing,
@@ -14,7 +13,6 @@ import { useForm, Controller } from 'react-hook-form';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import GoogleAuthContainer from './GoogleAuthContainer';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -52,7 +50,6 @@ const AuthForm = ({
         },
     });
     const [securePassword, setSecurePassword] = useState(true);
-    const [keyboardActive, setKeyboardActive] = useState();
     const animatedEmailInput = useSharedValue(0);
     // const animatedPasswordInput = useSharedValue(0);
     const animatedSubmitButton = useSharedValue(1);
@@ -168,7 +165,6 @@ const AuthForm = ({
         [animated2PasswordInput]
     );
     const toggleAuthViewWithFormReset = useCallback(() => {
-        keyboardActive && Keyboard.dismiss();
         reset(null, {
             keepErrors: false,
             keepDirty: false,
@@ -179,33 +175,50 @@ const AuthForm = ({
             keepSubmitCount: false,
             keepIsValid: false,
         });
-        console.log('called me oooo');
         toggleAuthView();
-    }, [reset, toggleAuthView, keyboardActive]);
-    const onSubmitFailed = useCallback(
-        (errors) => {
-            keyboardActive && Keyboard.dismiss();
-            console.log('failed', errors);
-        },
-        [keyboardActive]
-    );
+    }, [reset, toggleAuthView]);
+    const onSubmitFailed = useCallback((errors) => {
+        console.log('failed', errors);
+    }, []);
     const submitButtonDisabled = !!Object.keys(errors).length;
     const onPressSubmitButton = handleSubmit((data) => {
-        keyboardActive && Keyboard.dismiss();
         authUserWithEmail({ ...data, createAccount });
     }, onSubmitFailed);
 
-    useEffect(() => {
-        const eventArray = ['keyboardDidShow', 'keyboardDidHide'];
-        eventArray.forEach((event) =>
-            Keyboard.addListener(event, () =>
-                setKeyboardActive(event === 'keyboardDidShow')
-            )
-        );
-        return () => {
-            eventArray.forEach((event) => Keyboard.removeAllListeners(event));
-        };
-    }, []);
+    const styles2 = StyleSheet.create({
+        authWithGoogleText: {
+            fontSize: fontFactor * wp(3.75),
+            lineHeight: fontFactor * wp(4.77),
+        },
+        buttonText: {
+            fontSize: fontFactor * wp(4.55),
+            lineHeight: fontFactor * wp(5.78),
+            opacity: submitButtonDisabled ? 0.7 : 1,
+        },
+        buttonContainer: {
+            paddingVertical: fontFactor * wp(4.8),
+        },
+        errorText: (error) => ({
+            fontSize: fontFactor * wp(4),
+            lineHeight: fontFactor * wp(5.08),
+            color: error ? 'red' : 'black',
+        }),
+        toggleViewPassword: {
+            height: fontFactor * wp(13.72),
+            paddingHorizontal: wp(4),
+        },
+        inputText: {
+            padding: fontFactor * wp(4),
+            fontSize: fontFactor * wp(4.5),
+            lineHeight: fontFactor * wp(5.72),
+            height: fontFactor * wp(13.72),
+        },
+        passwordContainer: {
+            borderWidth: wp(0.5),
+            borderColor: animated2PasswordInputColor,
+        },
+        emailContainer: { borderWidth: wp(0.5) },
+    });
 
     useEffect(() => {
         if (authSuccessful) {
@@ -221,13 +234,6 @@ const AuthForm = ({
             });
         }
     }, [authSuccessful, reset]);
-
-    console.log(
-        'submitButtonDisabled',
-        submitButtonDisabled,
-        !!Object.keys(errors).length,
-        errors
-    );
 
     return (
         <View>
@@ -246,7 +252,7 @@ const AuthForm = ({
                         <View>
                             <Animated.View
                                 style={[
-                                    { borderWidth: wp(0.5) },
+                                    styles2.emailContainer,
                                     animatedEmailInputStyle,
                                 ]}
                             >
@@ -263,14 +269,8 @@ const AuthForm = ({
                                     onChangeText={onChange}
                                     value={value}
                                     style={[
-                                        {
-                                            padding: wp(4),
-                                            fontSize: fontFactor * wp(4.5),
-                                            lineHeight: fontFactor * wp(5.72),
-                                            fontFamily: 'Poppins_400Regular',
-                                            color: '#000000',
-                                            flex: 1,
-                                        },
+                                        styles.inputText,
+                                        styles2.inputText,
                                     ]}
                                 />
                             </Animated.View>
@@ -279,12 +279,10 @@ const AuthForm = ({
 
                             {error && (
                                 <Text
-                                    style={{
-                                        fontSize: fontFactor * wp(4),
-                                        lineHeight: fontFactor * wp(5.08),
-                                        fontFamily: 'Karla_400Regular',
-                                        color: 'red',
-                                    }}
+                                    style={[
+                                        styles.errorText,
+                                        styles2.errorText(error),
+                                    ]}
                                 >
                                     {error?.type === 'pattern'
                                         ? 'Incorrect format'
@@ -308,16 +306,13 @@ const AuthForm = ({
                     field: { onChange, onBlur, value },
                     fieldState: { error },
                 }) => {
+                    const isLengthError = error?.type === 'minLength';
                     return (
                         <View>
                             <Animated2.View
                                 style={[
-                                    {
-                                        borderWidth: wp(0.5),
-                                        flexDirection: 'row',
-                                        borderColor:
-                                            animated2PasswordInputColor,
-                                    },
+                                    styles2.passwordContainer,
+                                    styles.passwordContainer,
                                     // animatedPasswordInputStyle,
                                 ]}
                             >
@@ -336,73 +331,50 @@ const AuthForm = ({
                                     secureTextEntry={securePassword}
                                     onChangeText={onChange}
                                     value={value}
-                                    style={{
-                                        padding: wp(4),
-                                        fontSize: fontFactor * wp(4.5),
-                                        lineHeight: fontFactor * wp(5.72),
-                                        fontFamily: 'Poppins_400Regular',
-                                        color: '#000000',
-                                        flex: 1,
-                                    }}
+                                    style={[
+                                        styles.inputText,
+                                        styles2.inputText,
+                                    ]}
                                 />
                                 {!!value && (
-                                    <TouchableWithoutFeedback
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.toggleViewPassword,
+                                            styles2.toggleViewPassword,
+                                        ]}
                                         onPress={() =>
                                             setSecurePassword(
                                                 (oldState) => !oldState
                                             )
                                         }
                                     >
-                                        <View
+                                        <Animated2MaterialCommunityIcon
+                                            name={
+                                                securePassword
+                                                    ? 'eye-outline'
+                                                    : 'eye-off-outline'
+                                            }
+                                            size={fontFactor * wp(5.72)}
                                             style={{
-                                                justifyContent: 'center',
-                                                paddingHorizontal:
-                                                    fontFactor * wp(2.86),
+                                                color: animated2PasswordInputColor,
                                             }}
-                                        >
-                                            <Animated2MaterialCommunityIcon
-                                                name={
-                                                    securePassword
-                                                        ? 'eye-outline'
-                                                        : 'eye-off-outline'
-                                                }
-                                                size={fontFactor * wp(5.72)}
-                                                style={{
-                                                    color: animated2PasswordInputColor,
-                                                }}
-                                            />
-                                        </View>
-                                    </TouchableWithoutFeedback>
+                                        />
+                                    </TouchableOpacity>
                                 )}
                             </Animated2.View>
                             <MarginVertical size={0.3} />
 
-                            {!error || error?.type === 'minLength' ? (
-                                <Text
-                                    style={{
-                                        fontSize: fontFactor * wp(4),
-                                        lineHeight: fontFactor * wp(5.08),
-                                        fontFamily: 'Karla_400Regular',
-                                        color:
-                                            error?.type === 'minLength'
-                                                ? 'red'
-                                                : 'black',
-                                    }}
-                                >
-                                    Minimum of six characters
-                                </Text>
-                            ) : (
-                                <Text
-                                    style={{
-                                        fontSize: fontFactor * wp(4),
-                                        lineHeight: fontFactor * wp(5.08),
-                                        fontFamily: 'Karla_400Regular',
-                                        color: 'red',
-                                    }}
-                                >
-                                    This is required
-                                </Text>
-                            )}
+                            <Text
+                                style={[
+                                    styles.errorText,
+                                    styles2.errorText(error),
+                                ]}
+                            >
+                                {!error || isLengthError
+                                    ? 'Minimum of six characters'
+                                    : 'This is required'}
+                            </Text>
+
                             <MarginVertical size={0.3} />
                         </View>
                     );
@@ -419,48 +391,32 @@ const AuthForm = ({
             >
                 <Animated.View
                     style={[
-                        {
-                            backgroundColor: '#1A91D7',
-                            paddingVertical: fontFactor * wp(4.8),
-                            alignItems: 'center',
-                            borderColor: '#1A91D7',
-                        },
+                        styles.buttonContainer,
+                        styles2.buttonContainer,
                         animatedSubmitButtonStyle,
                     ]}
                 >
-                    <Text
-                        style={{
-                            color: 'white',
-                            fontFamily: 'Poppins_600SemiBold',
-                            fontSize: fontFactor * wp(4.55),
-                            lineHeight: fontFactor * wp(5.78),
-                            opacity: submitButtonDisabled ? 0.7 : 1,
-                        }}
-                    >
+                    <Text style={[styles.buttonText, styles2.buttonText]}>
                         {createAccount ? 'Sign Up' : 'Sign In'}
                     </Text>
                 </Animated.View>
             </TouchableWithoutFeedback>
             <MarginVertical />
-            <GoogleAuthContainer>
-                {(onPress, disabled) => (
-                    //factor Keyboard dismissal pon button press when flow re-implemeted
-                    <TouchableOpacity onPress={onPress} disabled={disabled}>
-                        <Text
-                            style={{
-                                fontSize: fontFactor * wp(3.75),
-                                lineHeight: fontFactor * wp(4.77),
-                                fontFamily: 'Poppins_600SemiBold',
-                                color: '#1A91D7',
-                            }}
-                        >
-                            {createAccount
-                                ? 'Sign up with google instead'
-                                : 'Sign in with google instead'}
-                        </Text>
-                    </TouchableOpacity>
-                )}
-            </GoogleAuthContainer>
+
+            {/* //factor Keyboard dismissal pon button press when flow re-implemeted */}
+            <TouchableOpacity onPress={null} disabled={null}>
+                <Text
+                    style={[
+                        styles.authWithGoogleText,
+                        styles2.authWithGoogleText,
+                    ]}
+                >
+                    {createAccount
+                        ? 'Sign up with google instead'
+                        : 'Sign in with google instead'}
+                </Text>
+            </TouchableOpacity>
+
             <MarginVertical size={2} />
             <AuthSwitch
                 fontFactor={fontFactor}
@@ -481,4 +437,28 @@ AuthForm.propTypes = {
 
 export default AuthForm;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    authWithGoogleText: {
+        fontFamily: 'Poppins_600SemiBold',
+        color: '#1A91D7',
+    },
+    buttonText: {
+        color: 'white',
+        fontFamily: 'Poppins_600SemiBold',
+    },
+    buttonContainer: {
+        backgroundColor: '#1A91D7',
+        alignItems: 'center',
+        borderColor: '#1A91D7',
+    },
+    errorText: {
+        fontFamily: 'Karla_400Regular',
+    },
+    toggleViewPassword: {
+        justifyContent: 'center',
+    },
+    inputText: { fontFamily: 'Poppins_400Regular', color: '#000000', flex: 1 },
+    passwordContainer: {
+        flexDirection: 'row',
+    },
+});

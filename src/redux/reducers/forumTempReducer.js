@@ -24,7 +24,13 @@ import {
     POST_FAILED,
     CLEAR_POST_SUCCESSFUL,
     RESET_POST_FAILED,
-    CLEAR_POST_FAILED,
+    CLEAR_POST_FAILED,   
+    INITIATE_COMMENT,
+    COMMENT_SUCCESSFUL,
+    COMMENT_FAILED,
+    CLEAR_COMMENT_SUCCESSFUL,
+    RESET_COMMENT_FAILED,
+    CLEAR_COMMENT_FAILED
 } from '../actions/actionTypes';
 
 // inital State
@@ -46,6 +52,10 @@ const initialState = {
     postSuccessful: false,
     postFailed: false,
     posting: false,
+    commentData: null,
+    commentSuccessful: false,
+    commentFailed: false,
+    commenting: false
 };
 
 const forumTempReducer = (state = initialState, action) => {
@@ -162,6 +172,18 @@ const forumTempReducer = (state = initialState, action) => {
                 posting: false,
                 postData: null,
             };
+        case INITIATE_COMMENT:
+            return {...state, commentData: action.payload, commenting: true}
+        case COMMENT_SUCCESSFUL:
+            return {...state, commentSuccessful: true,commenting: false}
+        case COMMENT_FAILED: 
+            return {...state, commentFailed: true, commenting: false}
+        case CLEAR_COMMENT_SUCCESSFUL: 
+            return { ...state, commentSuccessful: false, commentData: null}
+        case RESET_COMMENT_FAILED:
+            return {...state, commentFailed: false, commenting: true}
+        case CLEAR_COMMENT_FAILED:
+            return {...state, commentFailed: false, commentData: null}
         default:
             return state;
     }

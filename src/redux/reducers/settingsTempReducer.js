@@ -8,7 +8,11 @@ import {
     CLEAR_AUTH,
     CLEAR_POST_SUCCESSFUL,
     CLEAR_POST_FAILED,
-    POST_FAILED, RESET_POST_FAILED
+    POST_FAILED,
+    RESET_POST_FAILED,
+    INITIATE_COMMENT,
+    CLEAR_COMMENT_SUCCESSFUL,
+    CLEAR_COMMENT_FAILED,
 } from '../actions/actionTypes';
 
 const initialState = {
@@ -17,6 +21,7 @@ const initialState = {
     usernameModalVisible: false,
     authModalVisible: false,
     postResultModalVisible: false,
+    commentResultVisible: false,
 };
 
 export default function settingsTempReducer(state = initialState, action) {
@@ -46,9 +51,15 @@ export default function settingsTempReducer(state = initialState, action) {
         case POST_FAILED:
             return { ...state, postResultModalVisible: true };
         case RESET_POST_FAILED:
-            return {...state, postResultModalVisible: false}
+            return { ...state, postResultModalVisible: false };
         case CLEAR_POST_FAILED:
             return { ...state, postResultModalVisible: false };
+        case INITIATE_COMMENT:
+            return { ...state, commentResultVisible: true };
+        case CLEAR_COMMENT_SUCCESSFUL:
+            return { ...state, commentResultVisible: false };
+        case CLEAR_COMMENT_FAILED:
+            return { ...state, commentResultVisible: false };
         default:
             return state;
     }

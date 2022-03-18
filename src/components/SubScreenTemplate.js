@@ -78,7 +78,7 @@ function SubScreenTemplate({
                     ios: 'interactive',
                     android: 'on-drag',
                 })}
-                keyboardShouldPersistTaps="handled"
+                keyboardShouldPersistTaps="never"
                 nestedScrollEnabled
             />
         </View>

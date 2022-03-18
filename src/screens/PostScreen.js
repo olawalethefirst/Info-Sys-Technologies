@@ -37,6 +37,8 @@ import onLikeAsync from '../helperFunctions/onLikeAsync';
 import onUnlikeAsync from '../helperFunctions/onUnlikeAsync';
 import { List } from 'immutable';
 import PostResultModal from '../components/PostResultModal';
+import CommentResultModal from '../components/CommentResultModal';
+import writeComment from '../redux/actions/writeComment';
 
 function PostScreen({
     margin,
@@ -47,6 +49,7 @@ function PostScreen({
     effectiveBodyHeight,
     route: { params }, //maybe update postMini to send only this
     uid,
+    writeComment,
 }) {
     const scrollRef = useRef(null);
     const containerRef = useRef(null);
@@ -209,6 +212,12 @@ function PostScreen({
         },
         [scrollRef, containerRef, commentInputRef]
     );
+    const onComment = (comment) => {
+        writeComment({
+            comment,
+            parentPostID: params.postID,
+        });
+    };
 
     useEffect(() => {
         const listenToUpdatedData = () => {
@@ -240,7 +249,7 @@ function PostScreen({
 
     useEffect(() => {
         const events = ['focus', 'blur'];
-        
+
         const unsubscribers = events.map((event) =>
             navigation.addListener(event, () =>
                 toggleNavigationFocussed(event === events[0])
@@ -299,7 +308,10 @@ function PostScreen({
                         renderItem={renderItem}
                         keyExtractor={(item, index) => 'keyExtractor' + index}
                         ref={scrollRef}
-                        keyboardDismissMode={'none'}
+                        keyboardDismissMode={Platform.select({
+                            ios: 'interactive',
+                            android: 'none',
+                        })}
                         keyboardShouldPersistTaps="never"
                         ItemSeparatorComponent={RenderSeparator}
                         ListHeaderComponent={RenderSeparator}
@@ -309,6 +321,7 @@ function PostScreen({
                         fontFactor={fontFactor}
                         margin={margin}
                         commentInputRef={commentInputRef}
+                        onComment={onComment}
                     />
                     {!uid && <CallToAuth />}
                     {
@@ -321,6 +334,7 @@ function PostScreen({
                                         state.navigationFocussed
                                     }
                                 />
+                                <CommentResultModal />
                             </>
                         ) //switch to availabilty of username
                     }
@@ -350,4 +364,4 @@ const mapStateToProps = ({
     uid,
 });
 
-export default connect(mapStateToProps, {})(PostScreen);
+export default connect(mapStateToProps, { writeComment })(PostScreen);
