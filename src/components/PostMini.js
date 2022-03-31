@@ -1,34 +1,67 @@
-import React from 'react';
-import { StyleSheet, Pressable, View, Platform, Text } from 'react-native';
+import React, { useCallback } from 'react';
+import {
+    StyleSheet,
+    View,
+    Platform,
+    Text,
+    TouchableWithoutFeedback,
+} from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/Entypo';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import PostMiniIcon from './PostMiniIcon';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    interpolateColor,
+} from 'react-native-reanimated';
 
 const PostMini = ({
     fontFactor,
     title,
     createdAt,
-    owner,
     category,
-    body,
-    postID,
     likes,
     item,
 }) => {
+    const animatedValue = useSharedValue(0);
+
+    const onPressIn = useCallback(() => {
+        'worklet';
+        animatedValue.value = 1;
+    }, [animatedValue]);
+    const onPressOut = useCallback(() => {
+        'worklet';
+        animatedValue.value = 0;
+    }, [animatedValue]);
+
+    const animatedBackgroundStyle = useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(
+            animatedValue.value,
+            [0, 1],
+            ['#fff', '#1A91D7']
+        ),
+    }));
+    const animatedFontStyle = useAnimatedStyle(() => ({
+        color: interpolateColor(
+            animatedValue.value,
+            [0, 1],
+            ['#000', '#f7f7f7']
+        ),
+    }));
+
     const platformSpecificPostIconWidth =
         Platform.OS === 'web'
             ? { width: wp(22) * fontFactor }
             : { aspectRatio: 1 };
     const styles2 = StyleSheet.create({
-        postContainer: (pressed) => ({
+        postContainer: {
             height: wp(25) * fontFactor,
-            backgroundColor: !pressed ? '#f7f7f7' : '#1A91D7',
             borderWidth: wp(0.1) * fontFactor,
             padding: wp(3) * fontFactor,
-        }),
+        },
         iconContainer: {
             padding: wp(2.5) * fontFactor,
             ...platformSpecificPostIconWidth,
@@ -57,57 +90,52 @@ const PostMini = ({
     };
 
     return (
-        <Pressable
-            onStartShouldSetResponder={() => true}
+        <TouchableWithoutFeedback
             onPress={onPress}
-            style={({ pressed }) => [
-                styles.postContainer,
-                styles2.postContainer(pressed),
-            ]}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
         >
-            {({ pressed }) => (
-                <>
-                    <View style={[styles.iconContainer, styles2.iconContainer]}>
-                        <PostMiniIcon category={category} />
-                    </View>
-                    <View
-                        style={[styles.textsContainer, styles2.textsContainer]}
+            <Animated.View
+                style={[
+                    styles.postContainer,
+                    styles2.postContainer,
+                    animatedBackgroundStyle,
+                ]}
+            >
+                <View style={[styles.iconContainer, styles2.iconContainer]}>
+                    <PostMiniIcon category={category} />
+                </View>
+                <View style={[styles.textsContainer, styles2.textsContainer]}>
+                    <Animated.Text
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[
+                            styles.maxWidth60Perc,
+                            styles.poppins500Font,
+                            animatedFontStyle,
+                            styles2.fontSizeL2,
+                        ]}
                     >
-                        <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            style={[
-                                styles.maxWidth60Perc,
-                                styles.poppins500Font,
-                                pressed
-                                    ? styles.fontColorWhite
-                                    : styles.fontColorBlack,
-                                styles2.fontSizeL2,
-                            ]}
-                        >
-                            {title}
+                        {title}
+                    </Animated.Text>
+                    <Animated.Text
+                        ellipsizeMode="tail"
+                        numberOfLines={1}
+                        style={[
+                            styles.karla500Font,
+                            styles2.fontSizeL1,
+                            animatedFontStyle,
+                        ]}
+                    >
+                        {likes} Like{likes > 1 ? 's' : ''}
+                        <Text style={styles.fontColor808080}>
+                            <Icon name="dot-single" />
+                            <Text>{createdAt}</Text>
                         </Text>
-                        <Text
-                            ellipsizeMode="tail"
-                            numberOfLines={1}
-                            style={[
-                                styles.karla500Font,
-                                styles2.fontSizeL1,
-                                pressed
-                                    ? styles.fontColorWhite
-                                    : styles.fontColorBlack,
-                            ]}
-                        >
-                            {likes} Like{likes > 1 ? 's' : ''}
-                            <Text style={styles.fontColor808080}>
-                                <Icon name="dot-single" />
-                                <Text>{createdAt}</Text>
-                            </Text>
-                        </Text>
-                    </View>
-                </>
-            )}
-        </Pressable>
+                    </Animated.Text>
+                </View>
+            </Animated.View>
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -116,15 +144,17 @@ PostMini.propTypes = {
     title: PropTypes.string,
     likes: PropTypes.number,
     createdAt: PropTypes.string,
-    owner: PropTypes.string,
     category: PropTypes.string,
     body: PropTypes.string,
-    postID: PropTypes.string,
+    item: PropTypes.object,
 };
+
 
 const mapStateToProps = ({ settingsState: { fontFactor } }) => ({ fontFactor });
 
-export default connect(mapStateToProps)(React.memo(PostMini));
+export default connect(mapStateToProps, {  })(
+    React.memo(PostMini)
+);
 
 const styles = StyleSheet.create({
     postContainer: {

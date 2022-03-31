@@ -1,8 +1,5 @@
-import React, { useRef,  useCallback } from 'react';
-import {
-    StyleSheet,
-    View,
-} from 'react-native';
+import React, { useRef, useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
@@ -19,7 +16,7 @@ import LikeButton from './LikeButton';
 import ReplyButton from './ReplyButton';
 import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
 import { auth } from '../helperFunctions/initializeFirebase';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 const Post = ({
     fontFactor,
@@ -37,13 +34,12 @@ const Post = ({
     username,
     likes,
     createdAt,
-    index,
-    updateLike,
     postID,
+    updatePostLikes
 }) => {
     const columnMode = checkColumnMode(deviceWidthClass);
     const postRef = useRef(null);
-
+    
     const onReply = useCallback(() => {
         if (uid) {
             commentInputRef.current?.focus();
@@ -68,11 +64,11 @@ const Post = ({
     const liked = likes.includes(auth.currentUser.uid);
     const onLike = useCallback(() => {
         if (uid) {
-            updateLike(liked, index, postID);
+            updatePostLikes(postID);
         } else {
             toggleCallToAuthModal();
         }
-    }, [updateLike, index, liked, uid, toggleCallToAuthModal, postID]);
+    }, [updatePostLikes, uid, toggleCallToAuthModal, postID,]);
 
     const styles2 = StyleSheet.create({
         postContainer: {
@@ -83,6 +79,7 @@ const Post = ({
             width: columnMode ? '90%' : '100%',
         },
     });
+    console.log('likes', likes);
 
     return (
         <View>
@@ -92,6 +89,7 @@ const Post = ({
             >
                 <View style={[styles.columnMode, styles2.columnMode]}>
                     <View>
+                        <MarginVertical />
                         <Username username={username} fontFactor={fontFactor} />
                         <MarginVertical size={0.2} />
 
@@ -140,7 +138,8 @@ const Post = ({
     );
 };
 
-Post.propTypes = { fontFactor: PropTypes.number,
+Post.propTypes = {
+    fontFactor: PropTypes.number,
     margin: PropTypes.number,
     uid: PropTypes.string,
     deviceWidthClass: PropTypes.string,
@@ -155,9 +154,9 @@ Post.propTypes = { fontFactor: PropTypes.number,
     username: PropTypes.string,
     likes: PropTypes.array,
     createdAt: PropTypes.string,
-    index: PropTypes.number,
     updateLike: PropTypes.func,
-    postID: PropTypes.string,}
+    postID: PropTypes.string,
+};
 
 const mapStateToProps = ({
     settingsState: {
@@ -175,7 +174,9 @@ const mapStateToProps = ({
     effectiveBodyHeight,
 });
 
-export default connect(mapStateToProps, { toggleCallToAuthModal })(Post);
+export default connect(mapStateToProps, {
+    toggleCallToAuthModal,
+})(Post);
 
 const styles = StyleSheet.create({
     postContainer: {

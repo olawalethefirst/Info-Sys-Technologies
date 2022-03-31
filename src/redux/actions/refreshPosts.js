@@ -5,14 +5,16 @@ import {
 } from './actionTypes';
 import fetchPostsAsync from './fetchPostsAsync';
 
-export default function () {
+export default function refreshPosts() {
+    console.log('refreshing');
     return async (dispatch) => {
         try {
             dispatch({ type: REFRESHING_POSTS_INITIATED });
             const posts = await fetchPostsAsync(null, dispatch);
+            console.log('returned');
             dispatch({ type: REFRESHING_POSTS_SUCCESSFUL, payload: posts });
-        } catch (err) {
-            dispatch({ type: REFRESHING_POSTS_FAILED, payload: err.message });
+        } catch (e) {
+            dispatch({ type: REFRESHING_POSTS_FAILED, payload: e.code });
         }
     };
 }

@@ -8,9 +8,9 @@ import signUpWithEmailAsync from '../../helperFunctions/signUpWithEmailAsync';
 import signInWithEmailAsync from '../../helperFunctions/signInWIthEmailAsync';
 import timerPromiseAsync from '../../helperFunctions/timerPromiseAsync';
 import {
-    FIREBASE_AUTH_ERROR_CODES,
     googleAccount,
 } from '../../helperFunctions/processErrorString';
+import { AuthErrorCodes } from 'firebase/auth';
 import fetchAccountProvider from '../../helperFunctions/fetchAccountProviderAsync';
 
 export default function authUserWithEmail(payload) {
@@ -27,7 +27,7 @@ export default function authUserWithEmail(payload) {
             await timerPromiseAsync(2000);
             dispatch({ type: CLEAR_AUTH });
         } catch (err) {
-            if (err.code === FIREBASE_AUTH_ERROR_CODES.INVALID_PASSWORD) {
+            if (err.code === AuthErrorCodes.INVALID_PASSWORD) {
                 try {
                     const providers = await fetchAccountProvider(email);
                     if (providers.length && providers.includes('google.com')) {

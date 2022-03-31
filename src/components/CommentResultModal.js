@@ -74,7 +74,7 @@ function CommentResultModal({
             )}
             {result && (
                 <Animated.View entering={FadeIn} exiting={FadeOut}>
-                    <ModalButton text={'close'} onPress={closeCommentResult} />
+                    <ModalButton text={'cancel'} onPress={closeCommentResult} />
                 </Animated.View>
             )}
         </Modal>

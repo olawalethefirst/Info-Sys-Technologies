@@ -33,24 +33,26 @@ import Comment from '../components/Comment';
 import { Timestamp } from 'firebase/firestore';
 import moment from 'moment';
 import { auth } from '../helperFunctions/initializeFirebase';
-import onLikeAsync from '../helperFunctions/onLikeAsync';
-import onUnlikeAsync from '../helperFunctions/onUnlikeAsync';
-import { List } from 'immutable';
 import PostResultModal from '../components/PostResultModal';
 import CommentResultModal from '../components/CommentResultModal';
 import writeComment from '../redux/actions/writeComment';
+import usePostDetails from '../hooks/usePostDetails';
 
 function PostScreen({
     margin,
     fontFactor,
     headerSize,
     deviceWidthClass,
-    navigation,
+    navigation: { addListener, setParams },
     effectiveBodyHeight,
     route: { params }, //maybe update postMini to send only this
     uid,
     writeComment,
 }) {
+    const [navigationFocussed, setNavigationFocussed] = useState(false);
+    const [postDetails, updatePostLikes, updateCommentLikes] =
+        usePostDetails(params);
+
     const scrollRef = useRef(null);
     const containerRef = useRef(null);
     const commentInputRef = useRef(null);
@@ -78,94 +80,12 @@ function PostScreen({
         outputRange: [0, -stickyHeaderHeight],
     });
 
-    //action types
-    const UPDATE_POST = 'UPDATE_POST';
-    const REMOVE_LIKE = 'REMOVE_LIKE';
-    const ADD_LIKE = 'ADD_LIKE';
-    const TOGGLE_NAVIGATION_FOCUSSED = 'TOGGLE_NAVIGATION_FOCUSSED';
-
-    //reducer
-    const reducer = (state, action) => {
-        switch (action.type) {
-            case UPDATE_POST:
-                return {
-                    ...state,
-                    data: state.data.map((el, ind) => {
-                        if (ind === 0) {
-                            return action.payload;
-                        }
-                        return el;
-                    }),
-                };
-            case ADD_LIKE:
-                return {
-                    ...state,
-                    data: state.data.map((el, index) => {
-                        if (index === action.payload) {
-                            return {
-                                ...el,
-                                likes: [...el.likes, auth.currentUser.uid],
-                            };
-                        }
-                        return el;
-                    }),
-                };
-            case REMOVE_LIKE:
-                return {
-                    ...state,
-                    data: state.data.map((el, index) => {
-                        if (index === action.payload) {
-                            return {
-                                ...el,
-                                likes: el.likes.filter(
-                                    (uid) => uid !== auth.currentUser.uid
-                                ),
-                            };
-                        }
-                        return el;
-                    }),
-                };
-            case TOGGLE_NAVIGATION_FOCUSSED:
-                return { ...state, navigationFocussed: action.payload };
-            default:
-                return state;
-        }
-    };
-
-    //state & dispatch
-    const [state, dispatch] = useReducer(reducer, {
-        data: [{ ...params }],
-        shouldRefreshList: false,
-        navigationFocussed: false,
-    });
-
-    //actions
-    const updateLike = async (liked, payload, postID) => {
-        if (liked) {
-            try {
-                dispatch({ type: REMOVE_LIKE, payload });
-                await onUnlikeAsync(postID);
-            } catch {
-                dispatch({ type: ADD_LIKE, payload });
-            }
-        } else {
-            try {
-                dispatch({ type: ADD_LIKE, payload });
-                await onLikeAsync(postID);
-            } catch {
-                dispatch({ type: REMOVE_LIKE, payload });
-            }
-        }
-    };
-    const updatePost = (payload) => {
-        dispatch({ type: UPDATE_POST, payload });
-    };
     const toggleNavigationFocussed = (payload) => {
-        dispatch({ type: TOGGLE_NAVIGATION_FOCUSSED, payload });
+        setNavigationFocussed(payload);
     };
 
     const { statusBarHeight } = Constants;
-    const post = state.data[0];
+    const { postID } = params;
 
     const renderItem = useCallback(
         ({ item, index }) => {
@@ -175,14 +95,10 @@ function PostScreen({
                 title,
                 username,
                 likes,
-                createdAt: { nanoseconds, seconds },
+                createdAt,
                 postID,
                 owner,
-                searchField,
             } = item;
-            const timestampString = moment(
-                new Timestamp(seconds, nanoseconds).toDate()
-            ).fromNow();
 
             if (category) {
                 return (
@@ -191,14 +107,14 @@ function PostScreen({
                         containerRef={containerRef}
                         commentInputRef={commentInputRef}
                         username={username}
-                        createdAt={timestampString}
+                        createdAt={moment(new Date(createdAt)).fromNow()}
                         likes={likes}
                         category={category}
                         title={title}
                         body={body}
                         postID={postID}
                         index={index}
-                        updateLike={updateLike}
+                        updatePostLikes={updatePostLikes}
                     />
                 );
             }
@@ -210,48 +126,14 @@ function PostScreen({
                 />
             );
         },
-        [scrollRef, containerRef, commentInputRef]
+        [scrollRef, containerRef, commentInputRef, updatePostLikes]
     );
-    const onComment = (comment) => {
-        writeComment({
-            comment,
-            parentPostID: params.postID,
-        });
-    };
-
-    useEffect(() => {
-        const listenToUpdatedData = () => {
-            const listener = onSnapshot(
-                doc(firestore, 'posts', params.postID),
-                (snapshot) => {
-                    const data = snapshot.data();
-                    if (data) {
-                        if (!List(data.likes).equals(List(post.likes))) {
-                            const { category, title, body } = data;
-                            const updatedPost = {
-                                postID: snapshot.id,
-                                searchField:
-                                    category + '. ' + title + '. ' + body,
-                                ...data,
-                            }; //may be updated to only include required data
-                            updatePost(updatedPost);
-                        } else {
-                            console.log('failed update test');
-                        }
-                    }
-                }
-            );
-            return listener;
-        };
-        const listener = listenToUpdatedData();
-        return listener;
-    }, [params.postID, post]);
 
     useEffect(() => {
         const events = ['focus', 'blur'];
 
         const unsubscribers = events.map((event) =>
-            navigation.addListener(event, () =>
+            addListener(event, () =>
                 toggleNavigationFocussed(event === events[0])
             )
         );
@@ -259,7 +141,7 @@ function PostScreen({
         return () => {
             unsubscribers.forEach((unsubscribe) => unsubscribe());
         };
-    }, [navigation]);
+    }, [addListener]);
 
     return (
         <View
@@ -293,6 +175,7 @@ function PostScreen({
                     />
 
                     <Animated.FlatList
+                        //footerBehavior - if empty, show loading
                         nestedScrollEnabled
                         style={{ zIndex: -1 }}
                         scrollEventThrottle={16}
@@ -302,8 +185,7 @@ function PostScreen({
                             marginTop: stickyHeaderHeight,
                             paddingBottom: headerSize,
                         }}
-                        extraData={state.shouldRefreshList}
-                        data={state.data}
+                        data={postDetails}
                         bounces={false}
                         renderItem={renderItem}
                         keyExtractor={(item, index) => 'keyExtractor' + index}
@@ -314,14 +196,14 @@ function PostScreen({
                         })}
                         keyboardShouldPersistTaps="never"
                         ItemSeparatorComponent={RenderSeparator}
-                        ListHeaderComponent={RenderSeparator}
                     />
                     <CommentInput
                         headerSize={headerSize}
                         fontFactor={fontFactor}
                         margin={margin}
                         commentInputRef={commentInputRef}
-                        onComment={onComment}
+                        writeComment={writeComment}
+                        postID={postID}
                     />
                     {!uid && <CallToAuth />}
                     {
@@ -330,9 +212,7 @@ function PostScreen({
                                 <UsernameModal />
                                 <PostResultModal
                                     name={'postResultModal2'}
-                                    navigationFocussed={
-                                        state.navigationFocussed
-                                    }
+                                    navigationFocussed={navigationFocussed}
                                 />
                                 <CommentResultModal />
                             </>
@@ -364,4 +244,6 @@ const mapStateToProps = ({
     uid,
 });
 
-export default connect(mapStateToProps, { writeComment })(PostScreen);
+export default connect(mapStateToProps, {
+    writeComment,
+})(PostScreen);

@@ -21,9 +21,9 @@ import RenderSeparator from '../components/RenderSeparator';
 import 'react-native-get-random-values';
 import fetchPosts from '../redux/actions/fetchPosts';
 import refreshPosts from '../redux/actions/refreshPosts';
-import RenderPostsFooter from '../components/RenderPostsFooter';
+import RenderForumFooter from '../components/RenderForumFooter';
 import { Map } from 'immutable';
-import RenderPostsHeader from '../components/RenderPostsHeader';
+import RenderForumHeader from '../components/RenderForumHeader';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 import loadMorePosts, {
     ON_END_REACHED,
@@ -33,13 +33,14 @@ import { store } from '../redux/store';
 import updateShowFooter from '../redux/actions/updateShowFooter';
 import PropTypes from 'prop-types';
 import UsernameModal from '../components/UsernameModal';
-import onLikePostAsync from '../helperFunctions/onLikeAsync';
-import createPostAsync from '../helperFunctions/createPostAsync';
-import { v4 as uuidv4 } from 'uuid';
+import onLikePostAsync from '../helperFunctions/updateLikeAsync';
+import createPostAsync from '../helperFunctions/createDocAsync';
+import { v1 as uuidv1 } from 'uuid';
 import onUnlikePostAsync from '../helperFunctions/onUnlikeAsync';
 import updateUsernameAsync from '../helperFunctions/updateUsernameAsync';
 import { auth } from '../helperFunctions/initializeFirebase';
 import CallToAuth from '../components/CallToAuth';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 
 function ForumScreen({
     uid,
@@ -62,6 +63,8 @@ function ForumScreen({
     navigation,
 }) {
     //State related hooks
+    const [flatListHeight, setFlatListHeight] = useState(0);
+    const [contentHeight, setContentHeight] = useState(0);
     const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
     const [navigationFocussed, setNavigationFocussed] = useState(false);
     const scrollRef = useRef(null);
@@ -76,16 +79,6 @@ function ForumScreen({
     const columnMode = checkColumnMode(deviceWidthClass);
     const getItemLayout = (data, index) => {
         return { length: itemLength, offset: itemOffset * index, index };
-    };
-    const handleScroll = ({
-        nativeEvent: { contentSize, layoutMeasurement },
-    }) => {
-        const newShowFooter = contentSize.height > layoutMeasurement.height;
-        const oldShowFooter = store.getState().forumTempState.showFooter;
-
-        if (oldShowFooter !== newShowFooter) {
-            updateShowFooter(newShowFooter);
-        }
     };
     const onRefresh = useCallback(
         () => !searching && refreshPosts(),
@@ -126,7 +119,7 @@ function ForumScreen({
     });
 
     useEffect(() => {
-        fetchPosts();
+        // fetchPosts();
     }, [fetchPosts]);
 
     useEffect(() => {
@@ -142,6 +135,10 @@ function ForumScreen({
             unsubscribers.forEach((unsubscribe) => unsubscribe());
         };
     }, [navigation]);
+
+    useEffect(() => {
+        updateShowFooter(contentHeight > flatListHeight);
+    }, [flatListHeight, contentHeight, updateShowFooter]);
 
     const createPlentyPosts = async () => {
         const wordsArray = [
@@ -183,7 +180,7 @@ function ForumScreen({
                 title: i + '',
                 body: body.join(' '),
                 category: categories[catgRandNo],
-                postID: uuidv4(),
+                postID: uuidv1(),
             })
                 .then((doc) => console.log(doc, ' added successfully'))
                 .catch((doc) => console.log(doc, 'add failed'));
@@ -240,10 +237,9 @@ function ForumScreen({
             }
         }
     };
-    console.log('successfulLikes: ', successfulLikes.length);
 
     return (
-        <SafeAreaView style={[styles2.containerHeight]}>
+        <SafeAreaView style={[styles2.containerHeight, styles.container]}>
             <View style={styles.flex1}>
                 <Pressable onPress={() => Keyboard.dismiss()}>
                     <SecondaryHeader
@@ -255,6 +251,15 @@ function ForumScreen({
                     <Forum fontFactor={fontFactor} uid={uid} margin={margin} />
                 </Pressable>
                 <FlatList
+                    style={{ flex: 1 }}
+                    onLayout={({
+                        nativeEvent: {
+                            layout: { height },
+                        },
+                    }) => setFlatListHeight(height)}
+                    onContentSizeChange={(width, height) =>
+                        setContentHeight(height)
+                    }
                     contentContainerStyle={styles2.flatlistContentContainer}
                     data={searching ? searchResult : posts} //switch data source
                     extraData={Map({
@@ -269,27 +274,25 @@ function ForumScreen({
                     keyboardDismissMode={'none'}
                     keyboardShouldPersistTaps="never"
                     ListHeaderComponent={
-                        <RenderPostsHeader
+                        <RenderForumHeader
                             fontFactor={fontFactor}
                             loadingPostsError={loadingPostsError}
-                            showHeader={
-                                searching
-                                    ? !!searchResult?.length
-                                    : !!posts?.length
-                            }
+                            showFooter={showFooter}
+                            searching={searching}
+                            searchResultEmpty={!searchResult.length}
+                            postsEmpty={!posts.length}
                         />
                     }
-                    onScroll={handleScroll}
                     ListFooterComponent={
-                        <RenderPostsFooter
+                        <RenderForumFooter
                             loadingPosts={loadingPosts}
                             fontFactor={fontFactor}
                             loadingPostsError={loadingPostsError}
-                            posts={posts}
-                            searchResult={searchResult}
                             searching={searching}
                             showFooter={showFooter}
                             retryLoadMorePosts={retryLoadMorePosts}
+                            searchResultEmpty={!searchResult.length}
+                            postsEmpty={!posts.length}
                         />
                     }
                     ItemSeparatorComponent={RenderSeparator}
@@ -318,7 +321,13 @@ function ForumScreen({
                             name="postResultModal1"
                             navigationFocussed={navigationFocussed}
                         />
-                        <UsernameModal initialAction={toggleModal} />
+                        <UsernameModal
+                            initialAction={() => {
+                                if (username) {
+                                    toggleModal();
+                                }
+                            }}
+                        />
                     </>
                 )}
                 {!uid && (
@@ -394,5 +403,8 @@ export default connect(mapStateToProps, {
 const styles = StyleSheet.create({
     flex1: {
         flex: 1,
+    },
+    container: {
+        backgroundColor: '#fff',
     },
 });

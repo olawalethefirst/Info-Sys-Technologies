@@ -6,10 +6,13 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { noPost } from '../helperFunctions/processErrorString';
 import PropTypes from 'prop-types';
 
-export default function RenderPostsHeader({
+export default function RenderForumHeader({
     fontFactor,
     loadingPostsError,
-    showHeader, //renders when list not empty
+    showFooter,
+    searching,
+    postsEmpty,
+    searchResultEmpty,
 }) {
     const styles2 = StyleSheet.create({
         fontSizeL1: {
@@ -23,9 +26,11 @@ export default function RenderPostsHeader({
             paddingVertical: wp(4) * fontFactor,
         },
     });
-    const showError = loadingPostsError && loadingPostsError !== noPost;
+    const noPostError = loadingPostsError === noPost;
+    const showError = loadingPostsError && !noPostError && showFooter; //showFooter indicates length of list greater than view hence multiple error message can be displayed at top and bottom
+    const showHeaderSpacer = searching ? !searchResultEmpty : !postsEmpty; //renders when list not empty
 
-    if (showHeader) {
+    if (showHeaderSpacer) {
         return (
             <View style={[styles2.container]}>
                 {showError && (
@@ -58,10 +63,13 @@ export default function RenderPostsHeader({
     return null;
 }
 
-RenderPostsHeader.propTypes = {
+RenderForumHeader.propTypes = {
     fontFactor: PropTypes.number,
     loadingPostsError: PropTypes.string,
-    showHeader: PropTypes.bool,
+    postsEmpty: PropTypes.bool,
+    searchResultEmpty: PropTypes.bool,
+    showFooter: PropTypes.bool,
+    searching: PropTypes.bool,
 };
 
 const styles = StyleSheet.create({

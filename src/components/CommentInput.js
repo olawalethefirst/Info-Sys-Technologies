@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -11,15 +11,41 @@ import {
 import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { store } from '../redux/store';
+import hideKeyboardAsync from '../helperFunctions/hideKeyboardAsync';
 
 const CommentInput = ({
     headerSize,
     fontFactor,
     margin,
     commentInputRef,
-    onComment,
+    writeComment,
+    postID,
 }) => {
+    const [keyboardActive, setKeyboardActive] = useState(false);
     const [comment, setComment] = useState('');
+
+    const onComment = useCallback(
+        async (comment) => {
+            if (keyboardActive) {
+                await hideKeyboardAsync();
+                console.log('hidden the bitch');
+            }
+            writeComment({
+                comment,
+                parentPostID: postID,
+            });
+            setComment('');
+        },
+        [writeComment, postID, keyboardActive]
+    );
+
+    useEffect(() => {
+        const events = ['keyboardDidShow', 'keyboardDidHide'];
+        const listeners = events.map((e) =>
+            Keyboard.addListener(e, () => setKeyboardActive(e === events[0]))
+        );
+        return () => listeners.forEach((listener) => listener.remove());
+    }, []);
 
     return (
         <View

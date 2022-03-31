@@ -13,8 +13,7 @@ import updateBodyHeight from './src/redux/actions/updateBodyHeight';
 import updateFontFactor from './src/redux/actions/updateFontFactor';
 import updateHeaderSize from './src/redux/actions/updateHeaderSize';
 import TabNavigator from './src/navigators/TabNavigator';
-import { updateAuthState } from './src/helperFunctions/initializeFirebase';
-import updateUID from './src/redux/actions/updateUID';
+import updateAuthState from './src/redux/actions/updateAuthState';
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs([
     'AsyncStorage has been extracted from react-native core and will be removed in a future release. ',
@@ -81,6 +80,14 @@ function PreApp() {
     ]);
 
     useEffect(() => {
+        console.log(
+            margin,
+            headerSize,
+            deviceWidthClass,
+            bodyHeight,
+            fontFactor,
+            assetsLoaded
+        );
         const prep = () => {
             if (
                 margin &&
@@ -90,17 +97,14 @@ function PreApp() {
                 fontFactor &&
                 assetsLoaded
             ) {
-                updateAuthState((payload) => {
-                    dispatch(updateUID(payload));
-                });
+                updateAuthState(dispatch);
                 setAppIsReady(async () => {
                     await SplashScreen.hideAsync();
                     return true;
                 });
             }
         };
-        const unsubscribe = prep();
-        return unsubscribe;
+        prep();
     }, [
         margin,
         headerSize,

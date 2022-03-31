@@ -24,14 +24,21 @@ import {
     POST_FAILED,
     CLEAR_POST_SUCCESSFUL,
     RESET_POST_FAILED,
-    CLEAR_POST_FAILED,   
+    CLEAR_POST_FAILED,
     INITIATE_COMMENT,
     COMMENT_SUCCESSFUL,
     COMMENT_FAILED,
     CLEAR_COMMENT_SUCCESSFUL,
     RESET_COMMENT_FAILED,
-    CLEAR_COMMENT_FAILED
+    CLEAR_COMMENT_FAILED,
+    SET_POST_TITLE,
+    RESET_POST_TITLE,
+    TOGGLE_COMMENT_LIKE,
+    TOGGLE_POST_LIKE,
+    UPDATE_POST,
 } from '../actions/actionTypes';
+import { auth } from '../../helperFunctions/initializeFirebase';
+import { noPost } from '../../helperFunctions/processErrorString';
 
 // inital State
 const initialState = {
@@ -55,7 +62,9 @@ const initialState = {
     commentData: null,
     commentSuccessful: false,
     commentFailed: false,
-    commenting: false
+    commenting: false,
+    postsLimit: 20,
+    postDetails: [],
 };
 
 const forumTempReducer = (state = initialState, action) => {
@@ -63,15 +72,23 @@ const forumTempReducer = (state = initialState, action) => {
         case UPDATE_USER:
             return {
                 ...state,
-                uid: action.payload ? action.payload.uid : null,
-                username: action.payload ? action.payload.username : null,
+                uid: action.payload?.uid ?? null,
+                username: action.payload?.username ?? null,
             };
         case LOADING_POSTS_INITIATED:
             return { ...state, loadingPosts: true, loadingPostsError: null };
         case LOADING_POSTS_FIRST_BATCH_SUCCESSFUL:
-            return { ...state, loadingPosts: false };
+            return {
+                ...state,
+                loadingPosts: false,
+                loadingPostsError: !action.payload.length ? noPost : null,
+            };
         case LOADING_POSTS_SUCCESSFUL:
-            return { ...state, loadingPosts: false };
+            return {
+                ...state,
+                loadingPosts: false,
+                loadingPostsError: !action.payload.length ? noPost : null,
+            };
         case LOADING_POSTS_FAILED:
             return {
                 ...state,
@@ -148,23 +165,33 @@ const forumTempReducer = (state = initialState, action) => {
         case RETRY_AUTH_WITH_EMAIL:
             return { ...state, authorizing: true, authError: null };
         case INITIATE_POST:
-            return { ...state, postData: action.payload, posting: true };
+            return { ...state, posting: true };
         case POST_SUCCESSFUL:
             return {
                 ...state,
                 postSuccessful: true,
                 posting: false,
+                loadingPostsError: null, //think about if this is necessary later
             };
-        case POST_FAILED:
-            return { ...state, postFailed: true, posting: false };
         case CLEAR_POST_SUCCESSFUL:
             return {
                 ...state,
                 postSuccessful: false,
-                postData: null,
+            };
+        case POST_FAILED:
+            return {
+                ...state,
+                postFailed: true,
+                posting: false,
+                postData: action.payload,
             };
         case RESET_POST_FAILED:
-            return { ...state, postFailed: false, posting: true };
+            return {
+                ...state,
+                postFailed: false,
+                posting: true,
+                postData: null,
+            };
         case CLEAR_POST_FAILED:
             return {
                 ...state,
@@ -173,17 +200,80 @@ const forumTempReducer = (state = initialState, action) => {
                 postData: null,
             };
         case INITIATE_COMMENT:
-            return {...state, commentData: action.payload, commenting: true}
+            return { ...state, commenting: true };
         case COMMENT_SUCCESSFUL:
-            return {...state, commentSuccessful: true,commenting: false}
-        case COMMENT_FAILED: 
-            return {...state, commentFailed: true, commenting: false}
-        case CLEAR_COMMENT_SUCCESSFUL: 
-            return { ...state, commentSuccessful: false, commentData: null}
+            return { ...state, commentSuccessful: true, commenting: false };
+        case COMMENT_FAILED:
+            return {
+                ...state,
+                commentFailed: true,
+                commenting: false,
+                commentData: action.payload,
+            };
+        case CLEAR_COMMENT_SUCCESSFUL:
+            return { ...state, commentSuccessful: false };
         case RESET_COMMENT_FAILED:
-            return {...state, commentFailed: false, commenting: true}
+            return {
+                ...state,
+                commentFailed: false,
+                commenting: true,
+                commentData: null,
+            };
         case CLEAR_COMMENT_FAILED:
-            return {...state, commentFailed: false, commentData: null}
+            return { ...state, commentFailed: false, commentData: null };
+        // case SET_POST_TITLE:
+        //     return { ...state, postDetails: [action.payload] };
+        // case RESET_POST_TITLE:
+        //     return { ...state, postDetails: [] };
+        // case TOGGLE_POST_LIKE:
+        //     return {
+        //         ...state,
+        //         postDetails: state.postDetails.map((postDetail) => {
+        //             if (postDetail.postID === action.payload) {
+        //                 return {
+        //                     ...postDetail,
+        //                     likes: postDetail.likes.includes(
+        //                         auth.currentUser.uid
+        //                     )
+        //                         ? postDetail.likes.filter(
+        //                               (val) => val !== auth.currentUser.uid
+        //                           )
+        //                         : [...postDetail.likes, auth.currentUser.uid],
+        //                 };
+        //             }
+        //             return postDetail;
+        //         }),
+        //     };
+        // case TOGGLE_COMMENT_LIKE:
+        //     return {
+        //         ...state,
+        //         postDetails: state.postDetails.map((postDetail) => {
+        //             if (postDetail.commentID === action.payload) {
+        //                 return {
+        //                     ...postDetail,
+        //                     likes: postDetail.likes.includes(
+        //                         auth.currentUser.uid
+        //                     )
+        //                         ? postDetail.likes.filter(
+        //                               (val) => val !== auth.currentUser.uid
+        //                           )
+        //                         : [...postDetail.likes, auth.currentUser.uid],
+        //                 };
+        //             }
+        //             return postDetail;
+        //         }),
+        //     };
+        // case UPDATE_POST:
+        //     return {
+        //         ...state,
+        //         postDetails: state.postDetails.map((postDetail) => {
+        //             if (postDetail.postID === action.payload.postID) {
+        //                 console.log('returning this', action.payload);
+        //                 return action.payload;
+        //             }
+        //             return postDetail;
+        //         }),
+        //     };
         default:
             return state;
     }

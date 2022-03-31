@@ -13,15 +13,15 @@ import processErrorString, {
 import PropTypes from 'prop-types';
 import MarginVertical from './MarginVertical';
 
-export default function RenderPostsFooter({
+export default function RenderForumFooter({
     loadingPosts,
     fontFactor,
     loadingPostsError,
     searching,
     showFooter,
     retryLoadMorePosts,
-    posts,
-    searchResult,
+    postsEmpty,
+    searchResultEmpty,
 }) {
     const styles2 = StyleSheet.create({
         container: {
@@ -31,12 +31,10 @@ export default function RenderPostsFooter({
         fontSizeL1: { fontSize: fontFactor * wp(4) },
         fontSizeL2: { fontSize: fontFactor * wp(5) },
     });
-    //only render footer when there's an intersection in the set of "length smaller than screen" and "not loading post"
 
     const noPostError = loadingPostsError === noPost;
     const showError = loadingPostsError && !noPostError;
-    const noSearchResult = searching && noPostError && !searchResult.length;
-    const noPostResult = !posts.length && noPostError;
+    const noSearchResult = searching && noPostError && searchResultEmpty;
 
     if (loadingPosts) {
         return (
@@ -60,21 +58,23 @@ export default function RenderPostsFooter({
                         {processErrorString(loadingPostsError)}
                     </Text>
                     <MarginVertical size={0.2} />
-                    {<TouchableOpacity
-                        activeOpacity={0.7}
-                        onPress={retryLoadMorePosts}
-                    >
-                        <Text
-                            style={[
-                                styles2.fontSizeL1,
-                                styles.poppins400Font,
-                                styles.alignTextCenter,
-                                styles.fontColor808080,
-                            ]}
+                    {
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={retryLoadMorePosts}
                         >
-                            Retry
-                        </Text>
-                    </TouchableOpacity>}
+                            <Text
+                                style={[
+                                    styles2.fontSizeL1,
+                                    styles.poppins400Font,
+                                    styles.alignTextCenter,
+                                    styles.fontColor808080,
+                                ]}
+                            >
+                                Retry
+                            </Text>
+                        </TouchableOpacity>
+                    }
                 </>
             </View>
         );
@@ -96,7 +96,7 @@ export default function RenderPostsFooter({
         );
     }
 
-    if (noPostResult) {
+    if (postsEmpty) {
         return (
             <View style={styles2.container}>
                 <Text
@@ -119,15 +119,15 @@ export default function RenderPostsFooter({
     return <></>;
 }
 
-RenderPostsFooter.propTypes = {
+RenderForumFooter.propTypes = {
     fontFactor: PropTypes.number,
     loadingPostsError: PropTypes.string,
     loadingPosts: PropTypes.bool,
     searching: PropTypes.bool,
     showFooter: PropTypes.bool,
     retryLoadMorePosts: PropTypes.func,
-    posts: PropTypes.array,
-    searchResult: PropTypes.array,
+    postsEmpty: PropTypes.bool,
+    searchResultEmpty: PropTypes.bool,
 };
 
 const styles = StyleSheet.create({

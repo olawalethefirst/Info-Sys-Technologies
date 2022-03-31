@@ -6,8 +6,8 @@ import {
     query,
     doc,
     startAfter,
-    getDocFromServer,
     getDocsFromServer,
+    getDocFromServer,
 } from 'firebase/firestore';
 
 export default async function getPostsSnapshot(lastPostID) {
@@ -17,7 +17,6 @@ export default async function getPostsSnapshot(lastPostID) {
             orderBy('createdAt', 'desc'),
             limit(20)
         );
-
         const lastPostSnapshot = await getDocFromServer(
             doc(firestore, 'posts', lastPostID)
         );

@@ -1,35 +1,23 @@
-import createCommentWithTimerAsync from '../../helperFunctions/createCommentWithTimerAsync';
-import {
-    COMMENT_SUCCESSFUL,
-    CLEAR_COMMENT_SUCCESSFUL,
-    COMMENT_FAILED,
-    RESET_COMMENT_FAILED,
-} from './actionTypes';
-import deleteCommentAsync from '../../helperFunctions/deleteCommentAsync';
-import { v4 as uuidv4 } from 'uuid';
-import timerPromiseAsync from '../../helperFunctions/timerPromiseAsync';
+import { RESET_COMMENT_FAILED } from './actionTypes';
+import { v1 as uuidv1 } from 'uuid';
+import { auth } from '../../helperFunctions/initializeFirebase';
+import commentOperation from './commentOperation';
 
 const rewriteComment = () => async (dispatch, getState) => {
-    dispatch({
-        type: RESET_COMMENT_FAILED,
-    });
-    const commentID = uuidv4();
-    try {
-        await createCommentWithTimerAsync(
-            { ...getState().forumTempState.commentData, commentID },
-            1500
-        );
-        dispatch({ type: COMMENT_SUCCESSFUL });
-        await timerPromiseAsync(1000);
+    if (auth.currentUser.uid && auth.currentUser.displayName) {
+        const data = getState().forumTempState.commentData;
         dispatch({
-            type: CLEAR_COMMENT_SUCCESSFUL,
+            type: RESET_COMMENT_FAILED,
         });
-    } catch (err) {
-        console.log('error: ', err);
-        deleteCommentAsync(commentID);
-        dispatch({
-            type: COMMENT_FAILED,
-        });
+        const docObj = {
+            ...data,
+            owner: auth.currentUser.uid,
+            createdAt: Date.now(),
+            username: auth.currentUser.displayName,
+            likes: [],
+        };
+        const commentID = uuidv1();
+        commentOperation(dispatch, data, docObj, commentID);
     }
 };
 

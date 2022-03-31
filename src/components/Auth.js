@@ -86,7 +86,8 @@ const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
                 styles2.animatedView,
             ]}
         >
-            <View
+            <Animated.View
+                exiting={FadeOut.duration(150)} //feels hacky but fixes the unmounted unInspectable persistent child el
                 style={[
                     styles2.responsiveContainerParent,
                     styles.responsiveContainerParent,
@@ -98,8 +99,9 @@ const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
                         toggleAuthView={toggleAuthAnimatedView}
                     />
                 </View>
-            </View>
-            <View
+            </Animated.View>
+            <Animated.View
+                exiting={FadeOut.duration(150)} //feels hacky but fixes the unmounted unInspectable persistent child el
                 style={[
                     styles2.responsiveContainerParent,
                     styles.responsiveContainerParent,
@@ -108,7 +110,7 @@ const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
                 <View style={styles2.responsiveContainer}>
                     <AuthTemplate toggleAuthView={toggleAuthAnimatedView} />
                 </View>
-            </View>
+            </Animated.View>
         </Animated.View>
     );
 };

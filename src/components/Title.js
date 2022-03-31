@@ -20,7 +20,7 @@ Title.propTypes = {
 
 const styles = StyleSheet.create({
     text: {
-        fontFamily: 'Poppins_500Medium',
+        fontFamily: 'Poppins_400Regular',
         textAlign: 'left',
     },
 });

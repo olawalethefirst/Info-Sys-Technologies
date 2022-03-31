@@ -72,97 +72,129 @@ export default function CreatePostForm({
     const PRESS_IN = 'PRESS_IN';
     const PRESS_OUT = 'PRESS_OUT';
 
-    const toggleBorderColorOn = useCallback((animatedValue) => {
-        'worklet';
-        animatedValue.value = withTiming(1, { duration: 150 });
-    }, []);
-    const toggleBorderColorOff = useCallback((animatedValue) => {
-        'worklet';
-        animatedValue.value = withTiming(0, { duration: 150 });
-    }, []);
+    const toggleBorderColorOn = useCallback(
+        (type) => {
+            'worklet';
+            switch (type) {
+                case TITLE:
+                    console.log('called');
+                    animatedTitle.value = withTiming(1, {
+                        duration: 150,
+                    });
+                    return;
+                case BODY:
+                    animatedBody.value = withTiming(1, {
+                        duration: 150,
+                    });
+                    return;
+                case CATEGORY:
+                    animatedCategory.value = withTiming(1, {
+                        duration: 150,
+                    });
+                    return;
+                default:
+                    return;
+            }
+        },
+        [animatedTitle, animatedBody, animatedCategory]
+    );
+    const toggleBorderColorOff = useCallback(
+        (type) => {
+            'worklet';
+            switch (type) {
+                case TITLE:
+                    animatedTitle.value = withTiming(0, {
+                        duration: 150,
+                    });
+                    return;
+                case BODY:
+                    animatedBody.value = withTiming(0, {
+                        duration: 150,
+                    });
+                    return;
+                case CATEGORY:
+                    animatedCategory.value = withTiming(0, {
+                        duration: 150,
+                    });
+                    return;
+                default:
+                    return;
+            }
+        },
+        [animatedTitle, animatedBody, animatedCategory]
+    );
     const toggleAnimatedInput = useCallback(
-        (animatedInput, action) => {
-            switch (action) {
+        (action) => {
+            switch (action.type) {
                 case FOCUS:
-                    return toggleBorderColorOn(animatedInput);
+                    return toggleBorderColorOn(action.payload);
                 case BLUR:
-                    return toggleBorderColorOff(animatedInput);
+                    return toggleBorderColorOff(action.payload);
                 default:
                     return;
             }
         },
         [toggleBorderColorOn, toggleBorderColorOff]
     );
-    const generateAnimateToggler = useCallback(
-        (action) => {
-            switch (action.type) {
-                case TITLE:
-                    return toggleAnimatedInput(animatedTitle, action.payload);
-                case CATEGORY:
-                    return toggleAnimatedInput(
-                        animatedCategory,
-                        action.payload
-                    );
-                case BODY:
-                    return toggleAnimatedInput(animatedBody, action.payload);
+    const onPressButtonIn = useCallback(
+        (type) => {
+            'worklet';
+            switch (type) {
+                case CLOSE:
+                    return (animatedCloseModalButton.value = withTiming(0.9, {
+                        duration: 150,
+                    }));
+                case SUBMIT:
+                    return (animatedCreatePostButton.value = withTiming(0.9, {
+                        duration: 150,
+                    }));
                 default:
                     return;
             }
         },
-        [animatedTitle, animatedCategory, animatedBody, toggleAnimatedInput]
+        [animatedCloseModalButton, animatedCreatePostButton]
     );
-    const onPressButtonIn = useCallback((animatedValue) => {
-        'worklet';
-        animatedValue.value = withTiming(0.9, { duration: 150 });
-    }, []);
-    const onPressButtonOut = useCallback((animatedValue) => {
-        'worklet';
-        animatedValue.value = withTiming(1, { duration: 150 });
-    }, []);
+    const onPressButtonOut = useCallback(
+        (type) => {
+            'worklet';
+            switch (type) {
+                case CLOSE:
+                    return (animatedCloseModalButton.value = withTiming(1, {
+                        duration: 150,
+                    }));
+                case SUBMIT:
+                    return (animatedCreatePostButton.value = withTiming(1, {
+                        duration: 150,
+                    }));
+                default:
+                    return;
+            }
+        },
+        [animatedCloseModalButton, animatedCreatePostButton]
+    );
     const animatedButtonToggler = useCallback(
-        (animatedValue, action) => {
-            switch (action) {
+        (action) => {
+            switch (action.type) {
                 case PRESS_IN:
-                    return onPressButtonIn(animatedValue);
+                    return onPressButtonIn(action.payload);
                 case PRESS_OUT:
-                    return onPressButtonOut(animatedValue);
+                    return onPressButtonOut(action.payload);
                 default:
                     return;
             }
         },
         [onPressButtonIn, onPressButtonOut]
     );
-    const generateAnimatedButtonToggler = useCallback(
-        (action) => {
-            switch (action.type) {
-                case SUBMIT:
-                    return animatedButtonToggler(
-                        animatedCreatePostButton,
-                        action.payload
-                    );
-                case CLOSE:
-                    return animatedButtonToggler(
-                        animatedCloseModalButton,
-                        action.payload
-                    );
-                default:
-                    return;
-            }
-        },
-        [
-            animatedCreatePostButton,
-            animatedCloseModalButton,
-            animatedButtonToggler,
-        ]
-    );
 
-    const animatedTitleStyle = useAnimatedStyle(() => ({
-        borderColor: interpolateColor(
-            animatedTitle.value,
-            [0, 1],
-            ['#000', '#1A91D7']
-        ),
-    }));
+    const animatedTitleStyle = useAnimatedStyle(() => {
+        return {
+            borderColor: interpolateColor(
+                animatedTitle.value,
+                [0, 1],
+                ['#000', '#1A91D7']
+            ),
+        };
+    });
     const animatedCategoryStyle = useAnimatedStyle(() => ({
         backgroundColor: interpolateColor(
             animatedCategory.value,
@@ -308,15 +340,15 @@ export default function CreatePostForm({
                                 ]}
                                 editable={!disableModalPressables}
                                 onFocus={() =>
-                                    generateAnimateToggler({
-                                        type: TITLE,
-                                        payload: FOCUS,
+                                    toggleAnimatedInput({
+                                        type: FOCUS,
+                                        payload: TITLE,
                                     })
                                 }
                                 onBlur={() => {
-                                    generateAnimateToggler({
-                                        type: TITLE,
-                                        payload: BLUR,
+                                    toggleAnimatedInput({
+                                        type: BLUR,
+                                        payload: TITLE,
                                     });
                                     onBlur();
                                 }}
@@ -352,15 +384,15 @@ export default function CreatePostForm({
                                     }}
                                     disabled={disableModalPressables}
                                     onPressIn={() =>
-                                        generateAnimateToggler({
-                                            type: CATEGORY,
-                                            payload: FOCUS,
+                                        toggleAnimatedInput({
+                                            type: FOCUS,
+                                            payload: CATEGORY,
                                         })
                                     }
                                     onPressOut={() =>
-                                        generateAnimateToggler({
-                                            type: CATEGORY,
-                                            payload: BLUR,
+                                        toggleAnimatedInput({
+                                            type: BLUR,
+                                            payload: CATEGORY,
                                         })
                                     }
                                 >
@@ -432,9 +464,9 @@ export default function CreatePostForm({
                                         scrollViewRef,
                                         modalHeight
                                     );
-                                    generateAnimateToggler({
-                                        type: BODY,
-                                        payload: FOCUS,
+                                    toggleAnimatedInput({
+                                        type: FOCUS,
+                                        payload: BODY,
                                     });
                                 }}
                                 multiline
@@ -442,9 +474,9 @@ export default function CreatePostForm({
                                 placeholderTextColor="#808080"
                                 autoCapitalize="sentences"
                                 onBlur={() => {
-                                    generateAnimateToggler({
-                                        type: BODY,
-                                        payload: BLUR,
+                                    toggleAnimatedInput({
+                                        type: BLUR,
+                                        payload: BODY,
                                     });
                                     onBlur();
                                 }}
@@ -479,15 +511,15 @@ export default function CreatePostForm({
                     disabled={disableModalPressables || disableCreatePost}
                     onPress={onSubmit}
                     onPressIn={() =>
-                        generateAnimatedButtonToggler({
-                            type: SUBMIT,
-                            payload: PRESS_IN,
+                        animatedButtonToggler({
+                            type: PRESS_IN,
+                            payload: SUBMIT,
                         })
                     }
                     onPressOut={() =>
-                        generateAnimatedButtonToggler({
-                            type: SUBMIT,
-                            payload: PRESS_OUT,
+                        animatedButtonToggler({
+                            type: PRESS_OUT,
+                            payload: SUBMIT,
                         })
                     }
                 >
@@ -513,15 +545,15 @@ export default function CreatePostForm({
                 <AnimatedTouchableWithoutFeedback
                     onPress={onCancel}
                     onPressIn={() =>
-                        generateAnimatedButtonToggler({
-                            type: CLOSE,
-                            payload: PRESS_IN,
+                        animatedButtonToggler({
+                            type: PRESS_IN,
+                            payload: CLOSE,
                         })
                     }
                     onPressOut={() =>
-                        generateAnimatedButtonToggler({
-                            type: CLOSE,
-                            payload: PRESS_OUT,
+                        animatedButtonToggler({
+                            type: PRESS_OUT,
+                            payload: CLOSE,
                         })
                     }
                     disabled={disableModalPressables}

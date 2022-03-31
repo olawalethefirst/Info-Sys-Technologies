@@ -15,10 +15,11 @@ export default function fetchPosts(lastPost) {
                 type: lastPost
                     ? LOADING_POSTS_SUCCESSFUL
                     : LOADING_POSTS_FIRST_BATCH_SUCCESSFUL,
+
                 payload: posts,
             });
         } catch (e) {
-            dispatch({ type: LOADING_POSTS_FAILED, payload: e.message });
+            dispatch({ type: LOADING_POSTS_FAILED, payload: e.code });
         }
     };
 }

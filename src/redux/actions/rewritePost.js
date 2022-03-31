@@ -1,34 +1,23 @@
-import createPostWithTimerAsync from '../../helperFunctions/createPostWithTimerAsync';
-import {
-    POST_SUCCESSFUL,
-    CLEAR_POST_SUCCESSFUL,
-    POST_FAILED,
-    RESET_POST_FAILED,
-} from './actionTypes';
-import deletePostAsync from '../../helperFunctions/deletePostAsync';
-import { v4 as uuidv4 } from 'uuid';
-import timerPromiseAsync from '../../helperFunctions/timerPromiseAsync';
+import { RESET_POST_FAILED } from './actionTypes';
+import { v1 as uuidv1 } from 'uuid';
+import { auth } from '../../helperFunctions/initializeFirebase';
+import postOperation from './postOperation';
 
 const rewritePost = () => async (dispatch, getState) => {
-    dispatch({
-        type: RESET_POST_FAILED,
-    });
-    const postID = uuidv4();
-    try {
-        await createPostWithTimerAsync(
-            { ...getState().forumTempState.postData, postID },
-            3000
-        );
-        dispatch({ type: POST_SUCCESSFUL });
-        await timerPromiseAsync(2000);
+    if (auth.currentUser.displayName && auth.currentUser.uid) {
+        const data = getState().forumTempState.postData;
         dispatch({
-            type: CLEAR_POST_SUCCESSFUL,
+            type: RESET_POST_FAILED, //after retrieving data cos action resets stored data
         });
-    } catch {
-        deletePostAsync(postID);
-        dispatch({
-            type: POST_FAILED,
-        });
+        const docObj = {
+            ...data,
+            owner: auth.currentUser.uid,
+            username: auth.currentUser.displayName,
+            likes: [],
+            createdAt: Date.now(),
+        };
+        const postID = uuidv1();
+        postOperation(dispatch, docObj, postID, data);
     }
 };
 
