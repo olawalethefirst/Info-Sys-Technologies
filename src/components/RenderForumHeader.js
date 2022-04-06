@@ -22,8 +22,7 @@ export default function RenderForumHeader({
             fontSize: fontFactor * wp(5),
         },
         container: {
-            minHeight: wp(4.4) * fontFactor,
-            paddingVertical: wp(4) * fontFactor,
+            paddingVertical: wp(2.2) * fontFactor,
         },
     });
     const noPostError = loadingPostsError === noPost;

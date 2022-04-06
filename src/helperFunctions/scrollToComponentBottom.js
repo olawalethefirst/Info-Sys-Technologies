@@ -9,23 +9,24 @@ export default function scrollToComponentBottom(
     const isIOS = Platform.OS === 'ios';
 
     if (isIOS) {
-        let fieldFormOffset;
-        let fieldHeight;
+        let componentOffset;
+        let componentHeight;
         if (componentRef.current && containerRef.current) {
             componentRef.current.measureLayout(
                 containerRef.current,
                 (left, top, width, height) => {
-                    fieldFormOffset = top;
-                    fieldHeight = height;
+                    componentOffset = top;
+                    componentHeight = height;
                 }
             );
         }
         Keyboard.addListener(
             'keyboardDidShow',
             ({ endCoordinates: { height } }) => {
-                if (fieldHeight && fieldFormOffset) {
+                if (componentHeight && componentOffset) {
                     const offset =
-                        fieldFormOffset - (windowHeight - height - fieldHeight);
+                        componentOffset -
+                        (windowHeight - height - componentHeight);
                     scrollRef?.current?.scrollToOffset
                         ? scrollRef.current.scrollToOffset({
                               offset: Math.round(offset),

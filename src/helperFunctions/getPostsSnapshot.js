@@ -12,11 +12,6 @@ import {
 
 export default async function getPostsSnapshot(lastPostID) {
     if (lastPostID) {
-        query(
-            collection(firestore, 'posts'),
-            orderBy('createdAt', 'desc'),
-            limit(20)
-        );
         const lastPostSnapshot = await getDocFromServer(
             doc(firestore, 'posts', lastPostID)
         );
@@ -26,7 +21,7 @@ export default async function getPostsSnapshot(lastPostID) {
             startAfter(lastPostSnapshot),
             limit(20)
         );
-        return getDocsFromServer(postsQuery);
+        return getDocsFromServer(postsQuery)
     } else {
         const postsQuery = query(
             collection(firestore, 'posts'),

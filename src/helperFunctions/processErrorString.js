@@ -2,6 +2,7 @@ import { AuthErrorCodes } from 'firebase/auth';
 export const googleAccount = 'google account';
 export const usernameMinLimit = 'Minimum of three characters';
 export const noPost = 'No Post';
+export const noComment = 'noComment'
 export const offline = 'unable to reach firestore';
 
 export default function generateError(message) {

@@ -15,6 +15,7 @@ import {
     SafeAreaView,
     Pressable,
     Keyboard,
+    RefreshControl,
     View,
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -35,8 +36,10 @@ import moment from 'moment';
 import { auth } from '../helperFunctions/initializeFirebase';
 import PostResultModal from '../components/PostResultModal';
 import CommentResultModal from '../components/CommentResultModal';
-import writeComment from '../redux/actions/writeComment';
+// import writeComment from '../redux/actions/writeComment';
 import usePostDetails from '../hooks/usePostDetails';
+import RenderPostFooter from '../components/RenderPostFooter';
+import { useIsFocused } from '@react-navigation/native';
 
 function PostScreen({
     margin,
@@ -47,11 +50,26 @@ function PostScreen({
     effectiveBodyHeight,
     route: { params }, //maybe update postMini to send only this
     uid,
-    writeComment,
 }) {
-    const [navigationFocussed, setNavigationFocussed] = useState(false);
-    const [postDetails, updatePostLikes, updateCommentLikes] =
-        usePostDetails(params);
+    const isFocused = useIsFocused();
+    const [
+        postDetails,
+        updatePostLikes,
+        updateCommentLikes,
+        loading,
+        loadError,
+        fetchComments,
+        onRetryLoadComment,
+        writeComment,
+        rewriteComment,
+        closeCommentResult,
+        commentResultVisible,
+        commenting,
+        commentSuccessful,
+        commentFailed,
+        refreshing,
+        onRefresh,
+    ] = usePostDetails(params);
 
     const scrollRef = useRef(null);
     const containerRef = useRef(null);
@@ -70,19 +88,20 @@ function PostScreen({
             useNativeDriver: true,
         }
     );
-    const clampedScrollY = Animated.diffClamp(
-        scrollY.current,
-        0,
-        stickyHeaderHeight
-    );
-    const translateY = clampedScrollY.interpolate({
-        inputRange: [0, stickyHeaderHeight],
-        outputRange: [0, -stickyHeaderHeight],
+    const scrollYClampedToInset = scrollY.current.interpolate({
+        inputRange: [-stickyHeaderHeight, -stickyHeaderHeight + 1],
+        outputRange: [-stickyHeaderHeight, -stickyHeaderHeight + 1],
+        extrapolateLeft: 'clamp',
     });
-
-    const toggleNavigationFocussed = (payload) => {
-        setNavigationFocussed(payload);
-    };
+    const invertedScrollYClampedToInset = Animated.multiply(
+        scrollYClampedToInset,
+        -1
+    );
+    const translateY = Animated.diffClamp(
+        invertedScrollYClampedToInset,
+        -stickyHeaderHeight,
+        0
+    );
 
     const { statusBarHeight } = Constants;
     const { postID } = params;
@@ -98,6 +117,8 @@ function PostScreen({
                 createdAt,
                 postID,
                 owner,
+                comment,
+                commentID,
             } = item;
 
             if (category) {
@@ -113,8 +134,8 @@ function PostScreen({
                         title={title}
                         body={body}
                         postID={postID}
-                        index={index}
                         updatePostLikes={updatePostLikes}
+                        liked={likes.includes(auth.currentUser?.uid)}
                     />
                 );
             }
@@ -123,28 +144,28 @@ function PostScreen({
                     scrollRef={scrollRef}
                     containerRef={containerRef}
                     commentInputRef={commentInputRef}
+                    updateCommentLikes={updateCommentLikes}
+                    liked={likes.includes(auth.currentUser?.uid)}
+                    likes={likes}
+                    comment={comment}
+                    commentID={commentID}
+                    createdAt={moment(new Date(createdAt)).fromNow()}
+                    username={username}
                 />
             );
         },
-        [scrollRef, containerRef, commentInputRef, updatePostLikes]
+        [
+            scrollRef,
+            containerRef,
+            commentInputRef,
+            updatePostLikes,
+            updateCommentLikes,
+        ]
     );
-
-    useEffect(() => {
-        const events = ['focus', 'blur'];
-
-        const unsubscribers = events.map((event) =>
-            addListener(event, () =>
-                toggleNavigationFocussed(event === events[0])
-            )
-        );
-
-        return () => {
-            unsubscribers.forEach((unsubscribe) => unsubscribe());
-        };
-    }, [addListener]);
+    console.log(refreshing);
 
     return (
-        <View
+        <SafeAreaView
             ref={containerRef}
             style={{
                 flex: 1,
@@ -160,7 +181,7 @@ function PostScreen({
                 })}
                 behavior={Platform.select({ ios: 'padding', android: null })}
             >
-                <SafeAreaView
+                <View
                     style={{
                         flex: 1,
                     }}
@@ -175,18 +196,33 @@ function PostScreen({
                     />
 
                     <Animated.FlatList
-                        //footerBehavior - if empty, show loading
+                        refreshControl={
+                            <RefreshControl
+                                colors={['#1A91D7']}
+                                tintColor={'#1A91D7'}
+                                onRefresh={onRefresh}
+                                refreshing={refreshing}
+                                progressViewOffset={Platform.select({
+                                    ios: 0,
+                                    android: stickyHeaderHeight,
+                                })}
+                            />
+                        }
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
                         nestedScrollEnabled
                         style={{ zIndex: -1 }}
                         scrollEventThrottle={16}
                         onScroll={handleScroll}
                         contentContainerStyle={{
                             minHeight: effectiveBodyHeight + stickyHeaderHeight,
-                            marginTop: stickyHeaderHeight,
+                            paddingTop: Platform.select({
+                                android: stickyHeaderHeight,
+                                ios: 0,
+                            }),
                             paddingBottom: headerSize,
                         }}
                         data={postDetails}
-                        bounces={false}
                         renderItem={renderItem}
                         keyExtractor={(item, index) => 'keyExtractor' + index}
                         ref={scrollRef}
@@ -196,6 +232,32 @@ function PostScreen({
                         })}
                         keyboardShouldPersistTaps="never"
                         ItemSeparatorComponent={RenderSeparator}
+                        ListHeaderComponent={RenderSeparator}
+                        ListFooterComponent={
+                            <RenderPostFooter
+                                postNotLoaded={!postDetails}
+                                emptyComment={postDetails.length === 1}
+                                loading={loading}
+                                loadError={loadError}
+                                onRetryLoadComment={onRetryLoadComment}
+                            />
+                        }
+                        onEndReachedThreshold={1}
+                        onEndReached={fetchComments}
+                        contentInset={{
+                            top: Platform.select({
+                                ios: stickyHeaderHeight,
+                                android: 0,
+                            }),
+                        }}
+                        contentOffset={{
+                            x: 0,
+                            y: Platform.select({
+                                ios: -stickyHeaderHeight,
+                                android: 0,
+                            }),
+                        }}
+                        // automaticallyAdjustContentInsets={false}
                     />
                     <CommentInput
                         headerSize={headerSize}
@@ -212,15 +274,22 @@ function PostScreen({
                                 <UsernameModal />
                                 <PostResultModal
                                     name={'postResultModal2'}
-                                    navigationFocussed={navigationFocussed}
+                                    navigationFocussed={isFocused}
                                 />
-                                <CommentResultModal />
+                                <CommentResultModal
+                                    rewriteComment={rewriteComment}
+                                    closeCommentResult={closeCommentResult}
+                                    commentFailed={commentFailed}
+                                    commentSuccessful={commentSuccessful}
+                                    commenting={commenting}
+                                    commentResultVisible={commentResultVisible}
+                                />
                             </>
                         ) //switch to availabilty of username
                     }
-                </SafeAreaView>
+                </View>
             </KeyboardAvoidingView>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -244,6 +313,4 @@ const mapStateToProps = ({
     uid,
 });
 
-export default connect(mapStateToProps, {
-    writeComment,
-})(PostScreen);
+export default connect(mapStateToProps, {})(PostScreen);

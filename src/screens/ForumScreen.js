@@ -41,6 +41,7 @@ import updateUsernameAsync from '../helperFunctions/updateUsernameAsync';
 import { auth } from '../helperFunctions/initializeFirebase';
 import CallToAuth from '../components/CallToAuth';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { useIsFocused } from '@react-navigation/native';
 
 function ForumScreen({
     uid,
@@ -66,7 +67,7 @@ function ForumScreen({
     const [flatListHeight, setFlatListHeight] = useState(0);
     const [contentHeight, setContentHeight] = useState(0);
     const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
-    const [navigationFocussed, setNavigationFocussed] = useState(false);
+    const isFocused = useIsFocused();
     const scrollRef = useRef(null);
 
     //Variables & Fns
@@ -92,7 +93,8 @@ function ForumScreen({
                 loadingPostsError,
                 fetchPosts,
                 posts[posts.length - 1].postID,
-                searching
+                searching,
+                posts.length > 0
             ),
         [loadingPosts, loadingPostsError, fetchPosts, posts, searching]
     ); //only loads more if certain conditions are met
@@ -119,22 +121,9 @@ function ForumScreen({
     });
 
     useEffect(() => {
-        // fetchPosts();
-    }, [fetchPosts]);
-
-    useEffect(() => {
-        const events = ['focus', 'blur'];
-
-        const unsubscribers = events.map((event) =>
-            navigation.addListener(event, () =>
-                setNavigationFocussed(event === events[0])
-            )
-        );
-
-        return () => {
-            unsubscribers.forEach((unsubscribe) => unsubscribe());
-        };
-    }, [navigation]);
+        fetchPosts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         updateShowFooter(contentHeight > flatListHeight);
@@ -307,7 +296,7 @@ function ForumScreen({
                         />
                     }
                     onEndReachedThreshold={2}
-                    onEndReached={onEndReached}
+                    onEndReached={onEndReached} 
                 />
                 <AddPost toggleModal={toggleModal} />
                 {uid && (
@@ -319,7 +308,7 @@ function ForumScreen({
                         />
                         <PostResultModal
                             name="postResultModal1"
-                            navigationFocussed={navigationFocussed}
+                            navigationFocussed={isFocused}
                         />
                         <UsernameModal
                             initialAction={() => {

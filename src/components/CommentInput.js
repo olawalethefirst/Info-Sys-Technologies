@@ -18,8 +18,8 @@ const CommentInput = ({
     fontFactor,
     margin,
     commentInputRef,
-    writeComment,
     postID,
+    writeComment
 }) => {
     const [keyboardActive, setKeyboardActive] = useState(false);
     const [comment, setComment] = useState('');
@@ -28,15 +28,11 @@ const CommentInput = ({
         async (comment) => {
             if (keyboardActive) {
                 await hideKeyboardAsync();
-                console.log('hidden the bitch');
             }
-            writeComment({
-                comment,
-                parentPostID: postID,
-            });
+            writeComment(comment);
             setComment('');
         },
-        [writeComment, postID, keyboardActive]
+        [writeComment, keyboardActive]
     );
 
     useEffect(() => {
@@ -62,6 +58,7 @@ const CommentInput = ({
             }}
         >
             <TextInput
+                autoCorrect={false}
                 ref={commentInputRef}
                 style={[
                     {

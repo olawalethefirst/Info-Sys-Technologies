@@ -7,8 +7,8 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import ModalActivityIndicator from './ModalActivityIndicator';
 import { Platform, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
-import closeCommentResult from '../redux/actions/closeCommentResult';
-import rewriteComment from '../redux/actions/rewriteComment';
+// import closeCommentResult from '../redux/actions/closeCommentResult';
+// import rewriteComment from '../redux/actions/rewriteComment';
 
 function CommentResultModal({
     commentSuccessful,
@@ -81,15 +81,7 @@ function CommentResultModal({
     );
 }
 
-const mapStateToProps = ({
-    forumTempState: { commentSuccessful, commentFailed, commenting },
-    settingsTempState: { commentResultVisible },
-    settingsState: { margin },
-}) => ({
-    commentSuccessful,
-    commentFailed,
-    commentResultVisible,
-    commenting,
+const mapStateToProps = ({ settingsState: { margin } }) => ({
     margin,
 });
 
@@ -97,6 +89,4 @@ const styles = StyleSheet.create({
     modal: { padding: 0, margin: 0 },
 });
 
-export default connect(mapStateToProps, { closeCommentResult, rewriteComment })(
-    CommentResultModal
-);
+export default connect(mapStateToProps, {})(CommentResultModal);

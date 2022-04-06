@@ -1,4 +1,4 @@
-import React, { useRef,  useCallback  } from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -18,13 +18,12 @@ import Username from './Username';
 import CreatedAt from './CreatedAt';
 import Likes from './Likes';
 import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
-import Title from './Title';
 import Body from './Body';
 import LikeButton from './LikeButton';
 import ReplyButton from './ReplyButton';
 import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
 import { auth } from '../helperFunctions/initializeFirebase';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 const Comment = ({
     fontFactor,
@@ -32,48 +31,53 @@ const Comment = ({
     deviceWidthClass,
     uid,
     item,
-    toggleCallToAuth,
     scrollRef,
     containerRef,
-    effectiveBodyHeight,
+    bodyHeight,
     commentInputRef,
+    username,
+    createdAt,
+    likes,
+    comment,
+    toggleCallToAuthModal,
+    updateCommentLikes,
+    commentID,
+    headerSize,
+    liked
 }) => {
-    let liked;
     const columnMode = checkColumnMode(deviceWidthClass);
     const commentRef = useRef(null);
 
-    const onPress = () => {
-        console.log('pressed me');
-        // commentInputRef.current?.focus();
-        // let itemTopOffset;
-        // let itemHeight;
+    const onReply = useCallback(() => {
+        if (uid) {
+            commentInputRef.current?.focus();
+            scrollToComponentBottom(
+                commentRef,
+                containerRef,
+                scrollRef,
+                bodyHeight - headerSize
+            );
+        } else {
+            toggleCallToAuthModal();
+        }
+    }, [
+        uid,
+        toggleCallToAuthModal,
+        commentInputRef,
+        containerRef,
+        commentRef,
+        bodyHeight,
+        scrollRef,
+        headerSize,
+    ]);
 
-        // if (containerRef.current && commentRef.current) {
-        //     commentRef.current.measureLayout(
-        //         containerRef.current,
-        //         (left, top, width, height) => {
-        //             itemTopOffset = top;
-        //             itemHeight = height;
-        //         }
-        //     );
-        // }
-        // Keyboard.addListener(
-        //     'keyboardDidShow',
-        //     ({ endCoordinates: { height } }) => {
-        //         if (itemTopOffset && itemHeight) {
-        //             const offset =
-        //                 itemTopOffset -
-        //                 (effectiveBodyHeight - height - itemHeight);
-        //             scrollRef.current.scrollToOffset({
-        //                 offset,
-        //             });
-        //         }
-        //         Keyboard.removeAllListeners('keyboardDidShow');
-        //     }
-        // );
-    };
-
-    const onPress1 = () => {};
+    const onLike = useCallback(() => {
+        if (uid) {
+            updateCommentLikes(commentID);
+        } else {
+            toggleCallToAuthModal();
+        }
+    }, [updateCommentLikes, uid, toggleCallToAuthModal, commentID]);
 
     return (
         <View
@@ -91,53 +95,16 @@ const Comment = ({
                 }}
             >
                 <View>
-                    <Text
-                        style={{
-                            fontSize: fontFactor * wp(4),
-                            lineHeight: fontFactor * wp(5.09),
-                            fontFamily: 'Poppins_500Medium',
-                        }}
-                    >
-                        @username
-                    </Text>
+                    <Username username={username} fontFactor={fontFactor} />
                     <MarginVertical size={0.2} />
-                    <Text
-                        style={{
-                            fontSize: fontFactor * wp(3.75),
-                            lineHeight: fontFactor * wp(4.77),
-                            fontFamily: 'Poppins_400Regular',
-                            color: '#808080',
-                        }}
-                    >
-                        {moment(new Date()).fromNow()}
-                    </Text>
+                    <CreatedAt createdAt={createdAt} fontFactor={fontFactor} />
                     <MarginVertical size={0.2} />
-                    <Text
-                        style={{
-                            fontSize: fontFactor * wp(3.75),
-                            lineHeight: fontFactor * wp(4.77),
-                            fontFamily: 'Poppins_400Regular',
-                            color: '#808080',
-                        }}
-                    >
-                        0 likes
-                    </Text>
+                    <Likes likesCount={likes.length} fontFactor={fontFactor} />
                 </View>
                 <MarginVertical />
 
                 <View>
-                    <Text
-                        style={{
-                            fontSize: fontFactor * wp(4),
-                            lineHeight: fontFactor * wp(5.09),
-                            fontFamily: 'Poppins_400Regular',
-                            // textAlign: 'left',
-                        }}
-                    >
-                        Comment Comment Comment Comment Comment Comment Comment
-                        Comment Comment Comment Comment Comment Comment Comment
-                        Comment Comment Comment Comment Comment Post
-                    </Text>
+                    <Body body={comment} fontFactor={fontFactor} />
                 </View>
                 <MarginVertical />
                 <View
@@ -146,37 +113,12 @@ const Comment = ({
                         justifyContent: 'space-between',
                     }}
                 >
-                    <TouchableOpacity
-                        onPress={() => (uid ? onPress1() : toggleCallToAuth())}
-                        style={{
-                            padding: fontFactor * wp(2),
-                            margin: -fontFactor * wp(2),
-                        }}
-                    >
-                        <HeartIcon
-                            containerProp={{
-                                width: fontFactor * wp(6.36),
-                                height: fontFactor * wp(6.36),
-                            }}
-                            iconProp={
-                                liked
-                                    ? { fill: 'red', stroke: 'red' }
-                                    : { fill: 'none', stroke: 'black' }
-                            }
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => (uid ? onPress() : toggleCallToAuth())}
-                        style={{
-                            padding: fontFactor * wp(2),
-                            margin: -fontFactor * wp(2),
-                        }}
-                    >
-                        <ReplyIcon
-                            width={fontFactor * wp(6.36)}
-                            height={fontFactor * wp(6.36)}
-                        />
-                    </TouchableOpacity>
+                    <LikeButton
+                        liked={liked}
+                        fontFactor={fontFactor}
+                        onLike={onLike}
+                    />
+                    <ReplyButton onReply={onReply} fontFactor={fontFactor} />
                 </View>
                 <MarginVertical />
             </View>
@@ -189,7 +131,8 @@ const mapStateToProps = ({
         fontFactor,
         margin,
         deviceWidthClass,
-        effectiveBodyHeight,
+        bodyHeight,
+        headerSize,
     },
     forumTempState: { uid },
 }) => ({
@@ -197,9 +140,10 @@ const mapStateToProps = ({
     margin,
     deviceWidthClass,
     uid,
-    effectiveBodyHeight,
+    bodyHeight,
+    headerSize,
 });
 
-export default connect(mapStateToProps)(Comment);
+export default connect(mapStateToProps, { toggleCallToAuthModal })(Comment);
 
 const styles = StyleSheet.create({});

@@ -15,7 +15,6 @@ import Body from './Body';
 import LikeButton from './LikeButton';
 import ReplyButton from './ReplyButton';
 import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
-import { auth } from '../helperFunctions/initializeFirebase';
 import PropTypes from 'prop-types';
 
 const Post = ({
@@ -35,11 +34,14 @@ const Post = ({
     likes,
     createdAt,
     postID,
-    updatePostLikes
+    updatePostLikes,
+    liked,
+    headerSize,
+    bodyHeight,
 }) => {
     const columnMode = checkColumnMode(deviceWidthClass);
     const postRef = useRef(null);
-    
+
     const onReply = useCallback(() => {
         if (uid) {
             commentInputRef.current?.focus();
@@ -47,7 +49,7 @@ const Post = ({
                 postRef,
                 containerRef,
                 scrollRef,
-                effectiveBodyHeight
+                bodyHeight - headerSize
             );
         } else {
             toggleCallToAuthModal();
@@ -58,17 +60,17 @@ const Post = ({
         commentInputRef,
         containerRef,
         postRef,
-        effectiveBodyHeight,
         scrollRef,
+        bodyHeight,
+        headerSize,
     ]);
-    const liked = likes.includes(auth.currentUser.uid);
     const onLike = useCallback(() => {
         if (uid) {
             updatePostLikes(postID);
         } else {
             toggleCallToAuthModal();
         }
-    }, [updatePostLikes, uid, toggleCallToAuthModal, postID,]);
+    }, [updatePostLikes, uid, toggleCallToAuthModal, postID]);
 
     const styles2 = StyleSheet.create({
         postContainer: {
@@ -79,7 +81,6 @@ const Post = ({
             width: columnMode ? '90%' : '100%',
         },
     });
-    console.log('likes', likes);
 
     return (
         <View>
@@ -89,7 +90,6 @@ const Post = ({
             >
                 <View style={[styles.columnMode, styles2.columnMode]}>
                     <View>
-                        <MarginVertical />
                         <Username username={username} fontFactor={fontFactor} />
                         <MarginVertical size={0.2} />
 
@@ -104,7 +104,6 @@ const Post = ({
                         />
                     </View>
                     <MarginVertical />
-
                     <View>
                         <Category category={category} fontFactor={fontFactor} />
                         <MarginVertical size={0.5} />
@@ -164,6 +163,8 @@ const mapStateToProps = ({
         margin,
         deviceWidthClass,
         effectiveBodyHeight,
+        headerSize,
+        bodyHeight,
     },
     forumTempState: { uid },
 }) => ({
@@ -172,6 +173,8 @@ const mapStateToProps = ({
     deviceWidthClass,
     uid,
     effectiveBodyHeight,
+    headerSize,
+    bodyHeight,
 });
 
 export default connect(mapStateToProps, {

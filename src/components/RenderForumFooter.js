@@ -4,14 +4,13 @@ import {
     ActivityIndicator,
     StyleSheet,
     Text,
-    TouchableOpacity,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import processErrorString, {
+import  {
     noPost,
 } from '../helperFunctions/processErrorString';
 import PropTypes from 'prop-types';
-import MarginVertical from './MarginVertical';
+import RetryLoad from './RetryLoad';
 
 export default function RenderForumFooter({
     loadingPosts,
@@ -25,8 +24,7 @@ export default function RenderForumFooter({
 }) {
     const styles2 = StyleSheet.create({
         container: {
-            minHeight: wp(4.4) * fontFactor,
-            paddingVertical: wp(4) * fontFactor,
+            paddingVertical: wp(2.2) * fontFactor,
         },
         fontSizeL1: { fontSize: fontFactor * wp(4) },
         fontSizeL2: { fontSize: fontFactor * wp(5) },
@@ -39,44 +37,18 @@ export default function RenderForumFooter({
     if (loadingPosts) {
         return (
             <View style={styles2.container}>
-                <ActivityIndicator size="small" color="#1A91D7" />
+                <ActivityIndicator size={wp(4) * fontFactor} color="#1A91D7" />
             </View>
         );
     }
 
     if (showError) {
         return (
-            <View style={styles2.container}>
-                <>
-                    <Text
-                        style={[
-                            styles2.fontSizeL2,
-                            styles.karla500Font,
-                            styles.alignTextCenter,
-                        ]}
-                    >
-                        {processErrorString(loadingPostsError)}
-                    </Text>
-                    <MarginVertical size={0.2} />
-                    {
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={retryLoadMorePosts}
-                        >
-                            <Text
-                                style={[
-                                    styles2.fontSizeL1,
-                                    styles.poppins400Font,
-                                    styles.alignTextCenter,
-                                    styles.fontColor808080,
-                                ]}
-                            >
-                                Retry
-                            </Text>
-                        </TouchableOpacity>
-                    }
-                </>
-            </View>
+            <RetryLoad
+                error={loadingPostsError}
+                fontFactor={fontFactor}
+                onRetry={retryLoadMorePosts}
+            />
         );
     }
 

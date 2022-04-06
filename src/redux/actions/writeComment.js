@@ -5,7 +5,7 @@ import { v1 as uuidv1 } from 'uuid';
 import { auth } from '../../helperFunctions/initializeFirebase';
 import commentOperation from './commentOperation';
 
-const writeComment = (data) => async (dispatch) => {
+const writeComment = (data, updatePostDetails) => async (dispatch) => {
     if (auth.currentUser.uid && auth.currentUser.displayName) {
         dispatch({
             type: INITIATE_COMMENT,
@@ -18,7 +18,7 @@ const writeComment = (data) => async (dispatch) => {
             username: auth.currentUser.displayName,
             likes: [],
         };
-        commentOperation(dispatch, data, docObj, commentID );
+        await commentOperation(dispatch, data, docObj, commentID,  updatePostDetails);
     }
 };
 

@@ -31,20 +31,22 @@ function SubScreenTemplate({
             },
         }
     );
-    const scrollYClamped = Animated.diffClamp(
-        scrollY.current,
-        0,
-        stickyHeaderHeight
+    const scrollYClampedToPositive = scrollY.current.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+        extrapolateLeft: 'clamp',
+    });
+    const negativeScrollYClampedToPositive = Animated.multiply(
+        scrollYClampedToPositive,
+        -1
     );
-    const translateY = scrollYClamped.interpolate(
-        {
-            inputRange: [0, stickyHeaderHeight],
-            outputRange: [0, -stickyHeaderHeight],
-        },
-        {
-            useNativeDriver: true,
-        }
+
+    const translateY = Animated.diffClamp(
+        negativeScrollYClampedToPositive,
+        -stickyHeaderHeight,
+        0
     );
+    
     const renderItem = useCallback(({ item }) => item.data, []);
 
     return (
@@ -70,7 +72,6 @@ function SubScreenTemplate({
                     }
                 }
                 data={sectionComponents}
-                bounces={false}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => 'keyExtractor' + index}
                 ref={scrollRef}
