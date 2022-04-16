@@ -24,7 +24,7 @@ function ServicesIntro({ fontFactor, contentContainerWidth }) {
         <View style={[styles.container, { backgroundColor: '#161B26' }]}>
             <ImageBackground
                 // eslint-disable-next-line no-undef
-                source={require('../../assets/images/image8.png')}
+                source={require('../../assets/images/image8.webp')}
                 style={styles.container}
                 resizeMode="cover"
             >

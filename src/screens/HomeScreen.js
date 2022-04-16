@@ -3,6 +3,7 @@ import { StyleSheet, FlatList, View } from 'react-native';
 import Welcome from '../components/Welcome';
 import AboutMini from '../components/AboutMini';
 import ServicesMini from '../components/ServicesMini';
+import ServicesMiniPair from '../components/ServicesMiniPair';
 import ForumMini from '../components/ForumMini';
 import ContactMini from '../components/ContactMini';
 import { connect } from 'react-redux';
@@ -10,6 +11,11 @@ import PropTypes from 'prop-types';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useScrollToTop } from '@react-navigation/native';
 import updateEffectiveBodyHeight from '../redux/actions/updateEffectiveBodyHeight';
+import ServicesMiniIntro from '../components/ServicesMiniIntro';
+import checkColumnMode from '../helperFunctions/checkColumnMode';
+import {
+    serviceDetails,
+} from '../constants';
 
 function HomeScreen({
     margin,
@@ -23,20 +29,92 @@ function HomeScreen({
     const tabBarHeight = useBottomTabBarHeight();
     const scrollRef = useRef(null);
     useScrollToTop(scrollRef);
+    const servicesArray = checkColumnMode(deviceWidthClass)
+        ? [
+              {
+                  data: (
+                      <ServicesMiniPair
+                          data1={{
+                              title: serviceDetails[0].title,
+                              body: serviceDetails[0].body,
+                              index: 0,
+                          }}
+                          data2={{
+                              title: serviceDetails[1].title,
+                              body: serviceDetails[1].body,
+                              index: 1,
+                          }}
+                          spacing={2}
+                      />
+                  ),
+              },
+              {
+                  data: (
+                      <ServicesMiniPair
+                          data1={{
+                              title: serviceDetails[2].title,
+                              body: serviceDetails[2].body,
+                              index: 2,
+                          }}
+                          data2={{
+                              title: serviceDetails[3].title,
+                              body: serviceDetails[3].body,
+                              index: 3,
+                          }}
+                          spacing={2}
+                      />
+                  ),
+              },
+              {
+                  data: (
+                      <ServicesMiniPair
+                          data1={{
+                              title: serviceDetails[4].title,
+                              body: serviceDetails[4].body,
+                              index: 4,
+                          }}
+                          data2={{
+                              title: serviceDetails[5].title,
+                              body: serviceDetails[5].body,
+                              index: 5,
+                          }}
+                          spacing={2}
+                      />
+                  ),
+              },
+              {
+                  data: (
+                      <ServicesMiniPair
+                          data1={{
+                              title: serviceDetails[6].title,
+                              body: serviceDetails[6].body,
+                              index: 6,
+                          }}
+                          spacing={4}
+                      />
+                  ),
+              },
+          ]
+        : serviceDetails.map((val, index) => ({
+              data: (
+                  <ServicesMini
+                      data={{ title: val.title, body: val.body, index }}
+                  />
+              ),
+          }));
     const sectionComponents = [
         {
-            key: '0',
             data: (
                 <Welcome
                     margin={margin}
                     bodyHeight={effectiveBodyHeight}
                     fontFactor={fontFactor}
                     deviceWidthClass={deviceWidthClass}
+                    scrollRef={scrollRef}
                 />
             ),
         },
         {
-            key: '1',
             data: (
                 <AboutMini
                     fontFactor={fontFactor}
@@ -46,17 +124,10 @@ function HomeScreen({
             ),
         },
         {
-            key: '2',
-            data: (
-                <ServicesMini
-                    margin={margin}
-                    fontFactor={fontFactor}
-                    deviceWidthClass={deviceWidthClass}
-                />
-            ),
+            data: <ServicesMiniIntro margin={margin} fontFactor={fontFactor} />,
         },
+        ...servicesArray,
         {
-            key: '3',
             data: (
                 <ForumMini
                     margin={margin}
@@ -66,7 +137,6 @@ function HomeScreen({
             ),
         },
         {
-            key: '4',
             data: (
                 <ContactMini
                     margin={margin}
@@ -78,7 +148,7 @@ function HomeScreen({
     ];
 
     useEffect(() => {
-        if (bodyHeight && tabBarHeight) {
+        if (bodyHeight && tabBarHeight && !effectiveBodyHeight) {
             setEffectiveBodyHeight(() => {
                 const effectiveBodyHeight = bodyHeight - tabBarHeight;
                 updateEffectiveBodyHeight({
@@ -88,10 +158,15 @@ function HomeScreen({
                 return effectiveBodyHeight;
             });
         }
-    }, [bodyHeight, tabBarHeight, updateEffectiveBodyHeight]);
+    }, [
+        bodyHeight,
+        tabBarHeight,
+        updateEffectiveBodyHeight,
+        effectiveBodyHeight,
+    ]);
 
     if (!effectiveBodyHeight) {
-        return null;
+        return <></>;
     }
 
     return (

@@ -53,7 +53,7 @@ function BriefHistory({ fontFactor, margin, columnMode }) {
                 <View style={[columnMode && styles.columnElement]}>
                     <Image
                         // eslint-disable-next-line no-undef
-                        source={require('../../assets/images/image1.png')}
+                        source={require('../../assets/images/image1.webp')}
                         style={{
                             width: '100%',
                             height: isWeb ? '100%' : undefined,

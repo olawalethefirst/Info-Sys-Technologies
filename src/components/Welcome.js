@@ -1,34 +1,43 @@
-import React from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
     StyleSheet,
     Text,
     View,
     ImageBackground,
-    Pressable,
     Animated,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import PropTypes from 'prop-types';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 
-/*global require*/
-/*eslint no-undef: "error"*/
-
-function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
-    const animatedValue = new Animated.Value(1);
-    const onPressIn = () => {
-        Animated.spring(animatedValue, {
-            toValue: 0.8,
+function Welcome({
+    margin,
+    bodyHeight,
+    fontFactor,
+    deviceWidthClass,
+    scrollRef,
+}) {
+    const [offset, setOffset] = useState(0);
+    const animatedValue = useRef(new Animated.Value(1)).current;
+    const onPressIn = useCallback(() => {
+        Animated.timing(animatedValue, {
+            toValue: 0.9,
             useNativeDriver: true,
+            duration: 150,
         }).start();
-    };
-    const onPressOut = () => {
-        Animated.spring(animatedValue, {
+    }, [animatedValue]);
+    const onPressOut = useCallback(() => {
+        Animated.timing(animatedValue, {
             toValue: 1,
             useNativeDriver: true,
+            duration: 150,
         }).start();
-    };
+    }, [animatedValue]);
+    const onPress = useCallback(() => {
+        scrollRef.current?.scrollToOffset({ offset, animated: true });
+    }, [scrollRef, offset]);
     const columnMode = checkColumnMode(deviceWidthClass);
 
     return (
@@ -39,9 +48,15 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
                     minHeight: bodyHeight,
                 },
             ]}
+            onLayout={({
+                nativeEvent: {
+                    layout: { height },
+                },
+            }) => setOffset(height)}
         >
             <ImageBackground
-                source={require('../../assets/images/background.png')}
+                // eslint-disable-next-line no-undef
+                source={require('../../assets/images/background.webp')}
                 resizeMode="cover"
                 resizeMethod="resize"
                 style={[
@@ -93,7 +108,11 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
                         We strive for nothing but the best.
                     </Text>
                     <MarginVertical size={2} />
-                    <Pressable onPressIn={onPressIn} onPressOut={onPressOut}>
+                    <TouchableWithoutFeedback
+                        onPress={onPress}
+                        onPressIn={onPressIn}
+                        onPressOut={onPressOut}
+                    >
                         <Animated.View
                             style={[
                                 styles.button,
@@ -114,7 +133,7 @@ function Welcome({ margin, bodyHeight, fontFactor, deviceWidthClass }) {
                                 Learn more
                             </Text>
                         </Animated.View>
-                    </Pressable>
+                    </TouchableWithoutFeedback>
                     <MarginVertical size={4} />
                 </View>
                 <View
@@ -130,6 +149,7 @@ Welcome.propTypes = {
     bodyHeight: PropTypes.number,
     fontFactor: PropTypes.number,
     deviceWidthClass: PropTypes.string,
+    scrollRef: PropTypes.object,
 };
 
 export default React.memo(Welcome);

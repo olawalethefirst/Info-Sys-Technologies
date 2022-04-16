@@ -10,6 +10,7 @@ import Animated, {
 export default function SliderCircle({ size, index, pageNo }) {
     const AnimatedCircle = Animated.createAnimatedComponent(Circle);
     const animatedCircleStyle = useAnimatedStyle(() => {
+        'worklet';
         return {
             opacity: withTiming((Math.round(pageNo.value) === index) + 0), //opacity = 1 when active
         };

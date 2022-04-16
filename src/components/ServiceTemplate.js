@@ -1,89 +1,71 @@
-import React, { useEffect, useRef } from 'react';
-import {
-    StyleSheet,
-    Text,
-    Pressable,
-    View,
-    Animated,
-    Easing,
-} from 'react-native';
+import React, { useEffect, useCallback } from 'react';
+import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
 import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
-import RightArrowIcon from './RightArrowIcon';
+import LearnMoreIcon from './LearnMoreIcon';
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+    withRepeat,
+} from 'react-native-reanimated';
+import { useNavigation } from '@react-navigation/native';
+import { Services } from '../constants';
 
-export default function ServiceTemplate({
-    columnMode,
+function ServiceTemplate({
     children,
     serviceTitle,
     fontFactor,
     serviceBody,
+    index,
 }) {
-    const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-    const animatedValue = useRef(new Animated.Value(0)).current;
-    const animatedValue1 = useRef(new Animated.Value(1)).current;
-    const animatedValue2 = useRef(new Animated.Value(1)).current;
-    const animatedValue3 = useRef(new Animated.Value(0)).current;
+    const { navigate } = useNavigation();
+    const translateX = useSharedValue(10);
+    const touchOpacity = useSharedValue(1);
+    const animatedOpacity = useAnimatedStyle(() => ({
+        opacity: touchOpacity.value,
+    }));
+    const pendulumLoop = useCallback(
+        () => (translateX.value = withRepeat(withTiming(15), -1, true)),
+        [translateX]
+    );
+    const onPressIn = useCallback(() => {
+        translateX.value = withTiming(10, { duration: 50 });
+        touchOpacity.value = withTiming(0.5, { duration: 150 });
+    }, [touchOpacity, translateX]);
+    const onPressOut = useCallback(() => {
+        touchOpacity.value = withTiming(1, { duration: 150 });
+        pendulumLoop();
+    }, [touchOpacity, pendulumLoop]);
+    const onPress = useCallback(() => {
+        navigate(Services, { page: index + 1 });
+    }, [navigate, index]);
 
-    const indefiniteSpring = useRef(
-        Animated.loop(
-            Animated.sequence([
-                Animated.timing(animatedValue, {
-                    toValue: 4,
-                    duration: 250,
-                    useNativeDriver: true,
-                    easing: Easing.in,
-                }),
-                Animated.timing(animatedValue, {
-                    toValue: 0,
-                    duration: 250,
-                    useNativeDriver: true,
-                    easing: Easing.in,
-                }),
-            ])
-        )
-    ).current;
-    const onPressIn = useRef(
-        Animated.parallel([
-            Animated.spring(animatedValue1, {
-                toValue: 0.6,
-                useNativeDriver: true,
-            }),
-            Animated.timing(animatedValue2, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: true,
-            }),
-            Animated.timing(animatedValue3, {
-                toValue: 0.7,
-                duration: 300,
-                useNativeDriver: true,
-            }),
-        ])
-    ).current;
-    const onPressOut = useRef(
-        Animated.parallel([
-            Animated.spring(animatedValue1, {
-                toValue: 1,
-                useNativeDriver: true,
-            }),
-            Animated.timing(animatedValue2, {
-                toValue: 1,
-                duration: 300,
-                useNativeDriver: true,
-            }),
-            Animated.timing(animatedValue3, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: true,
-            }),
-        ])
-    ).current;
+    const styles2 = StyleSheet.create({
+        iconContainer: {
+            height: wp(12) * fontFactor,
+            width: wp(12) * fontFactor,
+            borderRadius: (45 * fontFactor) / 2,
+        },
+        container: {
+            paddingHorizontal: wp(8) * fontFactor,
+            paddingTop: wp(8) * fontFactor,
+            paddingBottom: wp(5.3) * fontFactor,
+        },
+        button: {
+            paddingVertical: wp(2) * fontFactor,
+        },
+        animatedArrow: {
+            height: fontFactor * wp(3.58),
+            alignSelf: 'center',
+            justifyContent: 'center',
+        },
+    });
 
     useEffect(() => {
-        indefiniteSpring.start();
-    });
-    console.log(animatedValue2);
+        pendulumLoop();
+    }, [pendulumLoop]);
 
     return (
         <View
@@ -94,12 +76,11 @@ export default function ServiceTemplate({
                     paddingTop: 30,
                     paddingBottom: 20,
                 },
-                columnMode && {},
             ]}
         >
-            <Animated.View style={[styles.iconContainer]}>
+            <View style={[styles.iconContainer, styles2.iconContainer]}>
                 {children}
-            </Animated.View>
+            </View>
             <MarginVertical size={1.5} />
 
             <Text
@@ -129,65 +110,20 @@ export default function ServiceTemplate({
             </Text>
             <MarginVertical size={1} />
 
-            <AnimatedPressable
-                hitSlop={wp(2)}
-                onPressIn={() => onPressIn.start()}
-                onPressOut={() => onPressOut.start()}
-                style={[
-                    styles.button,
-                    {
-                        paddingVertical: fontFactor * wp(3.58),
-                        paddingHorizontal: fontFactor * wp(4.55),
-                        marginLeft: -(fontFactor * wp(4.55)),
-                        opacity: animatedValue1,
-                    },
-                ]}
+            <TouchableWithoutFeedback
+                onPressIn={onPressIn}
+                onPressOut={onPressOut}
+                onPress={onPress}
             >
-                <Text
-                    style={[
-                        styles.buttonText,
-                        {
-                            fontSize: fontFactor * wp(3.58),
-                            lineHeight: fontFactor * wp(4.55),
-                        },
-                    ]}
-                >
-                    Learn more{'   '}
-                </Text>
                 <Animated.View
-                    style={[
-                        styles.buttonText,
-                        {
-                            height: fontFactor * wp(2.6),
-                            width: (fontFactor * wp(2.6) * 330) / 180,
-                            alignSelf: 'center',
-                        },
-                        {
-                            opacity: animatedValue3,
-                        },
-                    ]}
+                    style={[styles.button, styles2.button, animatedOpacity]}
                 >
-                    <RightArrowIcon />
+                    <LearnMoreIcon
+                        height={fontFactor * wp(4)}
+                        translateX={translateX}
+                    />
                 </Animated.View>
-                <Animated.View
-                    style={[
-                        styles.buttonText,
-                        {
-                            height: fontFactor * wp(2.6),
-                            width: (fontFactor * wp(2.6) * 330) / 180,
-                            alignSelf: 'center',
-                            position: 'relative',
-                            left: -(fontFactor * wp(2.6) * 330) / 180,
-                        },
-                        {
-                            transform: [{ translateX: animatedValue }],
-                            opacity: animatedValue2,
-                        },
-                    ]}
-                >
-                    <RightArrowIcon />
-                </Animated.View>
-            </AnimatedPressable>
+            </TouchableWithoutFeedback>
         </View>
     );
 }
@@ -196,8 +132,8 @@ ServiceTemplate.propTypes = {
     children: PropTypes.object,
     serviceTitle: PropTypes.string,
     serviceBody: PropTypes.string,
-    columnMode: PropTypes.bool,
     fontFactor: PropTypes.number,
+    index: PropTypes.number,
 };
 
 const styles = StyleSheet.create({
@@ -207,10 +143,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     iconContainer: {
-        height: 45,
-        width: 45,
         backgroundColor: '#1A91D7',
-        borderRadius: 45 / 2,
         padding: '4%',
     },
     heading: {
@@ -223,10 +156,11 @@ const styles = StyleSheet.create({
     },
     button: {
         alignSelf: 'flex-start',
-        flexDirection: 'row',
     },
     buttonText: {
         color: '#fff',
         fontFamily: 'Poppins_600SemiBold',
     },
 });
+
+export default React.memo(ServiceTemplate);

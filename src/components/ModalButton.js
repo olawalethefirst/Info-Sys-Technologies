@@ -10,7 +10,7 @@ function ModalButton({ fontFactor, text, submit, onPress, disabled }) {
             color: submit ? '#fff' : 'red',
             fontSize: fontFactor * wp(4.5),
             lineHeight: fontFactor * wp(5.72),
-            opacity: disabled ? 0.5 : 1,
+            // opacity: disabled ? 0.5 : 1,
         },
         container: {
             backgroundColor: submit ? '#1A91D7' : '#ddd',

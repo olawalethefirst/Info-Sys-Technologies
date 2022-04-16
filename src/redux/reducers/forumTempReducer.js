@@ -25,19 +25,7 @@ import {
     CLEAR_POST_SUCCESSFUL,
     RESET_POST_FAILED,
     CLEAR_POST_FAILED,
-    INITIATE_COMMENT,
-    COMMENT_SUCCESSFUL,
-    COMMENT_FAILED,
-    CLEAR_COMMENT_SUCCESSFUL,
-    RESET_COMMENT_FAILED,
-    CLEAR_COMMENT_FAILED,
-    SET_POST_TITLE,
-    RESET_POST_TITLE,
-    TOGGLE_COMMENT_LIKE,
-    TOGGLE_POST_LIKE,
-    UPDATE_POST,
 } from '../actions/actionTypes';
-import { auth } from '../../helperFunctions/initializeFirebase';
 import { noPost } from '../../helperFunctions/processErrorString';
 
 // inital State
@@ -199,81 +187,6 @@ const forumTempReducer = (state = initialState, action) => {
                 posting: false,
                 postData: null,
             };
-        case INITIATE_COMMENT:
-            return { ...state, commenting: true };
-        case COMMENT_SUCCESSFUL:
-            return { ...state, commentSuccessful: true, commenting: false };
-        case COMMENT_FAILED:
-            return {
-                ...state,
-                commentFailed: true,
-                commenting: false,
-                commentData: action.payload,
-            };
-        case CLEAR_COMMENT_SUCCESSFUL:
-            return { ...state, commentSuccessful: false };
-        case RESET_COMMENT_FAILED:
-            return {
-                ...state,
-                commentFailed: false,
-                commenting: true,
-                commentData: null,
-            };
-        case CLEAR_COMMENT_FAILED:
-            return { ...state, commentFailed: false, commentData: null };
-        // case SET_POST_TITLE:
-        //     return { ...state, postDetails: [action.payload] };
-        // case RESET_POST_TITLE:
-        //     return { ...state, postDetails: [] };
-        // case TOGGLE_POST_LIKE:
-        //     return {
-        //         ...state,
-        //         postDetails: state.postDetails.map((postDetail) => {
-        //             if (postDetail.postID === action.payload) {
-        //                 return {
-        //                     ...postDetail,
-        //                     likes: postDetail.likes.includes(
-        //                         auth.currentUser.uid
-        //                     )
-        //                         ? postDetail.likes.filter(
-        //                               (val) => val !== auth.currentUser.uid
-        //                           )
-        //                         : [...postDetail.likes, auth.currentUser.uid],
-        //                 };
-        //             }
-        //             return postDetail;
-        //         }),
-        //     };
-        // case TOGGLE_COMMENT_LIKE:
-        //     return {
-        //         ...state,
-        //         postDetails: state.postDetails.map((postDetail) => {
-        //             if (postDetail.commentID === action.payload) {
-        //                 return {
-        //                     ...postDetail,
-        //                     likes: postDetail.likes.includes(
-        //                         auth.currentUser.uid
-        //                     )
-        //                         ? postDetail.likes.filter(
-        //                               (val) => val !== auth.currentUser.uid
-        //                           )
-        //                         : [...postDetail.likes, auth.currentUser.uid],
-        //                 };
-        //             }
-        //             return postDetail;
-        //         }),
-        //     };
-        // case UPDATE_POST:
-        //     return {
-        //         ...state,
-        //         postDetails: state.postDetails.map((postDetail) => {
-        //             if (postDetail.postID === action.payload.postID) {
-        //                 console.log('returning this', action.payload);
-        //                 return action.payload;
-        //             }
-        //             return postDetail;
-        //         }),
-        //     };
         default:
             return state;
     }

@@ -47,10 +47,12 @@ function PreApp() {
         async function prepare() {
             try {
                 await SplashScreen.preventAutoHideAsync();
+                console.log('loading assets');
                 await loadAssetsAsync();
+                console.log('Assets completed load');
                 setAssetsLoaded(true);
             } catch (e) {
-                console.log('assets loading failed', e);
+                alert('assets loading failed', e);
                 prepare();
             }
         }
@@ -66,6 +68,7 @@ function PreApp() {
                 !bodyHeight ||
                 !fontFactor
             ) {
+                console.log('no settings data');
                 triggerSynchronousActions();
             }
         }
@@ -97,9 +100,14 @@ function PreApp() {
                 fontFactor &&
                 assetsLoaded
             ) {
-                updateAuthState(dispatch);
+                console.log('conditions to hide splash screen met');
+                dispatch(updateAuthState());
                 setAppIsReady(async () => {
+                    console.log('hiding splash screen');
                     await SplashScreen.hideAsync();
+                    console.log(
+                        'splash screen hidden successfully, setting app ready to true'
+                    );
                     return true;
                 });
             }
@@ -114,6 +122,8 @@ function PreApp() {
         assetsLoaded,
         dispatch,
     ]);
+
+    // console.log('appIsReady', appIsReady)
 
     if (!appIsReady) {
         return null;

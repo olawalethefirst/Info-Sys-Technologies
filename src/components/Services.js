@@ -1,56 +1,38 @@
-/* eslint-disable no-undef */
-import React, { useRef, useEffect, useCallback } from 'react';
-import { SafeAreaView, View, Dimensions, StyleSheet } from 'react-native';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
+import {
+    SafeAreaView,
+    View,
+    Dimensions,
+    StyleSheet,
+    InteractionManager,
+} from 'react-native';
 import PagerView from 'react-native-pager-view';
 import ServicesIntro from './ServicesIntro';
 import ServicesTemplate from './ServicesTemplate';
-import {
-    generalInformationTechnologyConsulting,
-    accountingSoftwareAndFinancialManagementSystem,
-    internalControlAndComplianceAudit,
-    fixedAssetsManagement,
-    feasibilityAndBusinessPlanning,
-    technologyAndManagementDevelopmentTraining,
-    cloudAccounting,
-} from '../serviceDetails';
+import { serviceDetails } from '../constants';
 import DancingDownArrow from './DancingDownArrow';
 import SlideIndicator from './SlideIndicator';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
 import Animated, {
     useSharedValue,
-    useHandler,
-    useEvent,
     useAnimatedStyle,
     withTiming,
 } from 'react-native-reanimated';
 import { connect } from 'react-redux';
+import useAnimatedPagerScrollHandler from '../hooks/useAnimatedPagerScrollHandler';
+import { useRoute, useIsFocused } from '@react-navigation/native';
+
+const AnimatedPagerView = Animated.createAnimatedComponent(PagerView);
 
 function Services({ headerSize, fontFactor, tabBarHeight }) {
+    const { params } = useRoute();
+    const page = params?.page;
+    const [initialPage] = useState(page ?? 0);
     const { width } = Dimensions.get('window');
+    const isFocused = useIsFocused();
     const pageNo = useSharedValue(0);
     const modalAwareAnimatedValue = useSharedValue(0);
-    const AnimatedPagerView = Animated.createAnimatedComponent(PagerView);
-    const useAnimatedPagerScrollHandler = (handlers, dependencies) => {
-        const { context, doDependenciesDiffer } = useHandler(
-            handlers,
-            dependencies
-        );
-
-        return useEvent(
-            (event) => {
-                'worklet';
-
-                const { onPageScroll } = handlers;
-
-                if (onPageScroll && event.eventName.endsWith('onPageScroll')) {
-                    onPageScroll(event, context);
-                }
-            },
-            ['onPageScroll'],
-            doDependenciesDiffer
-        );
-    };
     const onPageScroll = useAnimatedPagerScrollHandler({
         onPageScroll: (e) => {
             'worklet';
@@ -69,35 +51,55 @@ function Services({ headerSize, fontFactor, tabBarHeight }) {
     });
     const pagerRef = useRef(null);
     const navigation = useNavigation();
-    const drawerIconWidth = headerSize * 1.1; //drawerIcon width is 1.1 * headerSize
-    const arrowWidth = 0.25 * drawerIconWidth;
-    const slideIndicatorWidth = 0.15 * drawerIconWidth;
-    const contentContainerWidth = width - 2 * drawerIconWidth; //uses drawerIconWidth as marginHorizontal
-    const scrollToNextPage = () => {
+    const drawerIconWidth = useRef(headerSize * 1.1).current; //drawerIcon width is 1.1 * headerSize
+    const arrowWidth = useRef(0.25 * drawerIconWidth).current;
+    const slideIndicatorWidth = useRef(0.15 * drawerIconWidth).current;
+    const contentContainerWidth = useRef(width - 2 * drawerIconWidth).current; //uses drawerIconWidth as marginHorizontal
+    const scrollToNextPage = useCallback(() => {
         pagerRef.current?.setPage(pageNo.value + 1);
-    };
+    }, [pageNo]);
     const scrollToTop = useCallback(() => {
         pagerRef.current?.setPage(0);
     }, []);
-    let key = 0;
-
-    useEffect(() => {
+    const scheduleScrollToTop = useCallback(() => {
         navigation.addListener('tabPress', () => {
-            if (navigation.isFocused()) {
+            if (isFocused) {
                 scrollToTop();
             }
         });
-        return () => navigation.removeListener('');
-    }, [navigation, scrollToTop]);
+    }, [navigation, isFocused, scrollToTop]);
+    const unSubscribeFromTabPress = useCallback(()=> navigation.removeListener('tabPress'), [navigation])
+    const scrollToPage = useCallback(() => {
+        if (page) {
+            pagerRef.current?.setPage(page);
+            navigation.setParams({
+                page: null,
+            });
+        }
+    }, [navigation, page]);
+    let key = 0;
+
+    useEffect(() => {
+        const interaction =
+            InteractionManager.runAfterInteractions(scheduleScrollToTop);
+        return () => {
+            interaction.cancel();
+            unSubscribeFromTabPress();
+        };
+    }, [unSubscribeFromTabPress, scheduleScrollToTop]);
+
+    useEffect(() => {
+        const interaction =
+            InteractionManager.runAfterInteractions(scrollToPage);
+        return interaction.cancel;
+    }, [scrollToPage]);
 
     return (
-        <SafeAreaView
-            style={styles.container}
-        >
+        <SafeAreaView style={styles.container}>
             <AnimatedPagerView
                 onPageScroll={onPageScroll}
                 style={{ flex: 1 }}
-                initialPage={0}
+                initialPage={initialPage}
                 orientation="vertical"
                 ref={pagerRef}
                 overScrollMode="never"
@@ -111,9 +113,10 @@ function Services({ headerSize, fontFactor, tabBarHeight }) {
                 <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
-                        details={generalInformationTechnologyConsulting}
-                        title={'General Information Technology Consulting'}
-                        url={require('../../assets/images/image9.png')}
+                        body={serviceDetails[0].body}
+                        title={serviceDetails[0].title}
+                        // eslint-disable-next-line no-undef
+                        url={require('../../assets/images/image9.webp')}
                         fontFactor={fontFactor}
                         contentContainerWidth={contentContainerWidth}
                         modalAwareAnimatedValue={modalAwareAnimatedValue}
@@ -123,9 +126,10 @@ function Services({ headerSize, fontFactor, tabBarHeight }) {
                 <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
-                        details={accountingSoftwareAndFinancialManagementSystem}
-                        title={'Accounting Software & Financial Management'}
-                        url={require('../../assets/images/image10.png')}
+                        body={serviceDetails[1].body}
+                        title={serviceDetails[1].title}
+                        // eslint-disable-next-line no-undef
+                        url={require('../../assets/images/image10.webp')}
                         fontFactor={fontFactor}
                         contentContainerWidth={contentContainerWidth}
                         modalAwareAnimatedValue={modalAwareAnimatedValue}
@@ -135,9 +139,10 @@ function Services({ headerSize, fontFactor, tabBarHeight }) {
                 <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
-                        details={internalControlAndComplianceAudit}
-                        title={'Internal Control & Compliance Audit'}
-                        url={require('../../assets/images/image11.png')}
+                        body={serviceDetails[2].body}
+                        title={serviceDetails[2].title}
+                        // eslint-disable-next-line no-undef
+                        url={require('../../assets/images/image11.webp')}
                         fontFactor={fontFactor}
                         contentContainerWidth={contentContainerWidth}
                         modalAwareAnimatedValue={modalAwareAnimatedValue}
@@ -147,9 +152,10 @@ function Services({ headerSize, fontFactor, tabBarHeight }) {
                 <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
-                        details={cloudAccounting}
-                        title={'Cloud Accounting'}
-                        url={require('../../assets/images/image12.png')}
+                        body={serviceDetails[3].body}
+                        title={serviceDetails[3].title}
+                        // eslint-disable-next-line no-undef
+                        url={require('../../assets/images/image12.webp')}
                         fontFactor={fontFactor}
                         contentContainerWidth={contentContainerWidth}
                         modalAwareAnimatedValue={modalAwareAnimatedValue}
@@ -159,9 +165,10 @@ function Services({ headerSize, fontFactor, tabBarHeight }) {
                 <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
-                        details={technologyAndManagementDevelopmentTraining}
-                        title={'Technology & Management Development Training'}
-                        url={require('../../assets/images/image13.png')}
+                        body={serviceDetails[4].body}
+                        title={serviceDetails[4].title}
+                        // eslint-disable-next-line no-undef
+                        url={require('../../assets/images/image13.webp')}
                         fontFactor={fontFactor}
                         contentContainerWidth={contentContainerWidth}
                         modalAwareAnimatedValue={modalAwareAnimatedValue}
@@ -171,9 +178,10 @@ function Services({ headerSize, fontFactor, tabBarHeight }) {
                 <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
-                        details={feasibilityAndBusinessPlanning}
-                        title={'Feasibility & Business Planning'}
-                        url={require('../../assets/images/image14.png')}
+                        body={serviceDetails[5].body}
+                        title={serviceDetails[5].title}
+                        // eslint-disable-next-line no-undef
+                        url={require('../../assets/images/image14.webp')}
                         fontFactor={fontFactor}
                         contentContainerWidth={contentContainerWidth}
                         modalAwareAnimatedValue={modalAwareAnimatedValue}
@@ -183,9 +191,10 @@ function Services({ headerSize, fontFactor, tabBarHeight }) {
                 <View key={`${key++}`} collapsable={false}>
                     <ServicesTemplate
                         headerSize={headerSize}
-                        details={fixedAssetsManagement}
-                        title={'Fixed Assets Management (FAM)'}
-                        url={require('../../assets/images/image15.png')}
+                        body={serviceDetails[6].body}
+                        title={serviceDetails[6].title}
+                        // eslint-disable-next-line no-undef
+                        url={require('../../assets/images/image15.webp')}
                         fontFactor={fontFactor}
                         contentContainerWidth={contentContainerWidth}
                         modalAwareAnimatedValue={modalAwareAnimatedValue}
@@ -229,8 +238,8 @@ const mapStateToProps = ({
 
 const styles = StyleSheet.create({
     container: {
-        flex:1
-    }
-})
+        flex: 1,
+    },
+});
 
 export default connect(mapStateToProps)(React.memo(Services));

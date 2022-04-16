@@ -41,6 +41,8 @@ function CommentResultModal({
         },
     });
 
+    console.log('commentResultVisible in modal', commentResultVisible)
+
     return (
         <Modal
             isVisible={commentResultVisible}
@@ -54,17 +56,23 @@ function CommentResultModal({
             style={[styles.modal, styles2.modal]}
         >
             {commenting && (
-                <Animated.View entering={FadeIn} exiting={FadeOut}>
+                <Animated.View 
+                // entering={FadeIn} exiting={FadeOut}
+                >
                     <ModalActivityIndicator />
                 </Animated.View>
             )}
             {result && (
-                <Animated.View entering={FadeIn} exiting={FadeOut}>
+                <Animated.View 
+                // entering={FadeIn} exiting={FadeOut}
+                >
                     <ModalTextBlock text={result} color={resultColor} />
                 </Animated.View>
             )}
             {commentFailed && (
-                <Animated.View entering={FadeIn} exiting={FadeOut}>
+                <Animated.View 
+                // entering={FadeIn} exiting={FadeOut}
+                >
                     <ModalButton
                         text={'retry'}
                         submit
@@ -73,7 +81,9 @@ function CommentResultModal({
                 </Animated.View>
             )}
             {result && (
-                <Animated.View entering={FadeIn} exiting={FadeOut}>
+                <Animated.View 
+                // entering={FadeIn} exiting={FadeOut}
+                >
                     <ModalButton text={'cancel'} onPress={closeCommentResult} />
                 </Animated.View>
             )}

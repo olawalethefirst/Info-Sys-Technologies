@@ -41,7 +41,7 @@ import usePostDetails from '../hooks/usePostDetails';
 import RenderPostFooter from '../components/RenderPostFooter';
 import { useIsFocused } from '@react-navigation/native';
 
-function PostScreen({
+function PostScreen({ //add tabListener to scroll to Top here and forum screen
     margin,
     fontFactor,
     headerSize,
@@ -107,7 +107,7 @@ function PostScreen({
     const { postID } = params;
 
     const renderItem = useCallback(
-        ({ item, index }) => {
+        ({ item }) => {
             const {
                 body,
                 category,
@@ -116,7 +116,6 @@ function PostScreen({
                 likes,
                 createdAt,
                 postID,
-                owner,
                 comment,
                 commentID,
             } = item;
@@ -162,7 +161,7 @@ function PostScreen({
             updateCommentLikes,
         ]
     );
-    console.log(refreshing);
+    console.log('commentResultVisible', commentResultVisible);
 
     return (
         <SafeAreaView
@@ -186,15 +185,17 @@ function PostScreen({
                         flex: 1,
                     }}
                 >
-                    <SecondaryHeader
-                        heading={'Post'}
-                        headerSize={headerSize}
-                        margin={margin}
-                        translateY={translateY}
-                        fontFactor={fontFactor}
-                        deeplyNestedScreen
-                    />
-
+                    {/* view fixes bug(flatview obstructs stickyheader) in android, test with newer device to confirm if it exists in  */}
+                    <View style={{ zIndex: 100 }}>
+                        <SecondaryHeader
+                            heading={'Post'}
+                            headerSize={headerSize}
+                            margin={margin}
+                            translateY={translateY}
+                            fontFactor={fontFactor}
+                            deeplyNestedScreen
+                        />
+                    </View>
                     <Animated.FlatList
                         refreshControl={
                             <RefreshControl
@@ -257,7 +258,7 @@ function PostScreen({
                                 android: 0,
                             }),
                         }}
-                        // automaticallyAdjustContentInsets={false}
+                        automaticallyAdjustContentInsets={false}
                     />
                     <CommentInput
                         headerSize={headerSize}

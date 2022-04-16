@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
     View,
-    ImageBackground,
     Pressable,
     Dimensions,
+    Image,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
@@ -21,12 +21,13 @@ function ServicesTemplate({
     headerSize,
     url,
     title,
-    details,
+    body,
     fontFactor,
     contentContainerWidth,
     modalAwareAnimatedValue,
     tabBarHeight,
 }) {
+    const { height } = Dimensions.get('window');
     const modalAwareAnimatedValue2 = useSharedValue(0);
     const modalAwareAnimatedStyle = useAnimatedStyle(() => {
         ('worklet');
@@ -38,18 +39,18 @@ function ServicesTemplate({
             ],
         };
     });
-    const onModalWillShow = () => {
+    const onModalWillShow = useCallback(() => {
         ('worklet');
         modalAwareAnimatedValue.value = -height;
         modalAwareAnimatedValue2.value = -height;
-    };
-    const onModalWillHide = () => {
+    }, [modalAwareAnimatedValue2, modalAwareAnimatedValue, height]);
+    const onModalWillHide = useCallback(() => {
         'worklet';
         modalAwareAnimatedValue.value = 0;
         modalAwareAnimatedValue2.value = 0;
-    };
+    }, [modalAwareAnimatedValue2, modalAwareAnimatedValue]);
 
-    const styles2 = {
+    const styles2 = StyleSheet.create({
         heading: {
             fontSize: fontFactor * wp(8.5),
             lineHeight: fontFactor * wp(10.81),
@@ -66,61 +67,61 @@ function ServicesTemplate({
             paddingVertical: wp(0.5),
             borderBottomWidth: fontFactor * wp(0.5),
         },
-    };
-    const { height } = Dimensions.get('window');
+    });
     const [modalOpen, setModalOpen] = useState(false);
-    const toggleModal = () => setModalOpen((state) => !state);
+    const toggleModal = useCallback(() => setModalOpen((state) => !state), []);
 
     return (
         <View style={[styles.container, {}]}>
-            <ImageBackground source={url} style={[styles.container]}>
-                <Animated2.View
-                    style={[styles.container, modalAwareAnimatedStyle]}
-                >
-                    <View style={[styles2.contentContainer]}>
-                        <MarginVertical size={4} />
+            <Image
+                source={url}
+                style={[styles.container, StyleSheet.absoluteFill]}
+            />
+            <Animated2.View style={[styles.container, modalAwareAnimatedStyle]}>
+                <View style={[styles2.contentContainer]}>
+                    <MarginVertical size={4} />
+                    <Text
+                        style={[
+                            styles.whiteText,
+                            styles.poppins600Font,
+                            styles2.heading,
+                        ]}
+                    >
+                        {title}
+                    </Text>
+                    <MarginVertical />
+                    <Text
+                        numberOfLines={3}
+                        ellipsizeMode="tail"
+                        style={[
+                            styles.whiteText,
+                            styles.karla400Font,
+                            styles2.baseFont,
+                        ]}
+                    >
+                        {body}
+                    </Text>
+                    <MarginVertical />
+                    <Pressable
+                        style={[
+                            styles.lightBlueunderline,
+                            styles2.lightBlueunderline,
+                        ]}
+                        onPress={toggleModal}
+                    >
                         <Text
                             style={[
-                                styles.whiteText,
-                                styles.poppins600Font,
-                                styles2.heading,
-                            ]}
-                        >
-                            {title}
-                        </Text>
-                        <MarginVertical />
-                        <Text
-                            numberOfLines={3}
-                            ellipsizeMode="tail"
-                            style={[
-                                styles.whiteText,
-                                styles.karla400Font,
+                                styles.lightBlueText,
                                 styles2.baseFont,
+                                styles.poppins600Font,
                             ]}
                         >
-                            {details}
+                            Continue reading
                         </Text>
-                        <MarginVertical />
-                        <Pressable
-                            style={[
-                                styles.lightBlueunderline,
-                                styles2.lightBlueunderline,
-                            ]}
-                            onPress={toggleModal}
-                        >
-                            <Text
-                                style={[
-                                    styles.lightBlueText,
-                                    styles2.baseFont,
-                                    styles.poppins600Font,
-                                ]}
-                            >
-                                Continue reading
-                            </Text>
-                        </Pressable>
-                    </View>
-                </Animated2.View>
-            </ImageBackground>
+                    </Pressable>
+                </View>
+            </Animated2.View>
+
             <ServiceModal
                 modalOpen={modalOpen}
                 onModalWillHide={onModalWillHide}
@@ -129,7 +130,7 @@ function ServicesTemplate({
                 headerSize={headerSize}
                 tabBarHeight={tabBarHeight}
                 title={title}
-                details={details}
+                body={body}
                 contentContainerWidth={contentContainerWidth}
                 fontFactor={fontFactor}
             />
@@ -141,14 +142,14 @@ ServicesTemplate.propTypes = {
     headerSize: PropTypes.number,
     url: PropTypes.number,
     title: PropTypes.string,
-    details: PropTypes.string,
+    body: PropTypes.string,
     fontFactor: PropTypes.number,
     contentContainerWidth: PropTypes.number,
     modalAwareAnimatedValue: PropTypes.object,
     tabBarHeight: PropTypes.number,
 };
 
-export default React.memo(ServicesTemplate);
+export default React.memo(ServicesTemplate, () => false);
 
 const styles = StyleSheet.create({
     container: {

@@ -15,7 +15,7 @@ export default function ServiceModal({
     headerSize,
     tabBarHeight,
     title,
-    details,
+    body,
     contentContainerWidth,
     fontFactor,
 }) {
@@ -93,7 +93,7 @@ export default function ServiceModal({
                                     styles.whiteText,
                                 ]}
                             >
-                                {details}
+                                {body}
                             </Text>
                         </View>
                     </ScrollView>
@@ -111,7 +111,7 @@ ServiceModal.propTypes = {
     headerSize: PropTypes.number,
     tabBarHeight: PropTypes.number,
     title: PropTypes.string,
-    details: PropTypes.string,
+    body: PropTypes.string,
     contentContainerWidth: PropTypes.number,
     fontFactor: PropTypes.number,
 };

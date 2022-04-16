@@ -4,13 +4,15 @@ import {
     Text,
     ImageBackground,
     Animated,
-    TouchableOpacity,
+    // TouchableOpacity,
     View,
+    TouchableNativeFeedback 
 } from 'react-native';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import { stickyHeaderHeight } from '../constants';
+import { TouchableOpacity} from 'react-native-gesture-handler'
 
 const SecondaryHeader = ({
     deeplyNestedScreen,
@@ -41,7 +43,7 @@ const SecondaryHeader = ({
     return (
         <AnimatedImageBackground
             //eslint-disable-next-line no-undef
-            source={require('../../assets/images/background2.png')}
+            source={require('../../assets/images/background2.webp')}
             resizeMode="cover"
             style={[
                 styles.header,
@@ -53,14 +55,16 @@ const SecondaryHeader = ({
                 deeplyNestedScreen && styles.flexDirectionRow,
                 deeplyNestedScreen && styles.justifyContentFlexStart,
                 deeplyNestedScreen && styles.alignItemsCenter,
+               
             ]}
         >
             {deeplyNestedScreen && (
-                <TouchableOpacity
+                <TouchableOpacity 
                     style={[
                         styles.height100Perc,
                         styles.justifyContentCenter,
                         styles2.widthHeaderSize,
+                        {zIndex: 10000000000}
                     ]}
                     onPress={navigation.goBack}
                 >

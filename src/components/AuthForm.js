@@ -211,7 +211,7 @@ const AuthForm = ({
             padding: fontFactor * wp(4),
             fontSize: fontFactor * wp(4.5),
             lineHeight: fontFactor * wp(5.72),
-            height: fontFactor * wp(13.72),
+            minHeight: fontFactor * wp(13.72),
         },
         passwordContainer: {
             borderWidth: wp(0.5),
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
     toggleViewPassword: {
         justifyContent: 'center',
     },
-    inputText: { fontFamily: 'Poppins_400Regular', color: '#000000', flex: 1 },
+    inputText: { fontFamily: 'Poppins_400Regular', color: '#000000', flex: 1, },
     passwordContainer: {
         flexDirection: 'row',
     },

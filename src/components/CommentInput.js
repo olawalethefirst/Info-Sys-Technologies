@@ -12,6 +12,9 @@ import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { store } from '../redux/store';
 import hideKeyboardAsync from '../helperFunctions/hideKeyboardAsync';
+import { auth } from '../helperFunctions/initializeFirebase';
+import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
+import toggleOnUsernameModal from '../redux/actions/toggleOnUsernameModal';
 
 const CommentInput = ({
     headerSize,
@@ -19,7 +22,9 @@ const CommentInput = ({
     margin,
     commentInputRef,
     postID,
-    writeComment
+    writeComment,
+    toggleOnUsernameModal,
+    toggleCallToAuthModal,
 }) => {
     const [keyboardActive, setKeyboardActive] = useState(false);
     const [comment, setComment] = useState('');
@@ -29,10 +34,26 @@ const CommentInput = ({
             if (keyboardActive) {
                 await hideKeyboardAsync();
             }
-            writeComment(comment);
-            setComment('');
+            if (auth.currentUser?.uid && auth.currentUser?.displayName) {
+                console.log(
+                    'passed',
+                    auth.currentUser.uid,
+                    auth.currentUser.displayName
+                );
+                writeComment(comment);
+                setComment('');
+            } else if (!auth.currentUser?.uid) {
+                toggleCallToAuthModal();
+            } else if (!auth.currentUser?.displayName) {
+                toggleOnUsernameModal();
+            }
         },
-        [writeComment, keyboardActive]
+        [
+            writeComment,
+            keyboardActive,
+            toggleCallToAuthModal,
+            toggleOnUsernameModal,
+        ]
     );
 
     useEffect(() => {
@@ -42,6 +63,7 @@ const CommentInput = ({
         );
         return () => listeners.forEach((listener) => listener.remove());
     }, []);
+
 
     return (
         <View
@@ -58,7 +80,6 @@ const CommentInput = ({
             }}
         >
             <TextInput
-                autoCorrect={false}
                 ref={commentInputRef}
                 style={[
                     {
@@ -92,7 +113,7 @@ const CommentInput = ({
                         fontSize: fontFactor * wp(4),
                         lineHeight: fontFactor * wp(5.1),
                         fontFamily: 'Poppins_600SemiBold',
-                        opacity: !comment.trim() ? 0.7 : 1,
+                        opacity: comment.toString().trim().length > 0 ? 1 : 0.7,
                     }}
                 >
                     send
@@ -102,5 +123,8 @@ const CommentInput = ({
     );
 };
 
-export default CommentInput;
+export default connect(null, {
+    toggleOnUsernameModal,
+    toggleCallToAuthModal,
+})(CommentInput);
 const styles = StyleSheet.create({});

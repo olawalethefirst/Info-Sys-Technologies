@@ -7,6 +7,7 @@ import {
     RefreshControl,
     FlatList,
     Keyboard,
+    Dimensions,
 } from 'react-native';
 import Forum from '../components/Forum';
 import { connect } from 'react-redux';
@@ -240,7 +241,6 @@ function ForumScreen({
                     <Forum fontFactor={fontFactor} uid={uid} margin={margin} />
                 </Pressable>
                 <FlatList
-                    style={{ flex: 1 }}
                     onLayout={({
                         nativeEvent: {
                             layout: { height },
@@ -296,7 +296,7 @@ function ForumScreen({
                         />
                     }
                     onEndReachedThreshold={2}
-                    onEndReached={onEndReached} 
+                    onEndReached={onEndReached}
                 />
                 <AddPost toggleModal={toggleModal} />
                 {uid && (

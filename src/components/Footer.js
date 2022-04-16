@@ -61,7 +61,7 @@ function Footer({
             </Text>
             <Image
                 // eslint-disable-next-line no-undef
-                source={require('../../assets/images/transparent-logo.png')}
+                source={require('../../assets/images/transparent-logo.webp')}
                 style={{
                     height: 30,
                     width: 30,

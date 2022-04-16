@@ -34,7 +34,7 @@ function ForumMini({ margin, fontFactor, bodyHeight }) {
     return (
         <View style={[styles.container]}>
             <ImageBackground
-                source={require('../../assets/images/background1.png')}
+                source={require('../../assets/images/background1.webp')}
                 resizeMode="cover"
                 resizeMethod="resize"
                 style={[

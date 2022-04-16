@@ -20,13 +20,10 @@ import { noComment } from '../helperFunctions/processErrorString';
 import createDocAsync from '../helperFunctions/createDocAsync';
 import timerPromiseAsync from '../helperFunctions/timerPromiseAsync';
 import { v1 as uuidv1 } from 'uuid';
-import {
-    CLEAR_POST_FAILED,
-    CLEAR_POST_SUCCESSFUL,
-} from '../redux/actions/actionTypes';
 
 export default function usePostDetails(initialPostData) {
     const isMounted = useRef(false);
+    const loadCanceled = useRef(false);
     const postID = useRef(initialPostData.postID).current;
 
     const UPDATE_POST = 'UPDATE_POST';
@@ -67,7 +64,6 @@ export default function usePostDetails(initialPostData) {
                 return {
                     ...state,
                     loading: true,
-                    loadCanceled: false,
                     loadError: false,
                 };
             case ACTIVATE_LOAD_ERROR:
@@ -146,9 +142,8 @@ export default function usePostDetails(initialPostData) {
                 return {
                     ...state,
                     refreshing: true,
-                    loadCanceled: true,
                     loading: false,
-                }; //continue here tomorrow
+                };
             case REFRESHING_SUCCESSFUL:
                 return {
                     ...state,
@@ -179,12 +174,16 @@ export default function usePostDetails(initialPostData) {
         commentFailed: false,
         commentResultVisible: false,
         refreshing: false,
-        loadCanceled: false,
     });
 
     const reduxDispatch = useDispatch();
 
     const _isMounted = useCallback(() => isMounted.current, []);
+    const _updateLoadCanceled = useCallback(
+        (val) => (loadCanceled.current = val),
+        []
+    );
+    const _isLoadCanceled = useCallback(() => loadCanceled.current, []);
     const _togglePostLikes = useCallback(
         () =>
             dispatch({
@@ -235,7 +234,8 @@ export default function usePostDetails(initialPostData) {
                     postID,
                 })
             );
-        } catch {
+        } catch (err) {
+            console.log('error', err);
             if (_isMounted()) {
                 _togglePostLikes();
             }
@@ -246,7 +246,8 @@ export default function usePostDetails(initialPostData) {
             try {
                 _toggleCommentLikes(commentID);
                 await updateLikeAsync(commentID, comment);
-            } catch {
+            } catch (err) {
+                console.log('error', err);
                 if (_isMounted()) {
                     _toggleCommentLikes(commentID);
                 }
@@ -255,6 +256,7 @@ export default function usePostDetails(initialPostData) {
         [_toggleCommentLikes, _isMounted]
     );
     const _fetchFirstComments = useCallback(async () => {
+        _updateLoadCanceled(false);
         _initializeLoading();
         try {
             const commentsSnapshot = await getDocsFromServer(
@@ -265,7 +267,7 @@ export default function usePostDetails(initialPostData) {
                     limit(5)
                 )
             );
-            if (_isMounted() && !state.loadCanceled) {
+            if (_isMounted() && !_isLoadCanceled()) {
                 if (commentsSnapshot.empty) {
                     throw new Error(noComment);
                 } else {
@@ -273,8 +275,8 @@ export default function usePostDetails(initialPostData) {
                 }
             }
         } catch (err) {
-            if (_isMounted() && !state.loadCanceled) {
-                console.log('error', err);
+            console.log('error', err);
+            if (_isMounted() && !_isLoadCanceled) {
                 _updateLoadError(err.code ?? err.message);
             }
         }
@@ -285,9 +287,11 @@ export default function usePostDetails(initialPostData) {
         _initializeLoading,
         postID,
         _updateComments,
-        state.loadCanceled,
+        _isLoadCanceled,
+        _updateLoadCanceled,
     ]);
     const _fetchComments = useCallback(async () => {
+        _updateLoadCanceled(false);
         _initializeLoading();
         try {
             const postDetails = state.postDetails;
@@ -308,7 +312,7 @@ export default function usePostDetails(initialPostData) {
                     limit(5)
                 )
             );
-            if (_isMounted() && !state.loadCanceled) {
+            if (_isMounted() && !_isLoadCanceled()) {
                 if (commentsSnapshot.empty) {
                     throw new Error(noComment);
                 } else {
@@ -316,8 +320,8 @@ export default function usePostDetails(initialPostData) {
                 }
             }
         } catch (err) {
-            if (_isMounted() && !state.loadCanceled) {
-                console.log('error', err);
+            console.log('error', err);
+            if (_isMounted() && !_isLoadCanceled()) {
                 _updateLoadError(err.code ?? err.message);
             }
         }
@@ -329,16 +333,14 @@ export default function usePostDetails(initialPostData) {
         postID,
         state.postDetails,
         _updateComments,
-        state.loadCanceled,
+        _isLoadCanceled,
+        _updateLoadCanceled,
     ]);
     const fetchComments = useCallback(() => {
-        console.log('called for more');
         if (!state.loading && !state.loadError && !state.refreshing) {
             if (state.postDetails.length > 2) {
-                console.log('actually fetched more');
                 _fetchComments();
             } else {
-                console.log('actually fetched more -first batch');
                 _fetchFirstComments();
             }
         }
@@ -379,7 +381,8 @@ export default function usePostDetails(initialPostData) {
                 if (_isMounted()) {
                     dispatch({ type: CLEAR_COMMENT_SUCCESSFUL });
                 }
-            } catch {
+            } catch (err) {
+                console.log('error', err);
                 if (_isMounted()) {
                     dispatch({
                         type: COMMENT_FAILED,
@@ -403,15 +406,16 @@ export default function usePostDetails(initialPostData) {
     const closeCommentResult = useCallback(() => {
         if (state.commentSuccessful) {
             dispatch({
-                type: CLEAR_POST_SUCCESSFUL,
+                type: CLEAR_COMMENT_SUCCESSFUL,
             });
         } else if (state.commentFailed) {
             dispatch({
-                type: CLEAR_POST_FAILED,
+                type: CLEAR_COMMENT_FAILED,
             });
         }
     }, [state.commentSuccessful, state.commentFailed]);
     const onRefresh = useCallback(async () => {
+        _updateLoadCanceled(true);
         dispatch({
             type: INITIATE_REFRESHING,
         });
@@ -443,7 +447,7 @@ export default function usePostDetails(initialPostData) {
                 });
             }
         }
-    }, [_isMounted, _mapComment, postID]);
+    }, [_isMounted, _mapComment, postID, _updateLoadCanceled]);
 
     useEffect(() => {
         isMounted.current = true;

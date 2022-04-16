@@ -27,7 +27,7 @@ function VisionAndMission({ fontFactor, margin, columnMode }) {
                                 aspectRatio: 800 / 688,
                             }}
                             // eslint-disable-next-line no-undef
-                            source={require('../../assets/images/image2.png')}
+                            source={require('../../assets/images/image2.webp')}
                             resizeMode="contain"
                         />
                     </View>
@@ -96,7 +96,7 @@ function VisionAndMission({ fontFactor, margin, columnMode }) {
                                 aspectRatio: 693 / 688,
                             }}
                             // eslint-disable-next-line no-undef
-                            source={require('../../assets/images/image2.png')}
+                            source={require('../../assets/images/image2.webp')}
                             resizeMode="contain"
                         />
                     </View>

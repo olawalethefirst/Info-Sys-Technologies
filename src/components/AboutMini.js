@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -11,21 +11,27 @@ import AboutMiniSVG from './AboutMiniSVG';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
+import { useNavigation } from '@react-navigation/native';
+import { About } from '../constants';
 
 function AboutMini({ fontFactor, margin, deviceWidthClass }) {
-    const animatedValue = new Animated.Value(1);
-    const onPressIn = () => {
-        Animated.spring(animatedValue, {
-            toValue: 0.8,
+    const { navigate } = useNavigation();
+    const animatedValue = useRef(new Animated.Value(1)).current;
+    const onPressIn = useCallback(() => {
+        Animated.timing(animatedValue, {
+            toValue: 0.9,
             useNativeDriver: true,
+            duration: 150,
         }).start();
-    };
-    const onPressOut = () => {
-        Animated.spring(animatedValue, {
+    }, [animatedValue]);
+    const onPressOut = useCallback(() => {
+        Animated.timing(animatedValue, {
             toValue: 1,
             useNativeDriver: true,
+            duration: 150,
         }).start();
-    };
+    }, [animatedValue]);
+    const onPress = useCallback(() => navigate(About), [navigate]);
     const columnMode = checkColumnMode(deviceWidthClass);
 
     return (
@@ -86,6 +92,7 @@ function AboutMini({ fontFactor, margin, deviceWidthClass }) {
                 <TouchableWithoutFeedback
                     onPressIn={onPressIn}
                     onPressOut={onPressOut}
+                    onPress={onPress}
                 >
                     <Animated.View
                         style={[

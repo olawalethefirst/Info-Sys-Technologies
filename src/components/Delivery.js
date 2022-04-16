@@ -84,7 +84,7 @@ function Delivery({ fontFactor, margin, columnMode }) {
                             aspectRatio: 941 / 780,
                         }}
                         //eslint-disable-next-line no-undef
-                        source={require('../../assets/images/image5.png')}
+                        source={require('../../assets/images/image5.webp')}
                         resizeMode="contain"
                     />
                 </View>
@@ -101,7 +101,7 @@ function Delivery({ fontFactor, margin, columnMode }) {
                                 aspectRatio: 1024 / 682,
                             }}
                             //eslint-disable-next-line no-undef
-                            source={require('../../assets/images/image6.png')}
+                            source={require('../../assets/images/image6.webp')}
                             resizeMode="contain"
                         />
                     </View>
@@ -145,7 +145,7 @@ function Delivery({ fontFactor, margin, columnMode }) {
                                 aspectRatio: 1024 / 682,
                             }}
                             //eslint-disable-next-line no-undef
-                            source={require('../../assets/images/image6.png')}
+                            source={require('../../assets/images/image6.webp')}
                             resizeMode="contain"
                         />
                     </View>
@@ -193,7 +193,7 @@ function Delivery({ fontFactor, margin, columnMode }) {
                             aspectRatio: 822 / 679,
                         }}
                         //eslint-disable-next-line no-undef
-                        source={require('../../assets/images/image7.png')}
+                        source={require('../../assets/images/image7.webp')}
                         resizeMode="contain"
                     />
                 </View>

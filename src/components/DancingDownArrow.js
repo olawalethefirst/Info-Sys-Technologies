@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Pressable, InteractionManager } from 'react-native';
 import DownArrowIcon from './DownArrowIcon';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
@@ -21,7 +21,7 @@ export default function DancingDownArrow({
     const animatedArrowValue = useSharedValue(0);
     const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
     const animatedArrowStyle = useAnimatedStyle(() => ({
-        opacity: withTiming(Math.round(pageNo.value) != 7 + 0),
+        opacity: withTiming((Math.round(pageNo.value) != 7) + 0),
         transform: [{ translateY: animatedArrowValue.value }],
     }));
     const styles2 = {
@@ -38,7 +38,6 @@ export default function DancingDownArrow({
         },
     };
     const loopAnimation = withRepeat(withTiming(headerSize / 3), -1, true);
-    animatedArrowValue.value = loopAnimation;
     const stopAnimation = () => {
         animatedArrowValue.value = withTiming(0, { duration: 50 });
     };
@@ -46,8 +45,17 @@ export default function DancingDownArrow({
         animatedArrowValue.value = loopAnimation;
     };
 
+    useEffect(() => {
+        const interaction = InteractionManager.runAfterInteractions(() => {
+            animatedArrowValue.value = loopAnimation;
+        });
+        return interaction.cancel;
+    }, [animatedArrowValue, loopAnimation]);
+
     return (
         <AnimatedPressable
+            shouldRasterizeIOS
+            renderToHardwareTextureAndroid
             onPress={scrollToNextPage}
             onPressIn={stopAnimation}
             onPressOut={reInitiateAnimation}

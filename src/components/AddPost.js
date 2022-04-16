@@ -58,11 +58,9 @@ const AddPost = ({
     const onPress = () => {
         if (!uid) {
             return toggleCallToAuthModal();
-        }
-        if (!username) {
+        } else if (!username) {
             return toggleOnUsernameModal();
-        }
-        return toggleModal();
+        } else return toggleModal();
     };
 
     return (

@@ -14,6 +14,7 @@ import EntypoIcon from 'react-native-vector-icons/Entypo';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import PropTypes from 'prop-types';
 import { Platform } from 'react-native';
+import { Home, About, Services, Contact, ForumStack } from '../constants';
 
 const Tab = createBottomTabNavigator();
 const isAndroid = Platform.OS === 'android'; // add padding to app for android to prevent weird shift when keyboard up
@@ -21,7 +22,7 @@ const isAndroid = Platform.OS === 'android'; // add padding to app for android t
 const TabNavigator = ({ headerSize }) => {
     return (
         <Tab.Navigator
-            initialRouteName="Home"
+            initialRouteName={Home}
             backBehavior="none"
             screenOptions={{
                 tabBarHideOnKeyboard: isAndroid ? true : false,
@@ -43,7 +44,7 @@ const TabNavigator = ({ headerSize }) => {
             }}
         >
             <Tab.Screen
-                name="Home"
+                name={Home}
                 component={HomeScreen}
                 options={{
                     tabBarIcon: function tabBarIcon({ size, color, focused }) {
@@ -58,7 +59,7 @@ const TabNavigator = ({ headerSize }) => {
                 }}
             />
             <Tab.Screen
-                name="About"
+                name={About}
                 component={AboutScreen}
                 options={{
                     tabBarIcon: function tabBarIcon({ size, color, focused }) {
@@ -73,7 +74,7 @@ const TabNavigator = ({ headerSize }) => {
                 }}
             />
             <Tab.Screen
-                name="Services"
+                name={Services}
                 component={ServicesScreen}
                 options={{
                     tabBarIcon: function tabBarIcon({ size, color, focused }) {
@@ -88,7 +89,7 @@ const TabNavigator = ({ headerSize }) => {
                 }}
             />
             <Tab.Screen
-                name="Contact"
+                name={Contact}
                 component={ContactScreen}
                 options={{
                     tabBarIcon: function tabBarIcon({ size, color, focused }) {
@@ -103,7 +104,7 @@ const TabNavigator = ({ headerSize }) => {
                 }}
             />
             <Tab.Screen
-                name="ForumStack"
+                name={ForumStack}
                 component={ForumNavigator}
                 options={{
                     tabBarIcon: function tabBarIcon({ size, color, focused }) {

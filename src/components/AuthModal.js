@@ -89,11 +89,13 @@ const AuthModal = ({
                     disabled={authorizing}
                 />
             )}
-            <ModalButton
-                text="Close"
-                onPress={backAction}
-                disabled={authorizing}
-            />
+            {(authError || authSuccessful) && (
+                <ModalButton
+                    text="Close"
+                    onPress={backAction}
+                    disabled={authorizing}
+                />
+            )}
         </Modal>
     );
 };

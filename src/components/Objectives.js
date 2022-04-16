@@ -57,7 +57,7 @@ function Objectives({ fontFactor, margin, columnMode }) {
                             aspectRatio: 749 / 661,
                         }}
                         //eslint-disable-next-line no-undef
-                        source={require('../../assets/images/image3.png')}
+                        source={require('../../assets/images/image3.webp')}
                         resizeMode="contain"
                     />
                 </View>
@@ -74,7 +74,7 @@ function Objectives({ fontFactor, margin, columnMode }) {
                                 aspectRatio: 819 / 663,
                             }}
                             //eslint-disable-next-line no-undef
-                            source={require('../../assets/images/image4.png')}
+                            source={require('../../assets/images/image4.webp')}
                             resizeMode="contain"
                         />
                     </View>
@@ -121,7 +121,7 @@ function Objectives({ fontFactor, margin, columnMode }) {
                                 aspectRatio: 819 / 663,
                             }}
                             //eslint-disable-next-line no-undef
-                            source={require('../../assets/images/image4.png')}
+                            source={require('../../assets/images/image4.webp')}
                             resizeMode="contain"
                         />
                     </View>
