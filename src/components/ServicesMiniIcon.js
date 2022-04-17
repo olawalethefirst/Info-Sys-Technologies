@@ -9,22 +9,22 @@ import ICCAIcon from './ICCAIcon';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ServicesMiniIcon = ({ type }) => {
+const ServicesMiniIcon = ({ type, size }) => {
     switch (type) {
         case serviceDetails[3].title:
-            return <CAIcon />;
+            return <CAIcon size={size} />;
         case serviceDetails[4].title:
-            return <MTDIcon />;
+            return <MTDIcon size={size} />;
         case serviceDetails[5].title:
-            return <FBPIcon />;
+            return <FBPIcon size={size} />;
         case serviceDetails[6].title:
-            return <FAMIcon />;
+            return <FAMIcon size={size} />;
         case serviceDetails[2].title:
-            return <ICCAIcon />;
+            return <ICCAIcon size={size} />;
         case serviceDetails[1].title:
-            return <ASFMIcon />;
+            return <ASFMIcon size={size} />;
         case serviceDetails[0].title:
-            return <ITIcon />;
+            return <ITIcon size={size} />;
         default:
             <></>;
     }
@@ -32,6 +32,7 @@ const ServicesMiniIcon = ({ type }) => {
 
 ServicesMiniIcon.propTypes = {
     type: PropTypes.string,
+    size: PropTypes.number,
 };
 
 export default ServicesMiniIcon;

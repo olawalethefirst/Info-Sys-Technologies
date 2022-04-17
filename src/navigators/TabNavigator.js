@@ -9,12 +9,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HeaderBackground from '../components/HeaderBackground';
 import HeaderLogo from '../components/HeaderLogo';
 import MenuIcon from '../components/MenuIcon';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import PropTypes from 'prop-types';
 import { Platform } from 'react-native';
 import { Home, About, Services, Contact, ForumStack } from '../constants';
+import TabBarIcon from '../components/TabBarIcon';
 
 const Tab = createBottomTabNavigator();
 const isAndroid = Platform.OS === 'android'; // add padding to app for android to prevent weird shift when keyboard up
@@ -24,100 +22,36 @@ const TabNavigator = ({ headerSize }) => {
         <Tab.Navigator
             initialRouteName={Home}
             backBehavior="none"
-            screenOptions={{
-                tabBarHideOnKeyboard: isAndroid ? true : false,
-                headerBackground: HeaderBackground,
-                headerTitleAlign: 'left',
-                headerTitle: function headerTitle() {
-                    return <HeaderLogo headerSize={headerSize} />;
-                },
-                headerTitleContainerStyle: { width: '100%' },
-                headerRight: function headerRight() {
-                    return <MenuIcon headerSize={headerSize} />;
-                },
-                headerShadowVisible: true,
-                tabBarShowLabel: false,
-                tabBarStyle: {
-                    backgroundColor: '#fff',
-                },
-                tabBarActiveBackgroundColor: '#f7f7f7',
+            screenOptions={({ route }) => {
+                console.log(route);
+                return {
+                    tabBarHideOnKeyboard: isAndroid ? true : false,
+                    headerBackground: HeaderBackground,
+                    headerTitleAlign: 'left',
+                    headerTitle: function headerTitle() {
+                        return <HeaderLogo headerSize={headerSize} />;
+                    },
+                    headerTitleContainerStyle: { width: '100%' },
+                    headerRight: function headerRight() {
+                        return <MenuIcon headerSize={headerSize} />;
+                    },
+                    headerShadowVisible: true,
+                    tabBarShowLabel: false,
+                    tabBarStyle: {
+                        backgroundColor: '#fff',
+                    },
+                    tabBarActiveBackgroundColor: '#f7f7f7',
+                    tabBarIcon: (props) => (
+                        <TabBarIcon {...props} name={route.name} />
+                    ),
+                };
             }}
         >
-            <Tab.Screen
-                name={Home}
-                component={HomeScreen}
-                options={{
-                    tabBarIcon: function tabBarIcon({ size, color, focused }) {
-                        return (
-                            <EntypoIcon
-                                name="home"
-                                size={focused ? size * 1.2 : size}
-                                color={focused ? '#1A91D7' : color}
-                            />
-                        );
-                    },
-                }}
-            />
-            <Tab.Screen
-                name={About}
-                component={AboutScreen}
-                options={{
-                    tabBarIcon: function tabBarIcon({ size, color, focused }) {
-                        return (
-                            <FontAwesome5Icon
-                                name="info-circle"
-                                size={focused ? size * 1.2 : size}
-                                color={focused ? '#1A91D7' : color}
-                            />
-                        );
-                    },
-                }}
-            />
-            <Tab.Screen
-                name={Services}
-                component={ServicesScreen}
-                options={{
-                    tabBarIcon: function tabBarIcon({ size, color, focused }) {
-                        return (
-                            <Ionicons
-                                name="briefcase"
-                                size={focused ? size * 1.2 : size}
-                                color={focused ? '#1A91D7' : color}
-                            />
-                        );
-                    },
-                }}
-            />
-            <Tab.Screen
-                name={Contact}
-                component={ContactScreen}
-                options={{
-                    tabBarIcon: function tabBarIcon({ size, color, focused }) {
-                        return (
-                            <EntypoIcon
-                                name="old-phone"
-                                size={focused ? size * 1.2 : size}
-                                color={focused ? '#1A91D7' : color}
-                            />
-                        );
-                    },
-                }}
-            />
-            <Tab.Screen
-                name={ForumStack}
-                component={ForumNavigator}
-                options={{
-                    tabBarIcon: function tabBarIcon({ size, color, focused }) {
-                        return (
-                            <Ionicons
-                                name="chatbubbles"
-                                size={focused ? size * 1.2 : size}
-                                color={focused ? '#1A91D7' : color}
-                            />
-                        );
-                    },
-                }}
-            />
+            <Tab.Screen name={Home} component={HomeScreen} />
+            <Tab.Screen name={About} component={AboutScreen} />
+            <Tab.Screen name={Services} component={ServicesScreen} />
+            <Tab.Screen name={Contact} component={ContactScreen} />
+            <Tab.Screen name={ForumStack} component={ForumNavigator} />
         </Tab.Navigator>
     );
 };

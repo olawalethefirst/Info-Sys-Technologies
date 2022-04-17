@@ -1,5 +1,5 @@
 /* eslint-disable no-undef*/
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import {
     ImageBackground,
     StyleSheet,
@@ -10,26 +10,28 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import MarginVertical from './MarginVertical';
-import {
-    heightPercentageToDP as hp,
-    widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { ForumStack } from '../constants';
 
-function ForumMini({ margin, fontFactor, bodyHeight }) {
-    const animatedValue = new Animated.Value(1);
-    const onPressIn = () => {
-        Animated.spring(animatedValue, {
-            toValue: 1.25,
+function ForumMini({ margin, fontFactor, bodyHeight, navigate }) {
+    const animatedValue = useRef(new Animated.Value(1)).current;
+    const onPressIn = useCallback(() => {
+        Animated.timing(animatedValue, {
+            toValue: 1.1,
             useNativeDriver: true,
+            duration: 150,
         }).start();
-    };
-
-    const onPressOut = () => {
-        Animated.spring(animatedValue, {
+    }, [animatedValue]);
+    const onPressOut = useCallback(() => {
+        Animated.timing(animatedValue, {
             toValue: 1,
             useNativeDriver: true,
+            duration: 150,
         }).start();
-    };
+    }, [animatedValue]);
+    const onPress = useCallback(() => {
+        navigate(ForumStack);
+    }, [navigate]);
 
     return (
         <View style={[styles.container]}>
@@ -74,7 +76,12 @@ function ForumMini({ margin, fontFactor, bodyHeight }) {
                 </Text>
                 <MarginVertical size={4} />
             </ImageBackground>
-            <View style={[styles.miniContainer, { paddingHorizontal: margin }]}>
+            <View
+                style={[
+                    styles.miniContainer,
+                    { paddingHorizontal: margin, top: -wp(8) * fontFactor },
+                ]}
+            >
                 <View
                     style={[
                         styles.microContainer,
@@ -118,9 +125,9 @@ function ForumMini({ margin, fontFactor, bodyHeight }) {
                     </Text>
                     <MarginVertical size={1} />
                     <TouchableWithoutFeedback
-                        style={[]}
                         onPressIn={onPressIn}
                         onPressOut={onPressOut}
+                        onPress={onPress}
                     >
                         <Animated.View
                             style={[
@@ -155,6 +162,7 @@ ForumMini.propTypes = {
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
     bodyHeight: PropTypes.number,
+    navigate: PropTypes.func,
 };
 
 export default React.memo(ForumMini);
@@ -173,10 +181,10 @@ const styles = StyleSheet.create({
         fontFamily: 'Karla_400Regular',
         color: '#fff',
     },
-    miniContainer: { flex: 1, flexDirection: 'row', top: -hp(4) },
+    miniContainer: { flex: 1, flexDirection: 'row' },
     microContainer: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#f7f7f7',
         justifyContent: 'center',
     },
     microContent: {

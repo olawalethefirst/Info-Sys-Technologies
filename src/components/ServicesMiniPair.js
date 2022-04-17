@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 import MarginVertical from './MarginVertical';
 import ServiceTemplate from './ServiceTemplate';
-import ServicesMiniIcon from './ServicesMiniIcon';
 import { connect } from 'react-redux';
 
 function ServicesMiniPair({ margin, fontFactor, data1, data2, spacing }) {
@@ -12,33 +11,20 @@ function ServicesMiniPair({ margin, fontFactor, data1, data2, spacing }) {
             <View style={[styles.servicePairContainerColumnMode]}>
                 <ServiceTemplate
                     fontFactor={fontFactor}
-                    serviceTitle={data1.title}
-                    serviceBody={data1.body}
+                    title={data1.title}
+                    body={data1.body}
                     index={data1.index}
-                >
-                    <ServicesMiniIcon type={data1.title} />
-                </ServiceTemplate>
+                />
                 <View style={{ flex: 0.1 }} />
                 {data2 ? (
                     <ServiceTemplate
                         fontFactor={fontFactor}
-                        serviceTitle={data2.title}
-                        serviceBody={data2.body}
+                        title={data2.title}
+                        body={data2.body}
                         index={data2.index}
-                    >
-                        <ServicesMiniIcon type={data2.title} />
-                    </ServiceTemplate>
-                ) : (
-                    <View
-                        style={[
-                            styles.servicePairContainer,
-                            // {
-                            //     paddingHorizontal: 30,
-                            //     paddingTop: 30,
-                            //     paddingBottom: 20,
-                            // },
-                        ]}
                     />
+                ) : (
+                    <View style={[styles.servicePairContainer]} />
                 )}
             </View>
             <MarginVertical size={spacing} />

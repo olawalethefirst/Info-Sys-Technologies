@@ -11,11 +11,9 @@ import AboutMiniSVG from './AboutMiniSVG';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
-import { useNavigation } from '@react-navigation/native';
 import { About } from '../constants';
 
-function AboutMini({ fontFactor, margin, deviceWidthClass }) {
-    const { navigate } = useNavigation();
+function AboutMini({ fontFactor, margin, deviceWidthClass, navigate }) {
     const animatedValue = useRef(new Animated.Value(1)).current;
     const onPressIn = useCallback(() => {
         Animated.timing(animatedValue, {
@@ -125,6 +123,7 @@ AboutMini.propTypes = {
     fontFactor: PropTypes.number,
     margin: PropTypes.number,
     deviceWidthClass: PropTypes.string,
+    navigate: PropTypes.func,
 };
 
 export default React.memo(AboutMini);

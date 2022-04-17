@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 import MarginVertical from './MarginVertical';
 import ServiceTemplate from './ServiceTemplate';
-import ServicesMiniIcon from './ServicesMiniIcon';
 import { connect } from 'react-redux';
 
 function ServicesMini({
@@ -13,15 +12,13 @@ function ServicesMini({
     spacing,
 }) {
     return (
-        <View style={[styles.container, { paddingHorizontal: margin }]}>
+        <View style={[styles.container, { paddingHorizontal: margin, }]}>
             <ServiceTemplate
                 fontFactor={fontFactor}
-                serviceTitle={title}
-                serviceBody={body}
+                title={title}
+                body={body}
                 index={index}
-            >
-                <ServicesMiniIcon type={title} />
-            </ServiceTemplate>
+            />
             <MarginVertical size={spacing} />
         </View>
     );

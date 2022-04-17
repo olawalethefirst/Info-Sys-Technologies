@@ -1,5 +1,11 @@
 import React, { useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableWithoutFeedback,
+    InteractionManager,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
@@ -10,16 +16,11 @@ import Animated, {
     withTiming,
     withRepeat,
 } from 'react-native-reanimated';
-import { useNavigation } from '@react-navigation/native';
 import { Services } from '../constants';
+import { useNavigation } from '@react-navigation/native';
+import ServicesMiniIcon from './ServicesMiniIcon';
 
-function ServiceTemplate({
-    children,
-    serviceTitle,
-    fontFactor,
-    serviceBody,
-    index,
-}) {
+function ServiceTemplate({ title, fontFactor, body, index }) {
     const { navigate } = useNavigation();
     const translateX = useSharedValue(10);
     const touchOpacity = useSharedValue(1);
@@ -46,7 +47,7 @@ function ServiceTemplate({
         iconContainer: {
             height: wp(12) * fontFactor,
             width: wp(12) * fontFactor,
-            borderRadius: (45 * fontFactor) / 2,
+            borderRadius: (wp(12) * fontFactor) / 2,
         },
         container: {
             paddingHorizontal: wp(8) * fontFactor,
@@ -64,7 +65,9 @@ function ServiceTemplate({
     });
 
     useEffect(() => {
-        pendulumLoop();
+        const interaction =
+            InteractionManager.runAfterInteractions(pendulumLoop);
+        return interaction.cancel;
     }, [pendulumLoop]);
 
     return (
@@ -79,7 +82,7 @@ function ServiceTemplate({
             ]}
         >
             <View style={[styles.iconContainer, styles2.iconContainer]}>
-                {children}
+                <ServicesMiniIcon type={title} size={wp(6) * fontFactor} />
             </View>
             <MarginVertical size={1.5} />
 
@@ -92,7 +95,7 @@ function ServiceTemplate({
                     },
                 ]}
             >
-                {serviceTitle}
+                {title}
             </Text>
             <MarginVertical size={1} />
             <Text
@@ -106,7 +109,7 @@ function ServiceTemplate({
                 numberOfLines={3}
                 ellipsizeMode="tail"
             >
-                {serviceBody}
+                {body}
             </Text>
             <MarginVertical size={1} />
 
@@ -130,8 +133,8 @@ function ServiceTemplate({
 
 ServiceTemplate.propTypes = {
     children: PropTypes.object,
-    serviceTitle: PropTypes.string,
-    serviceBody: PropTypes.string,
+    title: PropTypes.string,
+    body: PropTypes.string,
     fontFactor: PropTypes.number,
     index: PropTypes.number,
 };
@@ -144,7 +147,9 @@ const styles = StyleSheet.create({
     },
     iconContainer: {
         backgroundColor: '#1A91D7',
-        padding: '4%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // padding: '4%',
     },
     heading: {
         color: '#fff',

@@ -1,25 +1,30 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { StyleSheet, Text, View, Pressable, Animated } from 'react-native';
 import PropTypes from 'prop-types';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ContactSVG from './ContactSVG';
 import MarginVertical from './MarginVertical';
+import { Contact } from '../constants';
 
-function ContactMini({ margin, fontFactor, bodyHeight }) {
-    const animatedValue = new Animated.Value(1);
-    console.log(animatedValue);
-    const onPressIn = () => {
-        Animated.spring(animatedValue, {
-            toValue: 0.8,
+function ContactMini({ margin, fontFactor, bodyHeight, navigate }) {
+    const animatedValue = useRef(new Animated.Value(1)).current;
+    const onPressIn = useCallback(() => {
+        Animated.timing(animatedValue, {
+            toValue: 0.9,
             useNativeDriver: true,
+            duration: 150,
         }).start();
-    };
-    const onPressOut = () => {
-        Animated.spring(animatedValue, {
+    }, [animatedValue]);
+    const onPressOut = useCallback(() => {
+        Animated.timing(animatedValue, {
             toValue: 1,
             useNativeDriver: true,
+            duration: 150,
         }).start();
-    };
+    }, [animatedValue]);
+    const onPress = useCallback(() => {
+        navigate(Contact);
+    }, [navigate]);
 
     return (
         <View
@@ -64,7 +69,11 @@ function ContactMini({ margin, fontFactor, bodyHeight }) {
                 </Text>
             </Text>
             <MarginVertical size={2} />
-            <Pressable onPressIn={onPressIn} onPressOut={onPressOut}>
+            <Pressable
+                onPressIn={onPressIn}
+                onPressOut={onPressOut}
+                onPress={onPress}
+            >
                 <Animated.View
                     style={[
                         styles.button,
@@ -96,22 +105,21 @@ ContactMini.propTypes = {
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
     bodyHeight: PropTypes.number,
+    navigate: PropTypes.func,
 };
 
 export default React.memo(ContactMini);
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#fff',
+        backgroundColor: '#f7f7f7',
         justifyContent: 'center',
     },
     heading: {
         fontFamily: 'Poppins_600SemiBold',
-        // color: '#fff',
         textAlign: 'center',
     },
     paragraph: {
-        // color: '#fff',
         fontFamily: 'Karla_400Regular',
         textAlign: 'center',
     },
