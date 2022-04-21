@@ -43,41 +43,46 @@ const Comment = ({
     updateCommentLikes,
     commentID,
     headerSize,
-    liked
+    liked,
+    scrollToItemBottom,
+    onReply,
+    onLike,
 }) => {
     const columnMode = checkColumnMode(deviceWidthClass);
     const commentRef = useRef(null);
 
-    const onReply = useCallback(() => {
-        if (uid) {
-            commentInputRef.current?.focus();
-            scrollToComponentBottom(
-                commentRef,
-                containerRef,
-                scrollRef,
-                bodyHeight - headerSize
-            );
-        } else {
-            toggleCallToAuthModal();
-        }
-    }, [
-        uid,
-        toggleCallToAuthModal,
-        commentInputRef,
-        containerRef,
-        commentRef,
-        bodyHeight,
-        scrollRef,
-        headerSize,
-    ]);
+    // const onReply = useCallback(() => {
+    //     if (uid) {
+    //         !commentInputRef.current?.isFocused()
+    //             ? commentInputRef.current?.focus()
+    //             : null;
+    //         scrollToItemBottom(
+    //             commentRef,
+    //             containerRef,
+    //             scrollRef,
+    //             bodyHeight - headerSize
+    //         );
+    //     } else {
+    //         toggleCallToAuthModal();
+    //     }
+    // }, [
+    //     uid,
+    //     toggleCallToAuthModal,
+    //     commentInputRef,
+    //     containerRef,
+    //     commentRef,
+    //     bodyHeight,
+    //     scrollRef,
+    //     headerSize,
+    // ]);
 
-    const onLike = useCallback(() => {
-        if (uid) {
-            updateCommentLikes(commentID);
-        } else {
-            toggleCallToAuthModal();
-        }
-    }, [updateCommentLikes, uid, toggleCallToAuthModal, commentID]);
+    // const onLike = useCallback(() => {
+    //     if (uid) {
+    //         updateCommentLikes(commentID);
+    //     } else {
+    //         toggleCallToAuthModal();
+    //     }
+    // }, [updateCommentLikes, uid, toggleCallToAuthModal, commentID]);
 
     return (
         <View
@@ -116,9 +121,12 @@ const Comment = ({
                     <LikeButton
                         liked={liked}
                         fontFactor={fontFactor}
-                        onLike={onLike}
+                        onLike={() => onLike(commentID)}
                     />
-                    <ReplyButton onReply={onReply} fontFactor={fontFactor} />
+                    <ReplyButton
+                        onReply={() => onReply(commentRef)}
+                        fontFactor={fontFactor}
+                    />
                 </View>
                 <MarginVertical />
             </View>

@@ -4,11 +4,13 @@ export default function scrollToComponentBottom(
     componentRef,
     containerRef,
     scrollRef,
-    windowHeight
+    windowHeight,
+    both
 ) {
+    console.log('called');
     const isIOS = Platform.OS === 'ios';
 
-    if (isIOS) {
+    if (both || isIOS) {
         let componentOffset;
         let componentHeight;
         if (componentRef.current && containerRef.current) {
@@ -20,7 +22,7 @@ export default function scrollToComponentBottom(
                 }
             );
         }
-        Keyboard.addListener(
+        const listener = Keyboard.addListener(
             'keyboardDidShow',
             ({ endCoordinates: { height } }) => {
                 if (componentHeight && componentOffset) {
@@ -37,7 +39,7 @@ export default function scrollToComponentBottom(
                               animated: true,
                           });
                 }
-                Keyboard.removeAllListeners('keyboardDidShow');
+                Keyboard.removeSubscription(listener);
             }
         );
     }

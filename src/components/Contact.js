@@ -1,25 +1,29 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import ContactForm from '../components/ContactForm';
 import PropTypes from 'prop-types';
+import SubScreenTemplate from './SubScreenTemplate';
+import ContactModal from './ContactModal';
 
-function Contact({ margin, fontFactor, scrollRef }) {
+function Contact({ fontFactor, headerSize, margin, scrollRef }) {
+    const sectionComponents = [
+        {
+            key: '0',
+            data: <ContactForm scrollRef={scrollRef} />,
+        },
+    ];
+
     return (
-        <View
-            style={[
-                styles.container,
-                {
-                    paddingHorizontal: margin,
-                    flexGrow: 1,
-                },
-            ]}
-        >
-            <ContactForm
-                fontFactor={fontFactor}
-                scrollRef={scrollRef}
+        <>
+            <SubScreenTemplate
+                sectionComponents={sectionComponents}
+                heading="Contact Us"
                 margin={margin}
+                fontFactor={fontFactor}
+                headerSize={headerSize}
+                scrollRef={scrollRef}
             />
-        </View>
+            <ContactModal />
+        </>
     );
 }
 
@@ -27,21 +31,7 @@ Contact.propTypes = {
     headerSize: PropTypes.number,
     margin: PropTypes.number,
     fontFactor: PropTypes.number,
-    scrollViewOffset: PropTypes.number,
     scrollRef: PropTypes.object,
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    allText: {
-        color: '#fff',
-        fontFamily: 'Poppins_500Medium',
-    },
-    contactOption: {
-        fontFamily: 'Poppins_600SemiBold',
-    },
-});
 
 export default React.memo(Contact);

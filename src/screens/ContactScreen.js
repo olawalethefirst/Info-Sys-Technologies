@@ -1,29 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useRef, lazy, Suspense } from 'react';
 import { StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
-import SubScreenTemplate from '../components/SubScreenTemplate';
 import { connect } from 'react-redux';
-import Contact from '../components/Contact';
+const Contact = lazy(() => import('../components/Contact'));
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
 import { useScrollToTop } from '@react-navigation/native';
+import SuspenseFallback from '../components/SuspenseFallback';
 
 function ContactScreen({ margin, headerSize, fontFactor }) {
     const scrollRef = useRef(null);
     useScrollToTop(scrollRef);
     const { statusBarHeight } = Constants;
-    const sectionComponents = [
-        {
-            key: '0',
-            data: (
-                <Contact
-                    margin={margin}
-                    fontFactor={fontFactor}
-                    key="0"
-                    scrollRef={scrollRef}
-                />
-            ),
-        },
-    ];
 
     return (
         <KeyboardAvoidingView
@@ -34,14 +21,14 @@ function ContactScreen({ margin, headerSize, fontFactor }) {
                 android: null,
             })}
         >
-            <SubScreenTemplate
-                sectionComponents={sectionComponents}
-                heading="Contact Us"
-                margin={margin}
-                fontFactor={fontFactor}
-                headerSize={headerSize}
-                scrollRef={scrollRef}
-            />
+            <Suspense fallback={<SuspenseFallback />}>
+                <Contact
+                    fontFactor={fontFactor}
+                    headerSize={headerSize}
+                    margin={margin}
+                    scrollRef={scrollRef}
+                />
+            </Suspense>
         </KeyboardAvoidingView>
     );
 }

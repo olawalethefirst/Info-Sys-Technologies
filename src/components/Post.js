@@ -22,10 +22,6 @@ const Post = ({
     margin,
     uid,
     deviceWidthClass,
-    containerRef,
-    effectiveBodyHeight,
-    commentInputRef,
-    scrollRef,
     toggleCallToAuthModal,
     body,
     category,
@@ -36,41 +32,18 @@ const Post = ({
     postID,
     updatePostLikes,
     liked,
-    headerSize,
-    bodyHeight,
+    onReply,
+    onLike,
 }) => {
     const columnMode = checkColumnMode(deviceWidthClass);
     const postRef = useRef(null);
-
-    const onReply = useCallback(() => {
-        if (uid) {
-            commentInputRef.current?.focus();
-            scrollToComponentBottom(
-                postRef,
-                containerRef,
-                scrollRef,
-                bodyHeight - headerSize
-            );
-        } else {
-            toggleCallToAuthModal();
-        }
-    }, [
-        uid,
-        toggleCallToAuthModal,
-        commentInputRef,
-        containerRef,
-        postRef,
-        scrollRef,
-        bodyHeight,
-        headerSize,
-    ]);
-    const onLike = useCallback(() => {
-        if (uid) {
-            updatePostLikes(postID);
-        } else {
-            toggleCallToAuthModal();
-        }
-    }, [updatePostLikes, uid, toggleCallToAuthModal, postID]);
+    // const onLike = useCallback(() => {
+    //     if (uid) {
+    //         updatePostLikes(postID);
+    //     } else {
+    //         toggleCallToAuthModal();
+    //     }
+    // }, [updatePostLikes, uid, toggleCallToAuthModal, postID]);
 
     const styles2 = StyleSheet.create({
         postContainer: {
@@ -121,11 +94,11 @@ const Post = ({
                         <LikeButton
                             fontFactor={fontFactor}
                             liked={liked}
-                            onLike={onLike}
+                            onLike={() => onLike(postID)}
                         />
                         <ReplyButton
                             fontFactor={fontFactor}
-                            onReply={onReply}
+                            onReply={() => onReply(postRef)}
                         />
                     </View>
                     <MarginVertical />

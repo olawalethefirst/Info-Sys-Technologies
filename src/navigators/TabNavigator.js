@@ -23,7 +23,6 @@ const TabNavigator = ({ headerSize }) => {
             initialRouteName={Home}
             backBehavior="none"
             screenOptions={({ route }) => {
-                console.log(route);
                 return {
                     tabBarHideOnKeyboard: isAndroid ? true : false,
                     headerBackground: HeaderBackground,

@@ -1,10 +1,9 @@
 import React, { useRef } from 'react';
-import { TextInput, Text, View, StyleSheet } from 'react-native';
+import { TextInput, Text, View, StyleSheet, Platform } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MarginVertical from './MarginVertical';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
 
 function InputField({
     onChange,
@@ -12,13 +11,14 @@ function InputField({
     value,
     error,
     required,
-    megaSize,
     subParagraph,
     label,
     fontFactor,
     scrollRef,
     contactFormRef,
     effectiveBodyHeight,
+    scrollToItemBottom,
+    megaSize,
     ...props
 }) {
     const styles2 = {
@@ -27,11 +27,11 @@ function InputField({
             lineHeight: fontFactor * wp(5.78),
         },
         input: {
-            padding: fontFactor * wp(2),
-            justifyContent: 'center',
+            paddingHorizontal: fontFactor * wp(2),
+            paddingVertical: fontFactor * wp(1),
         },
         singleLineInput: {
-            minHeight: fontFactor * wp(10),
+            height: fontFactor * wp(10),
         },
         multilineInput: {
             minHeight: 4 * fontFactor * wp(5.78),
@@ -42,7 +42,7 @@ function InputField({
             lineHeight: fontFactor * wp(4.62),
         },
     };
-    const mulitLineInputRef = useRef(null);
+    const mutiLineInputRef = useRef(null);
 
     return (
         <View>
@@ -58,23 +58,23 @@ function InputField({
             </Text>
             <MarginVertical size={0.2} />
             <TextInput
-                ref={mulitLineInputRef}
+                ref={mutiLineInputRef}
                 autoCapitalize={'none'}
                 autoCorrect={false}
-                multiline={megaSize ? true : false}
-                onFocus={
-                    megaSize
-                        ? () =>
-                              scrollToComponentBottom(
-                                  mulitLineInputRef,
-                                  contactFormRef,
-                                  scrollRef,
-                                  effectiveBodyHeight
-                              )
-                        : null
+                multiline={Platform.select({
+                    ios: true,
+                    android: megaSize ? true : false,
+                })}
+                onFocus={() =>
+                    scrollToItemBottom(
+                        mutiLineInputRef,
+                        contactFormRef,
+                        scrollRef,
+                        effectiveBodyHeight
+                    )
                 }
                 onBlur={onBlur}
-                textAlignVertical={megaSize && 'top'}
+                textAlignVertical={megaSize ? 'top' : 'center'}
                 value={value}
                 onChangeText={onChange}
                 style={[
@@ -82,8 +82,7 @@ function InputField({
                     styles2.input,
                     styles2.baseFontSize,
                     styles.blackText,
-                    !megaSize && styles2.singleLineInput,
-                    megaSize && styles2.multilineInput,
+                    megaSize ? styles2.multilineInput : styles2.singleLineInput,
                 ]}
                 {...props}
             />
@@ -138,13 +137,14 @@ InputField.propTypes = {
     value: PropTypes.string,
     error: PropTypes.object,
     required: PropTypes.bool,
-    megaSize: PropTypes.bool,
     subParagraph: PropTypes.string,
     label: PropTypes.string,
     fontFactor: PropTypes.number,
     scrollRef: PropTypes.object,
     contactFormRef: PropTypes.object,
     effectiveBodyHeight: PropTypes.number,
+    scrollToItemBottom: PropTypes.func,
+    megaSize: PropTypes.bool,
 };
 
 const mapStateToProps = (state) => ({

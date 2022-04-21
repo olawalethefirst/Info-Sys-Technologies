@@ -1,10 +1,19 @@
 import { StyleSheet, ActivityIndicator } from 'react-native';
 import React from 'react';
+import PropTypes from 'prop-types';
 
-const SuspenseFallback = () => {
+const SuspenseFallback = ({ color }) => {
     return (
-        <ActivityIndicator style={styles.margin} color="#fff" size={'small'} />
+        <ActivityIndicator style={styles.margin} color={color} size={'small'} />
     );
+};
+
+SuspenseFallback.defaultProps = {
+    color: '#fff',
+};
+
+SuspenseFallback.propTypes = {
+    color: PropTypes.string,
 };
 
 export default SuspenseFallback;

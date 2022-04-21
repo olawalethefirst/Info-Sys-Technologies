@@ -40,8 +40,11 @@ import CommentResultModal from '../components/CommentResultModal';
 import usePostDetails from '../hooks/usePostDetails';
 import RenderPostFooter from '../components/RenderPostFooter';
 import { useIsFocused } from '@react-navigation/native';
+import useScrollToItemBottom from '../hooks/useScrollToItemBottom';
+import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
 
-function PostScreen({ //add tabListener to scroll to Top here and forum screen
+function PostScreen({
+    //add tabListener to scroll to Top here and forum screen
     margin,
     fontFactor,
     headerSize,
@@ -50,8 +53,11 @@ function PostScreen({ //add tabListener to scroll to Top here and forum screen
     effectiveBodyHeight,
     route: { params }, //maybe update postMini to send only this
     uid,
+    toggleCallToAuthModal,
+    bodyHeight,
 }) {
     const isFocused = useIsFocused();
+    const [scrollToItemBottom] = useScrollToItemBottom();
     const [
         postDetails,
         updatePostLikes,
@@ -106,6 +112,39 @@ function PostScreen({ //add tabListener to scroll to Top here and forum screen
     const { statusBarHeight } = Constants;
     const { postID } = params;
 
+    const onReply = useCallback(
+        (itemRef) => {
+            if (uid) {
+                if (!commentInputRef.current?.isFocused()) {
+                    commentInputRef.current?.focus();
+                    scrollToItemBottom(
+                        itemRef,
+                        containerRef,
+                        scrollRef,
+                        bodyHeight - headerSize,
+                        true
+                    );
+                }
+            } else {
+                toggleCallToAuthModal();
+            }
+        },
+        [uid, scrollToItemBottom, toggleCallToAuthModal, bodyHeight, headerSize]
+    );
+    const onLike = useCallback(
+        (category) => (id) => {
+            if (uid) {
+                if (category) {
+                    updatePostLikes(id);
+                } else {
+                    updateCommentLikes(id);
+                }
+            } else {
+                toggleCallToAuthModal();
+            }
+        },
+        [uid, toggleCallToAuthModal, updateCommentLikes, updatePostLikes]
+    );
     const renderItem = useCallback(
         ({ item }) => {
             const {
@@ -135,6 +174,9 @@ function PostScreen({ //add tabListener to scroll to Top here and forum screen
                         postID={postID}
                         updatePostLikes={updatePostLikes}
                         liked={likes.includes(auth.currentUser?.uid)}
+                        scrollToItemBottom={scrollToItemBottom}
+                        onReply={onReply}
+                        onLike={onLike(category)}
                     />
                 );
             }
@@ -150,6 +192,9 @@ function PostScreen({ //add tabListener to scroll to Top here and forum screen
                     commentID={commentID}
                     createdAt={moment(new Date(createdAt)).fromNow()}
                     username={username}
+                    scrollToItemBottom={scrollToItemBottom}
+                    onReply={onReply}
+                    onLike={onLike(category)}
                 />
             );
         },
@@ -159,6 +204,9 @@ function PostScreen({ //add tabListener to scroll to Top here and forum screen
             commentInputRef,
             updatePostLikes,
             updateCommentLikes,
+            scrollToItemBottom,
+            onReply,
+            onLike,
         ]
     );
     console.log('commentResultVisible', commentResultVisible);
@@ -303,6 +351,7 @@ const mapStateToProps = ({
         headerSize,
         deviceWidthClass,
         effectiveBodyHeight,
+        bodyHeight,
     },
     forumTempState: { uid },
 }) => ({
@@ -312,6 +361,7 @@ const mapStateToProps = ({
     deviceWidthClass,
     effectiveBodyHeight,
     uid,
+    bodyHeight,
 });
 
-export default connect(mapStateToProps, {})(PostScreen);
+export default connect(mapStateToProps, { toggleCallToAuthModal })(PostScreen);

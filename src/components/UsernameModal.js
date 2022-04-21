@@ -23,6 +23,8 @@ import ModalButton from './ModalButton';
 import ModalActivityIndicator from './ModalActivityIndicator';
 import PropTypes from 'prop-types';
 
+const { statusBarHeight } = Constants;
+
 function UsernameModal({
     margin,
     fontFactor,
@@ -138,7 +140,6 @@ function UsernameModal({
         state.currentAction != SUBMITTING && closeModal(); //only allow close when not loading
     }, [closeModal, state.currentAction, state.keyboardActive]);
 
-    const { statusBarHeight } = Constants;
     const errorString = processErrorString(state.errorMessage);
     const inputRef = useRef(null);
 
@@ -151,13 +152,6 @@ function UsernameModal({
         inputButton: {
             padding: fontFactor * wp(4.4),
             marginBottom: fontFactor * wp(2.2),
-        },
-        modal: {
-            margin: 0,
-            marginTop: Platform.select({
-                ios: statusBarHeight,
-                android: 0,
-            }),
         },
         scrollView: {
             flexGrow: 1,
@@ -196,7 +190,7 @@ function UsernameModal({
 
     return (
         <Modal
-            style={styles2.modal}
+            style={styles.modal}
             hideModalContentWhileAnimating
             useNativeDriver
             useNativeDriverForBackdrop
@@ -281,6 +275,13 @@ const mapStateToProps = ({
 });
 
 const styles = StyleSheet.create({
+    modal: {
+        margin: 0,
+        marginTop: Platform.select({
+            ios: statusBarHeight,
+            android: 0,
+        }),
+    },
     textInput: {
         fontFamily: 'Karla_400Regular',
         textAlign: 'center',

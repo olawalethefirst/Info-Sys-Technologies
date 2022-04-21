@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -6,21 +6,30 @@ import {
     TextInput,
     Keyboard,
     TouchableWithoutFeedback,
-    Animated,
     TouchableOpacity,
 } from 'react-native';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import ModalSelector from 'react-native-modal-selector';
 import DatePickerModal from 'react-native-modal-datetime-picker';
-import InputField from './InputField';
 import PropTypes from 'prop-types';
-import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import { modalSelectorStyles } from '../constants';
+import toggleContactModal from '../redux/actions/toggleContactModal';
+import { connect } from 'react-redux';
+import InputField from './InputField';
+import useScrollToItemBottom from '../hooks/useScrollToItemBottom';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+} from 'react-native-reanimated';
 
-export default function ContactForm({ fontFactor, scrollRef }) {
-    const submitButtonAnimatedValue = useRef(new Animated.Value(1)).current;
+function ContactForm({ fontFactor, scrollRef, toggleContactModal, margin }) {
+    const [scrollToItemBottom] = useScrollToItemBottom();
+    const animatedSubmit = useSharedValue(1);
     const styles2 = {
+        container: { paddingHorizontal: margin },
         baseFontSize: {
             fontSize: fontFactor * wp(4.55),
             lineHeight: fontFactor * wp(5.78),
@@ -45,7 +54,6 @@ export default function ContactForm({ fontFactor, scrollRef }) {
         },
         button: {
             paddingVertical: fontFactor * wp(3.5),
-            transform: [{ scale: submitButtonAnimatedValue }],
         },
         buttonText: {
             fontSize: fontFactor * wp(5),
@@ -59,7 +67,12 @@ export default function ContactForm({ fontFactor, scrollRef }) {
             borderBottomWidth: wp(0.1) * fontFactor,
         },
     };
-    const { resetField, control, handleSubmit, formState, reset } = useForm({
+    const animatedSubmitStyle = useAnimatedStyle(() => ({
+        transform: [
+            { scale: withTiming(animatedSubmit.value, { duration: 150 }) },
+        ],
+    }));
+    const { resetField, control, handleSubmit, reset } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
         defaultValues: {
@@ -75,7 +88,11 @@ export default function ContactForm({ fontFactor, scrollRef }) {
             contactDetails: '',
         },
     });
-    const { errors, isSubmitSuccessful } = formState;
+    const { errors, isSubmitSuccessful, isSubmitted } = useFormState({
+        control,
+    });
+    const isFormError = !!Object.keys(errors).length;
+    const disableSubmit = isFormError && isSubmitted;
     const contactOption = useWatch({ name: 'contactOption', control });
     const inquiry = contactOption === 'Inquiry';
     const hireUs = contactOption === 'Hire Us';
@@ -142,25 +159,14 @@ export default function ContactForm({ fontFactor, scrollRef }) {
             keepDirty: false,
         });
     };
-    const AnimatedTouchableOpacity =
-        Animated.createAnimatedComponent(TouchableOpacity);
-    const onPressInButton = (animatedValue) => {
-        return Animated.timing(animatedValue, {
-            toValue: 0.9,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
-    };
-    const onPressOutButton = (animatedValue) => {
-        return Animated.timing(animatedValue, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
-    };
-    const onSubmit = () => {
-        setTimeout(() => console.log('submitted'), 5000);
-    };
+    const onPressInButton = useCallback(() => {
+        'worklet';
+        animatedSubmit.value = 0.9;
+    }, [animatedSubmit]);
+    const onPressOutButton = useCallback(() => {
+        'worklet';
+        animatedSubmit.value = 1;
+    }, [animatedSubmit]);
     const otherOptionReferralChannel = useWatch({
         name: 'referralChannel',
         control,
@@ -191,7 +197,7 @@ export default function ContactForm({ fontFactor, scrollRef }) {
     return (
         <View ref={contactFormRef}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View>
+                <View style={styles2.container}>
                     <MarginVertical size={2} />
                     <View>
                         <Text
@@ -326,6 +332,9 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                     required
                                     subParagraph="e.g Olawale Bashiru"
                                     label="Your Name"
+                                    scrollToItemBottom={scrollToItemBottom}
+                                    contactFormRef={contactFormRef}
+                                    scrollRef={scrollRef}
                                 />
                             )}
                         />
@@ -351,6 +360,9 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                     required
                                     subParagraph="e.g olawalebashiru@gmail.com"
                                     label="E-mail Address"
+                                    scrollToItemBottom={scrollToItemBottom}
+                                    contactFormRef={contactFormRef}
+                                    scrollRef={scrollRef}
                                 />
                             )}
                         />
@@ -369,6 +381,9 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                     error={error}
                                     subParagraph="Mobile number or skype ID"
                                     label="Contact Number"
+                                    scrollToItemBottom={scrollToItemBottom}
+                                    contactFormRef={contactFormRef}
+                                    scrollRef={scrollRef}
                                 />
                             )}
                         />
@@ -407,6 +422,11 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                             label="How did you hear about us?"
                                             pointerEvents="none"
                                             editable={false}
+                                            scrollToItemBottom={
+                                                scrollToItemBottom
+                                            }
+                                            contactFormRef={contactFormRef}
+                                            scrollRef={scrollRef}
                                         />
                                     </ModalSelector>
                                 )}
@@ -432,6 +452,11 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                             error={error}
                                             subParagraph="Please specify how you learnt about us"
                                             label="Please state"
+                                            scrollToItemBottom={
+                                                scrollToItemBottom
+                                            }
+                                            contactFormRef={contactFormRef}
+                                            scrollRef={scrollRef}
                                         />
                                     )}
                                 />
@@ -481,6 +506,9 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                             'e.g \u20A6500,000 or $1,000'
                                         }
                                         label="Your Budget"
+                                        scrollToItemBottom={scrollToItemBottom}
+                                        contactFormRef={contactFormRef}
+                                        scrollRef={scrollRef}
                                     />
                                 )}
                             />
@@ -505,6 +533,11 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                             label="Project Deadline"
                                             pointerEvents="none"
                                             editable={false}
+                                            scrollToItemBottom={
+                                                scrollToItemBottom
+                                            }
+                                            contactFormRef={contactFormRef}
+                                            scrollRef={scrollRef}
                                         />
                                         <DatePickerModal
                                             isVisible={datePickerVisible}
@@ -544,12 +577,13 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                         subParagraph={
                                             "Please tell me about what you'll like to achieve, provide as much information as relavant"
                                         }
-                                        label={'Project Details'}
                                         megaSize
+                                        label={'Project Details'}
                                         contactFormRef={contactFormRef}
                                         required
                                         scrollRef={scrollRef}
                                         contactOption={contactOption}
+                                        scrollToItemBottom={scrollToItemBottom}
                                     />
                                 )}
                             />
@@ -596,6 +630,9 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                             'Please specify in few words, what inquiry is about'
                                         }
                                         label={'Inquiry Title'}
+                                        scrollToItemBottom={scrollToItemBottom}
+                                        contactFormRef={contactFormRef}
+                                        scrollRef={scrollRef}
                                     />
                                 )}
                             />
@@ -619,11 +656,12 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                                             'Please provide more detailed information on inquiry'
                                         }
                                         label={'Inquiry Details'}
+                                        required
                                         megaSize
                                         contactFormRef={contactFormRef}
-                                        required
                                         scrollRef={scrollRef}
                                         contactOption={contactOption}
+                                        scrollToItemBottom={scrollToItemBottom}
                                     />
                                 )}
                             />
@@ -631,43 +669,61 @@ export default function ContactForm({ fontFactor, scrollRef }) {
                         </View>
                     )}
                     <View>
-                        <Text
-                            style={[
-                                styles2.subParagraph,
-                                styles.yellowFontColor,
-                                styles.poppins500Font,
-                            ]}
-                        >
-                            You should get a reply within 24 hours .
-                        </Text>
+                        {disableSubmit ? (
+                            <Text
+                                style={[
+                                    styles2.subParagraph,
+                                    styles.redText,
+                                    styles.poppins500Font,
+                                ]}
+                            >
+                                Check form fields
+                            </Text>
+                        ) : (
+                            <Text
+                                style={[
+                                    styles2.subParagraph,
+                                    styles.yellowFontColor,
+                                    styles.poppins500Font,
+                                ]}
+                            >
+                                You should get a reply within 24 hours .
+                            </Text>
+                        )}
 
                         <MarginVertical />
 
-                        <AnimatedTouchableOpacity
-                            activeOpacity={1}
-                            style={[styles.button, styles2.button]}
-                            onPressIn={() => {
-                                onPressInButton(submitButtonAnimatedValue);
-                            }}
-                            onPressOut={() =>
-                                onPressOutButton(submitButtonAnimatedValue)
-                            }
-                            onPress={handleSubmit(onSubmit, () =>
-                                console.log('error')
+                        <TouchableWithoutFeedback
+                            onPressIn={onPressInButton}
+                            onPressOut={onPressOutButton}
+                            onPress={handleSubmit(
+                                () => {
+                                    console.log('submitted successfully');
+                                    toggleContactModal();
+                                },
+                                () => console.log('failed')
                             )}
-                            disabled={!!Object.keys(errors).length}
+                            disabled={disableSubmit}
                         >
-                            <Text
+                            <Animated.View
                                 style={[
-                                    styles.buttonText,
-                                    styles.karla600Font,
-                                    styles2.buttonText,
-                                    styles.whiteText,
+                                    styles.button,
+                                    styles2.button,
+                                    animatedSubmitStyle,
                                 ]}
                             >
-                                Submit
-                            </Text>
-                        </AnimatedTouchableOpacity>
+                                <Text
+                                    style={[
+                                        styles.buttonText,
+                                        styles.karla600Font,
+                                        styles2.buttonText,
+                                        styles.whiteText,
+                                    ]}
+                                >
+                                    Submit
+                                </Text>
+                            </Animated.View>
+                        </TouchableWithoutFeedback>
 
                         <MarginVertical />
                     </View>
@@ -681,7 +737,15 @@ ContactForm.propTypes = {
     fontFactor: PropTypes.number,
     scrollRef: PropTypes.object,
     margin: PropTypes.number,
+    toggleContactModal: PropTypes.func,
 };
+
+const mapStateToProps = ({ settingsState: { fontFactor, margin } }) => ({
+    fontFactor,
+    margin,
+});
+
+export default connect(mapStateToProps, { toggleContactModal })(ContactForm);
 
 const styles = StyleSheet.create({
     whiteText: {

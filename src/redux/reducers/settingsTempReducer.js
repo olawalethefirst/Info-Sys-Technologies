@@ -13,6 +13,7 @@ import {
     INITIATE_COMMENT,
     CLEAR_COMMENT_SUCCESSFUL,
     CLEAR_COMMENT_FAILED,
+    TOGGLE_CONTACT_MODAL,
 } from '../actions/actionTypes';
 
 const initialState = {
@@ -22,6 +23,7 @@ const initialState = {
     authModalVisible: false,
     postResultModalVisible: false,
     commentResultVisible: false,
+    contactModalVisible: false,
 };
 
 export default function settingsTempReducer(state = initialState, action) {
@@ -60,6 +62,11 @@ export default function settingsTempReducer(state = initialState, action) {
             return { ...state, commentResultVisible: false };
         case CLEAR_COMMENT_FAILED:
             return { ...state, commentResultVisible: false };
+        case TOGGLE_CONTACT_MODAL:
+            return {
+                ...state,
+                contactModalVisible: !state.contactModalVisible,
+            };
         default:
             return state;
     }
