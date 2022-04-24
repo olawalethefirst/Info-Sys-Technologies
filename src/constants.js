@@ -48,6 +48,7 @@ export const About = 'About';
 export const Services = 'Services';
 export const Contact = 'Contact';
 export const ForumStack = 'ForumStack';
+export const comment = 'comment'
 
 export const serviceDetails = [
     {

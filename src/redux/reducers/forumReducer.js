@@ -3,7 +3,8 @@ import {
     REFRESHING_POSTS_SUCCESSFUL,
     LOADING_POSTS_FIRST_BATCH_SUCCESSFUL,
     POST_SUCCESSFUL,
-    TOGGLE_POST_LIKE,
+    ADD_POST_LIKE,
+    REMOVE_POST_LIKE,
     UPDATE_POST,
 } from '../actions/actionTypes';
 
@@ -28,19 +29,47 @@ export default function forumReducer(state = initialState, action) {
                 ...state,
                 posts: [action.payload, ...state.posts],
             };
-        case TOGGLE_POST_LIKE: {
+        case ADD_POST_LIKE: {
+            const {
+                payload: { uid, postID, timestamp },
+            } = action;
             return {
                 ...state,
                 posts: state.posts.map((post) => {
-                    if (post.postID === action.payload.postID) {
-                        return {
-                            ...post,
-                            likes: post.likes.includes(action.payload.uid)
-                                ? post.likes.filter(
-                                      (uid) => uid !== action.payload.uid
-                                  )
-                                : [...post.likes, action.payload.uid],
-                        };
+                    if (post.postID === postID) {
+                        const postLikes = post.likes;
+                        // eslint-disable-next-line no-prototype-builtins
+                        if (postLikes[uid] !== timestamp) {
+                            const newLikes = { ...post.likes };
+                            newLikes[uid] = timestamp;
+                            return {
+                                ...post,
+                                likes: newLikes,
+                            };
+                        }
+                    }
+                    return post;
+                }),
+            };
+        }
+        case REMOVE_POST_LIKE: {
+            const {
+                payload: { uid, postID },
+            } = action;
+            return {
+                ...state,
+                posts: state.posts.map((post) => {
+                    if (post.postID === postID) {
+                        const postLikes = post.likes;
+                        // eslint-disable-next-line no-prototype-builtins
+                        if (postLikes.hasOwnProperty(uid)) {
+                            const newLikes = { ...postLikes };
+                            delete newLikes[uid];
+                            return {
+                                ...post,
+                                likes: newLikes,
+                            };
+                        }
                     }
                     return post;
                 }),

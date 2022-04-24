@@ -4,6 +4,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
 import RetryLoad from './RetryLoad';
 import { noComment as noCommentErr } from '../helperFunctions/processErrorString';
+import PropTypes from 'prop-types';
 
 function RenderPostFooter({
     postNotLoaded,
@@ -24,7 +25,6 @@ function RenderPostFooter({
             fontSize: fontFactor * wp(5),
         },
     });
-    console.log(loading);
 
     if (postNotLoaded || loading) {
         return (
@@ -59,6 +59,15 @@ function RenderPostFooter({
 
     return <View style={styles2.container} />;
 }
+
+RenderPostFooter.propTypes = {
+    postNotLoaded: PropTypes.bool,
+    emptyComment: PropTypes.bool,
+    fontFactor: PropTypes.number,
+    loading: PropTypes.bool,
+    loadError: PropTypes.string,
+    onRetryLoadComment: PropTypes.func,
+};
 
 const mapStateToProps = ({ settingsState: { fontFactor } }) => ({
     fontFactor,

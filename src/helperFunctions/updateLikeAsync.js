@@ -1,34 +1,19 @@
-import {
-    arrayUnion,
-    runTransaction,
-    doc,
-    arrayRemove,
-} from 'firebase/firestore';
-import { firestore, auth } from './initializeFirebase';
-import docPath, { comment } from './docPath';
+import { runTransaction, doc, deleteField } from 'firebase/firestore';
+import { firestore } from './initializeFirebase';
+import docPath from './docPath';
 import NetInfo from '@react-native-community/netinfo';
-
-export { comment };
-
-const onLikeAsync = (parentID, parentType, tempUID) => {
+const updateLikeAsync = (parentID, timestamp, liked, uid, parentType) => {
     const docMap = {};
     const path = docPath(parentID, parentType);
 
     return runTransaction(firestore, async (transaction) => {
-        const online = await (await NetInfo.fetch()).isConnected;
+        const online = (await NetInfo.fetch()).isConnected;
         if (online) {
-            const parent = await transaction.get(doc(firestore, ...path));
-            if (parent.data().likes.includes(auth.currentUser.uid)) {
-                docMap['likes'] = arrayRemove(
-                    auth.currentUser.uid
-                    // tempUID
-                );
+            if (liked) {
+                docMap[`likes.${uid}`] = deleteField();
                 transaction.update(doc(firestore, ...path), docMap);
             } else {
-                docMap['likes'] = arrayUnion(
-                    auth.currentUser.uid
-                    // tempUID
-                );
+                docMap[`likes.${uid}`] = timestamp;
                 transaction.update(doc(firestore, ...path), docMap);
             }
         } else {
@@ -37,4 +22,4 @@ const onLikeAsync = (parentID, parentType, tempUID) => {
     });
 };
 
-export default onLikeAsync;
+export default updateLikeAsync;

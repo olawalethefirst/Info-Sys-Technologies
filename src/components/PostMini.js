@@ -18,14 +18,7 @@ import Animated, {
     interpolateColor,
 } from 'react-native-reanimated';
 
-const PostMini = ({
-    fontFactor,
-    title,
-    createdAt,
-    category,
-    likes,
-    item,
-}) => {
+const PostMini = ({ fontFactor, title, createdAt, category, likes, item }) => {
     const animatedValue = useSharedValue(0);
 
     const onPressIn = useCallback(() => {
@@ -80,14 +73,33 @@ const PostMini = ({
             lineHeight: fontFactor * wp(6.36),
         },
     });
-
     const navigation = useNavigation();
     const onPress = () => {
+        const {
+            username,
+            title,
+            postID,
+            owner,
+            likes,
+            createdAt,
+            category,
+            body,
+        } = item;
         navigation.navigate('ForumStack', {
             screen: 'Post',
-            params: item,
+            params: {
+                username,
+                title,
+                postID,
+                owner,
+                likes,
+                createdAt,
+                category,
+                body,
+            },
         });
     };
+    console.log(item);
 
     return (
         <TouchableWithoutFeedback
@@ -149,12 +161,9 @@ PostMini.propTypes = {
     item: PropTypes.object,
 };
 
-
 const mapStateToProps = ({ settingsState: { fontFactor } }) => ({ fontFactor });
 
-export default connect(mapStateToProps, {  })(
-    React.memo(PostMini)
-);
+export default connect(mapStateToProps, {})(React.memo(PostMini));
 
 const styles = StyleSheet.create({
     postContainer: {

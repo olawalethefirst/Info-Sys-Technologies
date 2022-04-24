@@ -1,110 +1,52 @@
-import React, { useRef, useCallback } from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-    TouchableOpacity,
-    Keyboard,
-} from 'react-native';
-import moment from 'moment';
+import React, { useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import ReplyIcon from './ReplyIcon';
-import HeartIcon from './HeartIcon';
-import checkColumnMode from '../helperFunctions/checkColumnMode';
 import { connect } from 'react-redux';
-import CommentsHeading from './CommentsHeading';
 import Username from './Username';
 import CreatedAt from './CreatedAt';
 import Likes from './Likes';
 import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
 import Body from './Body';
-import LikeButton from './LikeButton';
-import ReplyButton from './ReplyButton';
-import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
-import { auth } from '../helperFunctions/initializeFirebase';
+import LikeReplyContainer from './LikeReplyContainer';
 import PropTypes from 'prop-types';
 
 const Comment = ({
     fontFactor,
     margin,
-    deviceWidthClass,
-    uid,
-    item,
-    scrollRef,
-    containerRef,
-    bodyHeight,
-    commentInputRef,
     username,
     createdAt,
     likes,
     comment,
-    toggleCallToAuthModal,
-    updateCommentLikes,
     commentID,
-    headerSize,
     liked,
-    scrollToItemBottom,
     onReply,
     onLike,
+    columnMode,
 }) => {
-    const columnMode = checkColumnMode(deviceWidthClass);
     const commentRef = useRef(null);
-
-    // const onReply = useCallback(() => {
-    //     if (uid) {
-    //         !commentInputRef.current?.isFocused()
-    //             ? commentInputRef.current?.focus()
-    //             : null;
-    //         scrollToItemBottom(
-    //             commentRef,
-    //             containerRef,
-    //             scrollRef,
-    //             bodyHeight - headerSize
-    //         );
-    //     } else {
-    //         toggleCallToAuthModal();
-    //     }
-    // }, [
-    //     uid,
-    //     toggleCallToAuthModal,
-    //     commentInputRef,
-    //     containerRef,
-    //     commentRef,
-    //     bodyHeight,
-    //     scrollRef,
-    //     headerSize,
-    // ]);
-
-    // const onLike = useCallback(() => {
-    //     if (uid) {
-    //         updateCommentLikes(commentID);
-    //     } else {
-    //         toggleCallToAuthModal();
-    //     }
-    // }, [updateCommentLikes, uid, toggleCallToAuthModal, commentID]);
-
+    const styles2 = StyleSheet.create({
+        container: {
+            borderBottomWidth: wp(0.25),
+            marginHorizontal: margin,
+        },
+        columnMode: {
+            width: columnMode ? '90%' : '100%',
+        },
+    });
+    
     return (
-        <View
-            ref={commentRef}
-            style={{
-                borderBottomColor: '#cecece',
-                borderBottomWidth: wp(0.25),
-                marginHorizontal: margin,
-            }}
-        >
-            <View
-                style={{
-                    width: columnMode ? '90%' : '100%', // move to postscreen
-                    alignSelf: 'center',
-                }}
-            >
+        <View ref={commentRef} style={[styles.container, styles2.container]}>
+            <View style={[styles.columnMode, styles2.columnMode]}>
                 <View>
                     <Username username={username} fontFactor={fontFactor} />
                     <MarginVertical size={0.2} />
                     <CreatedAt createdAt={createdAt} fontFactor={fontFactor} />
                     <MarginVertical size={0.2} />
-                    <Likes likesCount={likes.length} fontFactor={fontFactor} />
+                    <Likes
+                        likesCount={Object.keys(likes).length}
+                        fontFactor={fontFactor}
+                    />
                 </View>
                 <MarginVertical />
 
@@ -112,46 +54,40 @@ const Comment = ({
                     <Body body={comment} fontFactor={fontFactor} />
                 </View>
                 <MarginVertical />
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                    }}
-                >
-                    <LikeButton
-                        liked={liked}
-                        fontFactor={fontFactor}
-                        onLike={() => onLike(commentID)}
-                    />
-                    <ReplyButton
-                        onReply={() => onReply(commentRef)}
-                        fontFactor={fontFactor}
-                    />
-                </View>
+                <LikeReplyContainer
+                    onPressLike={() => onLike(liked,commentID)}
+                    onPressReply={() => onReply(commentRef)}
+                    fontFactor={fontFactor}
+                    liked={liked}
+                />
                 <MarginVertical />
             </View>
         </View>
     );
 };
 
-const mapStateToProps = ({
-    settingsState: {
-        fontFactor,
-        margin,
-        deviceWidthClass,
-        bodyHeight,
-        headerSize,
-    },
-    forumTempState: { uid },
-}) => ({
+Comment.propTypes = {
+    fontFactor: PropTypes.number,
+    margin: PropTypes.number,
+    username: PropTypes.string,
+    likes: PropTypes.object,
+    createdAt: PropTypes.string,
+    comment: PropTypes.string,
+    commentID: PropTypes.string,
+    liked: PropTypes.bool,
+    onReply: PropTypes.func,
+    onLike: PropTypes.func,
+    columnMode: PropTypes.bool,
+};
+
+const mapStateToProps = ({ settingsState: { fontFactor, margin } }) => ({
     fontFactor,
     margin,
-    deviceWidthClass,
-    uid,
-    bodyHeight,
-    headerSize,
 });
 
 export default connect(mapStateToProps, { toggleCallToAuthModal })(Comment);
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    container: { borderBottomColor: '#cecece' },
+    columnMode: { alignSelf: 'center' },
+});

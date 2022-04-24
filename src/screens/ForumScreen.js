@@ -227,6 +227,12 @@ function ForumScreen({
             }
         }
     };
+    console.log(
+        'comparing maps',
+        Map({ a: 1, c: 3,  b: 2 }).equals(
+            Map({ a: 1, c: 3, b: 2,  })
+        )
+    );
 
     return (
         <SafeAreaView style={[styles2.containerHeight, styles.container]}>

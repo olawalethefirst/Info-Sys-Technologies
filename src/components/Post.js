@@ -1,28 +1,21 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MarginVertical from './MarginVertical';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import checkColumnMode from '../helperFunctions/checkColumnMode';
 import { connect } from 'react-redux';
 import CommentsHeading from './CommentsHeading';
 import Username from './Username';
 import CreatedAt from './CreatedAt';
 import Likes from './Likes';
 import Category from './Category';
-import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
 import Title from './Title';
 import Body from './Body';
-import LikeButton from './LikeButton';
-import ReplyButton from './ReplyButton';
-import scrollToComponentBottom from '../helperFunctions/scrollToComponentBottom';
 import PropTypes from 'prop-types';
+import LikeReplyContainer from './LikeReplyContainer';
 
 const Post = ({
     fontFactor,
     margin,
-    uid,
-    deviceWidthClass,
-    toggleCallToAuthModal,
     body,
     category,
     title,
@@ -30,20 +23,12 @@ const Post = ({
     likes,
     createdAt,
     postID,
-    updatePostLikes,
     liked,
     onReply,
     onLike,
+    columnMode,
 }) => {
-    const columnMode = checkColumnMode(deviceWidthClass);
     const postRef = useRef(null);
-    // const onLike = useCallback(() => {
-    //     if (uid) {
-    //         updatePostLikes(postID);
-    //     } else {
-    //         toggleCallToAuthModal();
-    //     }
-    // }, [updatePostLikes, uid, toggleCallToAuthModal, postID]);
 
     const styles2 = StyleSheet.create({
         postContainer: {
@@ -54,7 +39,7 @@ const Post = ({
             width: columnMode ? '90%' : '100%',
         },
     });
-
+    
     return (
         <View>
             <View
@@ -72,7 +57,7 @@ const Post = ({
                         />
                         <MarginVertical size={0.2} />
                         <Likes
-                            likesCount={likes.length}
+                            likesCount={Object.keys(likes).length}
                             fontFactor={fontFactor}
                         />
                     </View>
@@ -85,22 +70,12 @@ const Post = ({
                         <Body fontFactor={fontFactor} body={body} />
                     </View>
                     <MarginVertical />
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                        }}
-                    >
-                        <LikeButton
-                            fontFactor={fontFactor}
-                            liked={liked}
-                            onLike={() => onLike(postID)}
-                        />
-                        <ReplyButton
-                            fontFactor={fontFactor}
-                            onReply={() => onReply(postRef)}
-                        />
-                    </View>
+                    <LikeReplyContainer
+                        onPressLike={() => onLike(liked)}
+                        onPressReply={() => onReply(postID)}
+                        fontFactor={fontFactor}
+                        liked={liked}
+                    />
                     <MarginVertical />
                 </View>
             </View>
@@ -113,46 +88,25 @@ const Post = ({
 Post.propTypes = {
     fontFactor: PropTypes.number,
     margin: PropTypes.number,
-    uid: PropTypes.string,
-    deviceWidthClass: PropTypes.string,
-    containerRef: PropTypes.object,
-    effectiveBodyHeight: PropTypes.number,
-    commentInputRef: PropTypes.object,
-    scrollRef: PropTypes.object,
-    toggleCallToAuthModal: PropTypes.func,
     body: PropTypes.string,
     category: PropTypes.string,
     title: PropTypes.string,
     username: PropTypes.string,
-    likes: PropTypes.array,
+    likes: PropTypes.object,
     createdAt: PropTypes.string,
-    updateLike: PropTypes.func,
     postID: PropTypes.string,
+    liked: PropTypes.bool,
+    onReply: PropTypes.func,
+    onLike: PropTypes.func,
+    columnMode: PropTypes.bool,
 };
 
-const mapStateToProps = ({
-    settingsState: {
-        fontFactor,
-        margin,
-        deviceWidthClass,
-        effectiveBodyHeight,
-        headerSize,
-        bodyHeight,
-    },
-    forumTempState: { uid },
-}) => ({
+const mapStateToProps = ({ settingsState: { fontFactor, margin } }) => ({
     fontFactor,
     margin,
-    deviceWidthClass,
-    uid,
-    effectiveBodyHeight,
-    headerSize,
-    bodyHeight,
 });
 
-export default connect(mapStateToProps, {
-    toggleCallToAuthModal,
-})(Post);
+export default connect(mapStateToProps, {})(Post);
 
 const styles = StyleSheet.create({
     postContainer: {

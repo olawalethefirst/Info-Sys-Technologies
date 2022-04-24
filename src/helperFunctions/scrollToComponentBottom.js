@@ -7,7 +7,6 @@ export default function scrollToComponentBottom(
     windowHeight,
     both
 ) {
-    console.log('called');
     const isIOS = Platform.OS === 'ios';
 
     if (both || isIOS) {

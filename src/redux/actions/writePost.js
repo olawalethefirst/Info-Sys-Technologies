@@ -12,7 +12,7 @@ const writePost = (data) => async (dispatch) => {
             ...data,
             owner: auth.currentUser.uid,
             username: auth.currentUser.displayName,
-            likes: [],
+            likes: {},
             createdAt: Date.now(),
         };
         const postID = uuidv4();

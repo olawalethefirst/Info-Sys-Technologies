@@ -3,12 +3,11 @@ import Modal from 'react-native-modal';
 import { connect } from 'react-redux';
 import ModalButton from './ModalButton';
 import ModalTextBlock from './ModalTextBlock';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import ModalActivityIndicator from './ModalActivityIndicator';
 import { Platform, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
-// import closeCommentResult from '../redux/actions/closeCommentResult';
-// import rewriteComment from '../redux/actions/rewriteComment';
+import PropTypes from 'prop-types';
 
 function CommentResultModal({
     commentSuccessful,
@@ -41,8 +40,6 @@ function CommentResultModal({
         },
     });
 
-    console.log('commentResultVisible in modal', commentResultVisible)
-
     return (
         <Modal
             isVisible={commentResultVisible}
@@ -56,23 +53,17 @@ function CommentResultModal({
             style={[styles.modal, styles2.modal]}
         >
             {commenting && (
-                <Animated.View 
-                // entering={FadeIn} exiting={FadeOut}
-                >
+                <Animated.View>
                     <ModalActivityIndicator />
                 </Animated.View>
             )}
             {result && (
-                <Animated.View 
-                // entering={FadeIn} exiting={FadeOut}
-                >
+                <Animated.View>
                     <ModalTextBlock text={result} color={resultColor} />
                 </Animated.View>
             )}
             {commentFailed && (
-                <Animated.View 
-                // entering={FadeIn} exiting={FadeOut}
-                >
+                <Animated.View>
                     <ModalButton
                         text={'retry'}
                         submit
@@ -81,15 +72,23 @@ function CommentResultModal({
                 </Animated.View>
             )}
             {result && (
-                <Animated.View 
-                // entering={FadeIn} exiting={FadeOut}
-                >
+                <Animated.View>
                     <ModalButton text={'cancel'} onPress={closeCommentResult} />
                 </Animated.View>
             )}
         </Modal>
     );
 }
+
+CommentResultModal.propTypes = {
+    commentSuccessful: PropTypes.bool,
+    commentFailed: PropTypes.bool,
+    commentResultVisible: PropTypes.bool,
+    commenting: PropTypes.bool,
+    margin: PropTypes.number,
+    closeCommentResult: PropTypes.func,
+    rewriteComment: PropTypes.func,
+};
 
 const mapStateToProps = ({ settingsState: { margin } }) => ({
     margin,

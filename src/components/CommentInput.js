@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -6,22 +6,20 @@ import {
     TextInput,
     Keyboard,
     TouchableOpacity,
-    Pressable,
 } from 'react-native';
 import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { store } from '../redux/store';
 import hideKeyboardAsync from '../helperFunctions/hideKeyboardAsync';
 import { auth } from '../helperFunctions/initializeFirebase';
 import toggleCallToAuthModal from '../redux/actions/toggleCallToAuthModal';
 import toggleOnUsernameModal from '../redux/actions/toggleOnUsernameModal';
+import PropTypes from 'prop-types';
 
 const CommentInput = ({
-    headerSize,
+    height,
     fontFactor,
     margin,
     commentInputRef,
-    postID,
     writeComment,
     toggleOnUsernameModal,
     toggleCallToAuthModal,
@@ -55,6 +53,7 @@ const CommentInput = ({
             toggleOnUsernameModal,
         ]
     );
+    const onSend = useCallback(() => onComment(comment), [onComment, comment]);
 
     useEffect(() => {
         const events = ['keyboardDidShow', 'keyboardDidHide'];
@@ -64,33 +63,32 @@ const CommentInput = ({
         return () => listeners.forEach((listener) => listener.remove());
     }, []);
 
+    const styles2 = {
+        buttonText: {
+            fontSize: fontFactor * wp(4),
+            lineHeight: fontFactor * wp(5.1),
+            opacity: comment.toString().trim().length > 0 ? 1 : 0.7,
+        },
+        button: {
+            width: height * 1.1,
+            height: height,
+        },
+        input: {
+            fontSize: fontFactor * wp(4),
+            lineHeight: fontFactor * wp(5.1),
+            paddingHorizontal: margin,
+        },
+        container: {
+            borderWidth: wp(0.75) * fontFactor,
+            height: height,
+        },
+    };
 
     return (
-        <View
-            style={{
-                flexDirection: 'row',
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: headerSize,
-                borderColor: '#1A91D7',
-                borderWidth: wp(0.75) * fontFactor,
-                backgroundColor: '#fff',
-            }}
-        >
+        <View style={[styles.container, styles2.container]}>
             <TextInput
                 ref={commentInputRef}
-                style={[
-                    {
-                        fontSize: fontFactor * wp(4),
-                        lineHeight: fontFactor * wp(5.1),
-                        fontFamily: 'Poppins_500Medium',
-                        paddingHorizontal: margin,
-                        flex: 1,
-                        alignItems: 'center',
-                    },
-                ]}
+                style={[styles.input, styles2.input]}
                 value={comment}
                 onChangeText={(text) => setComment(text)}
                 placeholder="Type your comment"
@@ -98,24 +96,11 @@ const CommentInput = ({
                 textAlignVertical="center"
             />
             <TouchableOpacity
-                style={{
-                    width: headerSize * 1.1,
-                    height: '100%',
-                    justifyContent: 'center',
-                }}
+                style={[styles.button, styles2.button]}
                 disabled={!comment.trim()}
-                onPress={() => onComment(comment)}
+                onPress={onSend}
             >
-                <Text
-                    style={{
-                        color: '#1A91D7',
-                        textAlign: 'center',
-                        fontSize: fontFactor * wp(4),
-                        lineHeight: fontFactor * wp(5.1),
-                        fontFamily: 'Poppins_600SemiBold',
-                        opacity: comment.toString().trim().length > 0 ? 1 : 0.7,
-                    }}
-                >
+                <Text style={[styles.buttonText, styles2.buttonText]}>
                     send
                 </Text>
             </TouchableOpacity>
@@ -123,8 +108,35 @@ const CommentInput = ({
     );
 };
 
+CommentInput.propTypes = {
+    height: PropTypes.number,
+    fontFactor: PropTypes.number,
+    margin: PropTypes.number,
+    commentInputRef: PropTypes.object,
+    writeComment: PropTypes.func,
+    toggleOnUsernameModal: PropTypes.func,
+    toggleCallToAuthModal: PropTypes.func,
+};
+
 export default connect(null, {
     toggleOnUsernameModal,
     toggleCallToAuthModal,
 })(CommentInput);
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    buttonText: {
+        color: '#1A91D7',
+        textAlign: 'center',
+        fontFamily: 'Poppins_600SemiBold',
+    },
+    button: { justifyContent: 'center' },
+    input: { fontFamily: 'Poppins_500Medium', flex: 1, alignItems: 'center' },
+    container: {
+        flexDirection: 'row',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        borderColor: '#1A91D7',
+        backgroundColor: '#fff',
+    },
+});

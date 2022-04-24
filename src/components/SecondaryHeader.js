@@ -4,9 +4,7 @@ import {
     Text,
     ImageBackground,
     Animated,
-    // TouchableOpacity,
     View,
-    TouchableNativeFeedback 
 } from 'react-native';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';

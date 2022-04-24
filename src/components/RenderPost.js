@@ -12,7 +12,7 @@ export default function renderPost({ item }) {
             title={title}
             createdAt={createdString}
             category={category}
-            likes={likes.length}
+            likes={Object.keys(likes).length}
             item={item}
         />
     );

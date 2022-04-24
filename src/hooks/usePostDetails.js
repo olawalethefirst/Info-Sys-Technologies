@@ -1,10 +1,10 @@
 import { useCallback, useRef, useEffect, useReducer } from 'react';
 import { useDispatch } from 'react-redux';
-import updateLikeAsync, { comment } from '../helperFunctions/updateLikeAsync';
+import updateLikeAsync from '../helperFunctions/updateLikeAsync';
+import { comment } from '../constants';
 import { auth, firestore } from '../helperFunctions/initializeFirebase';
 import togglePostLike from '../redux/actions/togglePostLike';
 import {
-    onSnapshot,
     doc,
     getDocFromServer,
     getDocsFromServer,
@@ -25,13 +25,15 @@ export default function usePostDetails(initialPostData) {
     const isMounted = useRef(false);
     const loadCanceled = useRef(false);
     const postID = useRef(initialPostData.postID).current;
+    const post = useRef({
+        ...initialPostData,
+        likedTimestamp:
+            initialPostData.likes[auth.currentUser?.uid] ?? Date.now(),
+    }).current;
 
-    const UPDATE_POST = 'UPDATE_POST';
     const INITIATE_LOADING = 'INITIATE_LOADING';
     const ACTIVATE_LOAD_ERROR = 'ACTIVATE_LOAD_ERROR';
     const UPDATE_COMMENTS = 'UPDATE_COMMENT';
-    const TOGGLE_POST_LIKE = 'TOGGLE_POST_LIKE';
-    const TOGGLE_COMMENT_LIKE = 'TOGGLE_COMMENT_LIKE';
     const INITIATE_COMMENT = 'INITIATE_COMMENT';
     const COMMENT_SUCCESSFUL = 'COMMENT_SUCCESSFUL';
     const COMMENT_FAILED = 'COMMENT_FAILED';
@@ -41,30 +43,41 @@ export default function usePostDetails(initialPostData) {
     const INITIATE_REFRESHING = 'INITIATE_REFRESHING';
     const REFRESHING_FAILED = 'REFRESHING_FAILED';
     const REFRESHING_SUCCESSFUL = 'REFRESHING_SUCCESSFUL';
+    const ADD_POST_LIKE = 'ADD_POST_LIKE';
+    const REMOVE_POST_LIKE = 'REMOVE_POST_LIKE';
+    const ADD_COMMENT_LIKE = 'ADD_COMMENT_LIKE';
+    const REMOVE_COMMENT_LIKE = 'REMOVE_COMMENT_LIKE';
+    const ADD = 'ADD';
+    const REMOVE = 'REMOVE';
 
-    const _toggleLike = useCallback(
-        (likes) =>
-            likes.includes(auth.currentUser?.uid)
-                ? likes.filter((uid) => uid !== auth.currentUser?.uid)
-                : [...likes, auth.currentUser?.uid],
-
-        []
-    );
+    const _toggleLike = useCallback((type, uid, likes, timestamp) => {
+        const newLikes = { ...likes };
+        switch (type) {
+            case ADD: {
+                if (newLikes[uid] !== timestamp) {
+                    newLikes[uid] = timestamp;
+                    return newLikes;
+                }
+                return likes;
+            }
+            case REMOVE: {
+                if (likes[uid]) {
+                    delete newLikes[uid];
+                    return newLikes;
+                }
+                return likes;
+            }
+            default:
+                return likes;
+        }
+    }, []);
     const _reducer = (state, action) => {
         switch (action.type) {
-            case UPDATE_POST:
-                return {
-                    ...state,
-                    postDetails: [
-                        action.payload,
-                        ...state.postDetails.slice(1),
-                    ],
-                };
             case INITIATE_LOADING:
                 return {
                     ...state,
                     loading: true,
-                    loadError: false,
+                    loadError: null,
                 };
             case ACTIVATE_LOAD_ERROR:
                 return { ...state, loadError: action.payload, loading: false };
@@ -74,34 +87,107 @@ export default function usePostDetails(initialPostData) {
                     postDetails: [...state.postDetails, ...action.payload],
                     loading: false,
                 };
-            case TOGGLE_POST_LIKE: {
+            case ADD_POST_LIKE: {
                 const post = state.postDetails[0];
                 const postLikes = post.likes;
+                const { timestamp, uid } = action.payload;
+                const oldTimestamp = post.likedTimestamp;
+                const shouldUpdate = timestamp >= oldTimestamp;
                 return {
                     ...state,
                     postDetails: [
                         {
                             ...post,
-                            likes: _toggleLike(postLikes),
+                            likes: shouldUpdate
+                                ? _toggleLike(ADD, uid, postLikes, timestamp)
+                                : postLikes,
+                            likedTimestamp: shouldUpdate
+                                ? timestamp
+                                : oldTimestamp,
                         },
                         ...state.postDetails.slice(1),
                     ],
                 };
             }
-            case TOGGLE_COMMENT_LIKE:
+            case REMOVE_POST_LIKE: {
+                const post = state.postDetails[0];
+                const postLikes = post.likes;
+                const { timestamp, uid } = action.payload;
+                const oldTimestamp = post.likedTimestamp;
+                const shouldUpdate = timestamp >= oldTimestamp;
+                return {
+                    ...state,
+                    postDetails: [
+                        {
+                            ...post,
+                            likes: shouldUpdate
+                                ? _toggleLike(REMOVE, uid, postLikes)
+                                : postLikes,
+                            likedTimestamp: shouldUpdate
+                                ? timestamp
+                                : oldTimestamp,
+                        },
+                        ...state.postDetails.slice(1),
+                    ],
+                };
+            }
+            case ADD_COMMENT_LIKE: {
+                const {
+                    payload: { timestamp, commentID, uid },
+                } = action;
+
                 return {
                     ...state,
                     postDetails: state.postDetails.map((postDetail) => {
-                        if (postDetail.commentID === action.payload) {
+                        if (postDetail.commentID === commentID) {
                             const postDetailLikes = postDetail.likes;
+                            const oldTimestamp = postDetail.likedTimestamp;
+                            const shouldUpdate = timestamp >= oldTimestamp;
+
                             return {
                                 ...postDetail,
-                                likes: _toggleLike(postDetailLikes),
+                                likes: shouldUpdate
+                                    ? _toggleLike(
+                                          ADD,
+                                          uid,
+                                          postDetailLikes,
+                                          timestamp
+                                      )
+                                    : postDetailLikes,
+                                likedTimestamp: shouldUpdate
+                                    ? timestamp
+                                    : oldTimestamp,
                             };
                         }
                         return postDetail;
                     }),
                 };
+            }
+            case REMOVE_COMMENT_LIKE: {
+                const {
+                    payload: { timestamp, commentID, uid },
+                } = action;
+                return {
+                    ...state,
+                    postDetails: state.postDetails.map((postDetail) => {
+                        if (postDetail.commentID === commentID) {
+                            const postDetailLikes = postDetail.likes;
+                            const oldTimestamp = postDetail.likedTimestamp;
+                            const shouldUpdate = timestamp >= oldTimestamp;
+                            return {
+                                ...postDetail,
+                                likes: shouldUpdate
+                                    ? _toggleLike(REMOVE, uid, postDetailLikes)
+                                    : postDetailLikes,
+                                likedTimestamp: shouldUpdate
+                                    ? timestamp
+                                    : oldTimestamp,
+                            };
+                        }
+                        return postDetail;
+                    }),
+                };
+            }
             case INITIATE_COMMENT:
                 return {
                     ...state,
@@ -147,10 +233,7 @@ export default function usePostDetails(initialPostData) {
             case REFRESHING_SUCCESSFUL:
                 return {
                     ...state,
-                    postDetails: [
-                        ...state.postDetails.slice(0, 1),
-                        ...action.payload,
-                    ],
+                    postDetails: [...action.payload],
                     refreshing: false,
                 };
             case REFRESHING_FAILED:
@@ -165,7 +248,7 @@ export default function usePostDetails(initialPostData) {
     };
 
     const [state, dispatch] = useReducer(_reducer, {
-        postDetails: [initialPostData], //initialize with only needed data
+        postDetails: [post], //initialize with only needed data
         loading: false,
         loadError: null,
         comment: null,
@@ -184,18 +267,17 @@ export default function usePostDetails(initialPostData) {
         []
     );
     const _isLoadCanceled = useCallback(() => loadCanceled.current, []);
-    const _togglePostLikes = useCallback(
-        () =>
-            dispatch({
-                type: TOGGLE_POST_LIKE,
-            }),
-        []
-    );
+    const _togglePostLikes = useCallback((liked, timestamp, uid) => {
+        dispatch({
+            type: liked ? REMOVE_POST_LIKE : ADD_POST_LIKE,
+            payload: { timestamp, uid },
+        });
+    }, []);
     const _toggleCommentLikes = useCallback(
-        (commentID) =>
+        (liked, commentID, uid, timestamp) =>
             dispatch({
-                type: TOGGLE_COMMENT_LIKE,
-                payload: commentID,
+                type: liked ? REMOVE_COMMENT_LIKE : ADD_COMMENT_LIKE,
+                payload: { commentID, timestamp, uid },
             }),
         []
     );
@@ -208,52 +290,73 @@ export default function usePostDetails(initialPostData) {
     );
     const _mapComment = useCallback((doc) => {
         const commentID = doc.id;
-        return { commentID, ...doc.data() };
+        const data = doc.data();
+        return {
+            commentID,
+            ...data,
+            likedTimestamp: data.likes[auth.currentUser.uid] ?? Date.now(),
+        };
     }, []);
-    const _updateLoadError = useCallback(
-        (payload) =>
-            dispatch({
-                type: ACTIVATE_LOAD_ERROR,
-                payload,
-            }),
-        []
-    );
+    const _updateLoadError = useCallback((payload) => {
+        dispatch({
+            type: ACTIVATE_LOAD_ERROR,
+            payload,
+        });
+    }, []);
     const _updateComments = useCallback((payload) => {
         dispatch({
             type: UPDATE_COMMENTS,
             payload,
         });
     }, []);
-    const updatePostLikes = useCallback(async () => {
-        try {
-            _togglePostLikes();
-            await updateLikeAsync(postID);
-            reduxDispatch(
-                togglePostLike({
-                    uid: auth.currentUser?.uid,
-                    postID,
-                })
-            );
-        } catch (err) {
-            console.log('error', err);
-            if (_isMounted()) {
-                _togglePostLikes();
-            }
-        }
-    }, [reduxDispatch, _togglePostLikes, _isMounted, postID]);
-    const updateCommentLikes = useCallback(
-        async (commentID) => {
-            try {
-                _toggleCommentLikes(commentID);
-                await updateLikeAsync(commentID, comment);
-            } catch (err) {
-                console.log('error', err);
-                if (_isMounted()) {
-                    _toggleCommentLikes(commentID);
+    const updatePostLikes = useCallback(
+        async (liked) => {
+            const uid = auth.currentUser?.uid;
+            if (uid) {
+                const timestamp = Date.now();
+                try {
+                    _togglePostLikes(liked, timestamp, uid);
+                    await updateLikeAsync(postID, timestamp, liked, uid);
+                    reduxDispatch(
+                        togglePostLike(liked, {
+                            uid,
+                            postID,
+                            timestamp,
+                        })
+                    );
+                } catch (err) {
+                    console.log('error', err);
+                    if (_isMounted()) {
+                        _togglePostLikes(!liked, timestamp, uid);
+                    }
                 }
             }
         },
-        [_toggleCommentLikes, _isMounted]
+        [reduxDispatch, _togglePostLikes, _isMounted, postID]
+    );
+    const updateCommentLikes = useCallback(
+        async (liked, commentID) => {
+            const uid = auth.currentUser?.uid;
+            if (uid) {
+                const timestamp = Date.now();
+                try {
+                    _toggleCommentLikes(liked, commentID, uid, timestamp);
+                    await updateLikeAsync(
+                        commentID,
+                        timestamp,
+                        liked,
+                        uid,
+                        comment
+                    );
+                } catch (err) {
+                    console.log('error', err);
+                    if (_isMounted() && !_isLoadCanceled()) {
+                        _toggleCommentLikes(!liked, commentID, uid, timestamp);
+                    }
+                }
+            }
+        },
+        [_toggleCommentLikes, _isMounted, _isLoadCanceled]
     );
     const _fetchFirstComments = useCallback(async () => {
         _updateLoadCanceled(false);
@@ -276,7 +379,7 @@ export default function usePostDetails(initialPostData) {
             }
         } catch (err) {
             console.log('error', err);
-            if (_isMounted() && !_isLoadCanceled) {
+            if (_isMounted() && !_isLoadCanceled()) {
                 _updateLoadError(err.code ?? err.message);
             }
         }
@@ -295,20 +398,19 @@ export default function usePostDetails(initialPostData) {
         _initializeLoading();
         try {
             const postDetails = state.postDetails;
+            const last = await getDocFromServer(
+                doc(
+                    firestore,
+                    'comments',
+                    postDetails[postDetails.length - 1].commentID
+                )
+            );
             const commentsSnapshot = await getDocsFromServer(
                 query(
                     collection(firestore, 'comments'),
                     where('parentPostID', '==', postID),
                     orderBy('createdAt', 'desc'),
-                    startAfter(
-                        await getDocFromServer(
-                            doc(
-                                firestore,
-                                'comments',
-                                postDetails[postDetails.length - 1].commentID
-                            )
-                        )
-                    ),
+                    startAfter(last),
                     limit(5)
                 )
             );
@@ -338,10 +440,10 @@ export default function usePostDetails(initialPostData) {
     ]);
     const fetchComments = useCallback(() => {
         if (!state.loading && !state.loadError && !state.refreshing) {
-            if (state.postDetails.length > 2) {
-                _fetchComments();
-            } else {
+            if (state.postDetails.length === 1) {
                 _fetchFirstComments();
+            } else {
+                _fetchComments();
             }
         }
     }, [
@@ -368,7 +470,7 @@ export default function usePostDetails(initialPostData) {
                     owner: auth.currentUser.uid,
                     createdAt: Date.now(),
                     username: auth.currentUser.displayName,
-                    likes: [],
+                    likes: {},
                 };
                 await createDocAsync(docObj, ['comments', commentID]);
                 if (_isMounted()) {
@@ -420,6 +522,9 @@ export default function usePostDetails(initialPostData) {
             type: INITIATE_REFRESHING,
         });
         try {
+            const postSnapshot = await getDocFromServer(
+                doc(firestore, 'posts', postID)
+            );
             const commentsSnapshot = await getDocsFromServer(
                 query(
                     collection(firestore, 'comments'),
@@ -428,13 +533,34 @@ export default function usePostDetails(initialPostData) {
                     limit(5)
                 )
             );
+            const post = postSnapshot.data();
+            const { category, title, body } = post;
+            reduxDispatch(
+                updatePost({
+                    postID,
+                    searchField: category + '. ' + title + '. ' + body,
+                    ...post,
+                })
+            );
+
             if (_isMounted()) {
                 if (commentsSnapshot.empty) {
                     throw new Error(noComment);
                 } else {
                     dispatch({
                         type: REFRESHING_SUCCESSFUL,
-                        payload: commentsSnapshot.docs.map(_mapComment),
+                        payload: [
+                            {
+                                ...post,
+                                postID,
+                                likedTimestamp:
+                                    // eslint-disable-next-line no-prototype-builtins
+                                    post.likes.hasOwnProperty(
+                                        auth.currentUser?.uid
+                                    ) ?? Date.now(),
+                            },
+                            ...commentsSnapshot.docs.map(_mapComment),
+                        ],
                     });
                 }
             }
@@ -447,7 +573,7 @@ export default function usePostDetails(initialPostData) {
                 });
             }
         }
-    }, [_isMounted, _mapComment, postID, _updateLoadCanceled]);
+    }, [_isMounted, _mapComment, postID, _updateLoadCanceled, reduxDispatch]);
 
     useEffect(() => {
         isMounted.current = true;
@@ -455,38 +581,6 @@ export default function usePostDetails(initialPostData) {
             isMounted.current = false;
         };
     });
-    useEffect(() => {
-        const unsubscribe = onSnapshot(
-            doc(firestore, 'posts', postID),
-            (snapshot) => {
-                if (!_isMounted()) {
-                    unsubscribe();
-                } else {
-                    if (snapshot.exists()) {
-                        const data = snapshot.data();
-                        const { category, title, body } = data;
-
-                        dispatch({
-                            type: UPDATE_POST,
-                            payload: {
-                                ...data,
-                                postID,
-                            },
-                        });
-
-                        reduxDispatch(
-                            updatePost({
-                                postID,
-                                searchField:
-                                    category + '. ' + title + '. ' + body,
-                                ...data,
-                            })
-                        );
-                    }
-                }
-            }
-        );
-    }, [reduxDispatch, postID, _isMounted]);
 
     return [
         state.postDetails,

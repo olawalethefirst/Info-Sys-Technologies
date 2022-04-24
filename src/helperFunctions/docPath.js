@@ -1,4 +1,4 @@
-export const comment = 'comment'
+import { comment } from '../constants';
 
 export default function docPath(parentID, parentType) {
     switch (parentType) {
