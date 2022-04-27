@@ -12,7 +12,6 @@ import updateMargin from './src/redux/actions/updateMargin';
 import updateBodyHeight from './src/redux/actions/updateBodyHeight';
 import updateFontFactor from './src/redux/actions/updateFontFactor';
 import updateHeaderSize from './src/redux/actions/updateHeaderSize';
-import TabNavigator from './src/navigators/TabNavigator';
 import updateAuthState from './src/redux/actions/updateAuthState';
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs([
@@ -20,6 +19,7 @@ LogBox.ignoreLogs([
     '[2022-',
     'Setting a timer for a long period of time, i.e.',
 ]);
+import DrawerNavigator from './src/navigators/DrawerNavigator';
 
 function PreApp() {
     const [assetsLoaded, setAssetsLoaded] = useState(false);
@@ -131,7 +131,7 @@ function PreApp() {
 
     return (
         <NavigationContainer>
-            <TabNavigator />
+            <DrawerNavigator />
         </NavigationContainer>
     );
 }

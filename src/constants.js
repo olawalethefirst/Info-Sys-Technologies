@@ -48,7 +48,12 @@ export const About = 'About';
 export const Services = 'Services';
 export const Contact = 'Contact';
 export const ForumStack = 'ForumStack';
-export const comment = 'comment'
+export const comment = 'comment';
+export const Post = 'Post';
+export const Auth = 'Auth';
+export const Forum = 'Forum';
+export const postsLimit = 20
+export const commentsLimit = 5
 
 export const serviceDetails = [
     {

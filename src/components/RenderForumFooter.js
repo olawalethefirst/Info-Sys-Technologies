@@ -1,14 +1,7 @@
 import React from 'react';
-import {
-    View,
-    ActivityIndicator,
-    StyleSheet,
-    Text,
-} from 'react-native';
+import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import  {
-    noPost,
-} from '../helperFunctions/processErrorString';
+import { noPost } from '../helperFunctions/processErrorString';
 import PropTypes from 'prop-types';
 import RetryLoad from './RetryLoad';
 

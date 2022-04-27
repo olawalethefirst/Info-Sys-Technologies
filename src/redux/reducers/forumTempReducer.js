@@ -69,13 +69,13 @@ const forumTempReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loadingPosts: false,
-                loadingPostsError: !action.payload.length ? noPost : null,
+                loadingPostsError: action.payload.length < 20 ? noPost : null,
             };
         case LOADING_POSTS_SUCCESSFUL:
             return {
                 ...state,
                 loadingPosts: false,
-                loadingPostsError: !action.payload.length ? noPost : null,
+                loadingPostsError: action.payload.length < 20 ? noPost : null,
             };
         case LOADING_POSTS_FAILED:
             return {

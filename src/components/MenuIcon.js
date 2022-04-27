@@ -3,7 +3,7 @@ import { StyleSheet, Pressable, Animated } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 import PropTypes from 'prop-types';
 
-export default function MenuIcon({ headerSize }) {
+export default function MenuIcon({ headerSize, navigation }) {
     const svgWidth = 0.5 * headerSize;
     const animatedValue = useRef(new Animated.Value(1)).current;
     const onPressModalIconIn = () => {
@@ -22,11 +22,7 @@ export default function MenuIcon({ headerSize }) {
     return (
         <Pressable
             style={styles.container}
-            // onPress={() =>
-            //     true
-            //         ? null
-            //         : null
-            // }
+            onPress={() => navigation.getParent().openDrawer()}
             onPressIn={onPressModalIconIn}
             onPressOut={onPressModalIconOut}
         >
@@ -75,6 +71,7 @@ export default function MenuIcon({ headerSize }) {
 
 MenuIcon.propTypes = {
     headerSize: PropTypes.number,
+    navigation: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

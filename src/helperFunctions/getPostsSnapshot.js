@@ -9,6 +9,7 @@ import {
     getDocsFromServer,
     getDocFromServer,
 } from 'firebase/firestore';
+import { postsLimit } from '../constants';
 
 export default async function getPostsSnapshot(lastPostID) {
     if (lastPostID) {
@@ -19,14 +20,14 @@ export default async function getPostsSnapshot(lastPostID) {
             collection(firestore, 'posts'),
             orderBy('createdAt', 'desc'),
             startAfter(lastPostSnapshot),
-            limit(20)
+            limit(postsLimit)
         );
         return getDocsFromServer(postsQuery)
     } else {
         const postsQuery = query(
             collection(firestore, 'posts'),
             orderBy('createdAt', 'desc'),
-            limit(20)
+            limit(postsLimit)
         );
         return getDocsFromServer(postsQuery);
     }

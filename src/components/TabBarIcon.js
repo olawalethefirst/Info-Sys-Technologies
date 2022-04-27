@@ -12,7 +12,7 @@ const TabBarIcon = ({ name, size, focused, color }) => {
                 <EntypoIcon
                     name="home"
                     size={focused ? size * 1.2 : size}
-                    color={focused ? '#1A91D7' : color}
+                    color={color}
                 />
             );
         case About:
@@ -20,7 +20,7 @@ const TabBarIcon = ({ name, size, focused, color }) => {
                 <FontAwesome5Icon
                     name="info-circle"
                     size={focused ? size * 1.2 : size}
-                    color={focused ? '#1A91D7' : color}
+                    color={color}
                 />
             );
         case Services:
@@ -28,7 +28,7 @@ const TabBarIcon = ({ name, size, focused, color }) => {
                 <Ionicons
                     name="briefcase"
                     size={focused ? size * 1.2 : size}
-                    color={focused ? '#1A91D7' : color}
+                    color={color}
                 />
             );
         case Contact:
@@ -36,7 +36,7 @@ const TabBarIcon = ({ name, size, focused, color }) => {
                 <EntypoIcon
                     name="old-phone"
                     size={focused ? size * 1.2 : size}
-                    color={focused ? '#1A91D7' : color}
+                    color={color}
                 />
             );
         case ForumStack:
@@ -44,7 +44,7 @@ const TabBarIcon = ({ name, size, focused, color }) => {
                 <Ionicons
                     name="chatbubbles"
                     size={focused ? size * 1.2 : size}
-                    color={focused ? '#1A91D7' : color}
+                    color={color}
                 />
             );
         default:

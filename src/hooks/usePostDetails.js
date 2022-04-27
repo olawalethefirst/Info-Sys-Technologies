@@ -20,6 +20,7 @@ import { noComment } from '../helperFunctions/processErrorString';
 import createDocAsync from '../helperFunctions/createDocAsync';
 import timerPromiseAsync from '../helperFunctions/timerPromiseAsync';
 import { v1 as uuidv1 } from 'uuid';
+import { commentsLimit } from '../constants';
 
 export default function usePostDetails(initialPostData) {
     const isMounted = useRef(false);
@@ -86,6 +87,7 @@ export default function usePostDetails(initialPostData) {
                     ...state,
                     postDetails: [...state.postDetails, ...action.payload],
                     loading: false,
+                    loadError: action.payload.length < commentsLimit ? noComment : null,
                 };
             case ADD_POST_LIKE: {
                 const post = state.postDetails[0];
@@ -367,7 +369,7 @@ export default function usePostDetails(initialPostData) {
                     collection(firestore, 'comments'),
                     where('parentPostID', '==', postID),
                     orderBy('createdAt', 'desc'),
-                    limit(5)
+                    limit(commentsLimit)
                 )
             );
             if (_isMounted() && !_isLoadCanceled()) {
@@ -411,7 +413,7 @@ export default function usePostDetails(initialPostData) {
                     where('parentPostID', '==', postID),
                     orderBy('createdAt', 'desc'),
                     startAfter(last),
-                    limit(5)
+                    limit(commentsLimit)
                 )
             );
             if (_isMounted() && !_isLoadCanceled()) {
@@ -530,7 +532,7 @@ export default function usePostDetails(initialPostData) {
                     collection(firestore, 'comments'),
                     where('parentPostID', '==', postID),
                     orderBy('createdAt', 'desc'),
-                    limit(5)
+                    limit(commentsLimit)
                 )
             );
             const post = postSnapshot.data();
@@ -545,6 +547,20 @@ export default function usePostDetails(initialPostData) {
 
             if (_isMounted()) {
                 if (commentsSnapshot.empty) {
+                    dispatch({
+                        type: REFRESHING_SUCCESSFUL,
+                        payload: [
+                            {
+                                ...post,
+                                postID,
+                                likedTimestamp:
+                                    // eslint-disable-next-line no-prototype-builtins
+                                    post.likes.hasOwnProperty(
+                                        auth.currentUser?.uid
+                                    ) ?? Date.now(),
+                            },
+                        ],
+                    });
                     throw new Error(noComment);
                 } else {
                     dispatch({

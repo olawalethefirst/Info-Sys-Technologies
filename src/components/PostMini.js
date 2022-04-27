@@ -99,7 +99,6 @@ const PostMini = ({ fontFactor, title, createdAt, category, likes, item }) => {
             },
         });
     };
-    console.log(item);
 
     return (
         <TouchableWithoutFeedback

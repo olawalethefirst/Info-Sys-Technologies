@@ -22,7 +22,7 @@ const TabNavigator = ({ headerSize }) => {
         <Tab.Navigator
             initialRouteName={Home}
             backBehavior="none"
-            screenOptions={({ route }) => {
+            screenOptions={({ route, navigation }) => {
                 return {
                     tabBarHideOnKeyboard: isAndroid ? true : false,
                     headerBackground: HeaderBackground,
@@ -32,14 +32,14 @@ const TabNavigator = ({ headerSize }) => {
                     },
                     headerTitleContainerStyle: { width: '100%' },
                     headerRight: function headerRight() {
-                        return <MenuIcon headerSize={headerSize} />;
+                        return <MenuIcon headerSize={headerSize} navigation={navigation} />;
                     },
                     headerShadowVisible: true,
                     tabBarShowLabel: false,
-                    tabBarStyle: {
-                        backgroundColor: '#fff',
-                    },
-                    tabBarActiveBackgroundColor: '#f7f7f7',
+                    tabBarActiveTintColor: '#1A91D7',
+                    tabBarInactiveTintColor: '#656566',
+                    tabBarInactiveBackgroundColor: '#fff',
+                    tabBarActiveBackgroundColor: '#fff',
                     tabBarIcon: (props) => (
                         <TabBarIcon {...props} name={route.name} />
                     ),

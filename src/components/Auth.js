@@ -19,9 +19,7 @@ const Auth = ({ minHeight, deviceWidthClass, uid, fontFactor }) => {
         params: { viewAnimatedValue },
     } = useRoute();
 
-    const authAnimatedView = useSharedValue(
-        viewAnimatedValue ? viewAnimatedValue : 0 //if passed down, use value, else use 0 as default
-    );
+    const authAnimatedView = useSharedValue(viewAnimatedValue);
     const deviceWidth = Dimensions.get('window').width;
     const authAnimatedViewStyle = useAnimatedStyle(() => ({
         transform: [
