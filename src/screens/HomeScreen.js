@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { StyleSheet, FlatList, View } from 'react-native';
 import Welcome from '../components/Welcome';
 import AboutMini from '../components/AboutMini';

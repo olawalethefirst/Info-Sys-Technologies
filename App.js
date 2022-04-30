@@ -47,12 +47,9 @@ function PreApp() {
         async function prepare() {
             try {
                 await SplashScreen.preventAutoHideAsync();
-                console.log('loading assets');
                 await loadAssetsAsync();
-                console.log('Assets completed load');
                 setAssetsLoaded(true);
             } catch (e) {
-                alert('assets loading failed', e);
                 prepare();
             }
         }
@@ -68,7 +65,6 @@ function PreApp() {
                 !bodyHeight ||
                 !fontFactor
             ) {
-                console.log('no settings data');
                 triggerSynchronousActions();
             }
         }
@@ -83,14 +79,6 @@ function PreApp() {
     ]);
 
     useEffect(() => {
-        console.log(
-            margin,
-            headerSize,
-            deviceWidthClass,
-            bodyHeight,
-            fontFactor,
-            assetsLoaded
-        );
         const prep = () => {
             if (
                 margin &&
@@ -100,14 +88,9 @@ function PreApp() {
                 fontFactor &&
                 assetsLoaded
             ) {
-                console.log('conditions to hide splash screen met');
                 dispatch(updateAuthState());
                 setAppIsReady(async () => {
-                    console.log('hiding splash screen');
                     await SplashScreen.hideAsync();
-                    console.log(
-                        'splash screen hidden successfully, setting app ready to true'
-                    );
                     return true;
                 });
             }
@@ -122,9 +105,7 @@ function PreApp() {
         assetsLoaded,
         dispatch,
     ]);
-
-    // console.log('appIsReady', appIsReady)
-
+    
     if (!appIsReady) {
         return null;
     }

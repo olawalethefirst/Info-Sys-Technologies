@@ -11,7 +11,7 @@ import clearAuth from '../redux/actions/clearAuth';
 import ModalTextBlock from './ModalTextBlock';
 import ModalButton from './ModalButton';
 import { AuthErrorCodes } from 'firebase/auth';
-import retryAuthUserWithEmail from '../redux/actions/retryAuthUserWithEmail';
+import retryAuthUser from '../redux/actions/retryAuthUser';
 
 // eslint-disable-next-line no-undef
 const AuthModal = ({
@@ -23,7 +23,7 @@ const AuthModal = ({
     clearAuth,
     authorizing,
     authError,
-    retryAuthUserWithEmail,
+    retryAuthUser,
 }) => {
     const { statusBarHeight } = Constants;
     const navigation = useNavigation();
@@ -71,7 +71,7 @@ const AuthModal = ({
                     style={styles.activityIndicator}
                 />
             )}
-            {(authSuccessful || authError) && (
+            {(authSuccessful || !!authError) && (
                 <ModalTextBlock
                     text={
                         authSuccessful
@@ -81,15 +81,15 @@ const AuthModal = ({
                     color={authSuccessful ? '#fff' : 'red'}
                 />
             )}
-            {retryAbleError && (
+            {!!retryAbleError && (
                 <ModalButton
                     text="Retry"
                     submit
-                    onPress={retryAuthUserWithEmail}
+                    onPress={retryAuthUser}
                     disabled={authorizing}
                 />
             )}
-            {(authError || authSuccessful) && (
+            {(!!authError || authSuccessful) && (
                 <ModalButton
                     text="Close"
                     onPress={backAction}
@@ -109,7 +109,7 @@ AuthModal.propTypes = {
     clearAuth: PropTypes.func,
     authorizing: PropTypes.bool,
     authError: PropTypes.string,
-    retryAuthUserWithEmail: PropTypes.func,
+    retryAuthUser: PropTypes.func,
 };
 
 const mapStateToProps = ({
@@ -130,5 +130,5 @@ const mapStateToProps = ({
 
 export default connect(mapStateToProps, {
     clearAuth,
-    retryAuthUserWithEmail,
+    retryAuthUser,
 })(AuthModal);

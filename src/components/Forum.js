@@ -126,8 +126,7 @@ const Forum = ({
 
     useEffect(() => {
         fetchPosts();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [fetchPosts]);
 
     useEffect(() => {
         updateShowFooter(contentHeight > flatListHeight);

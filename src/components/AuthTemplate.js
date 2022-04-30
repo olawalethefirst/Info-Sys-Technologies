@@ -13,7 +13,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AuthForm from './AuthForm';
 import AuthSwitch from './AuthSwitch';
 import AuthOption from './AuthOption';
-import authUserWithEmail from '../redux/actions/authUserWithEmail';
+import authUser from '../redux/actions/authUser';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -27,8 +27,7 @@ const AuthTemplate = ({
     margin,
     createAccount,
     toggleAuthView,
-    authUserWithEmail,
-    uid,
+    authUser,
     authSuccessful,
 }) => {
     const [animatedViewHeight, setAnimatedViewHeight] = useState(0);
@@ -131,7 +130,6 @@ const AuthTemplate = ({
                         <AuthOption
                             fontFactor={fontFactor}
                             animateView={toggleanimatedView}
-                            uid={uid}
                         />
                         <MarginVertical size={2} />
                         <AuthSwitch
@@ -159,7 +157,7 @@ const AuthTemplate = ({
                         <AuthForm
                             fontFactor={fontFactor}
                             createAccount={createAccount}
-                            authUserWithEmail={authUserWithEmail}
+                            authUser={authUser}
                             toggleAuthView={toggleAuthView}
                             authSuccessful={authSuccessful}
                         />
@@ -175,22 +173,21 @@ AuthTemplate.propTypes = {
     margin: PropTypes.number,
     createAccount: PropTypes.bool,
     toggleAuthView: PropTypes.func,
-    authUserWithEmail: PropTypes.func,
+    authUser: PropTypes.func,
     uid: PropTypes.string,
     authSuccessful: PropTypes.bool,
 };
 
 const mapStateToProps = ({
     settingsState: { fontFactor, margin },
-    forumTempState: { uid, authSuccessful },
+    forumTempState: { authSuccessful },
 }) => ({
     fontFactor,
     margin,
-    uid,
     authSuccessful,
 });
 
-export default connect(mapStateToProps, { authUserWithEmail })(AuthTemplate);
+export default connect(mapStateToProps, { authUser })(AuthTemplate);
 
 const styles = StyleSheet.create({
     animatedViewContainer: {

@@ -1,11 +1,10 @@
-import React, { useRef, lazy, Suspense } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import { connect } from 'react-redux';
-const Contact = lazy(() => import('../components/Contact'));
+import Contact from '../components/Contact';
 import Constants from 'expo-constants';
 import PropTypes from 'prop-types';
 import { useScrollToTop } from '@react-navigation/native';
-import SuspenseFallback from '../components/SuspenseFallback';
 
 function ContactScreen({ margin, headerSize, fontFactor }) {
     const scrollRef = useRef(null);
@@ -21,14 +20,12 @@ function ContactScreen({ margin, headerSize, fontFactor }) {
                 android: null,
             })}
         >
-            <Suspense fallback={<SuspenseFallback />}>
-                <Contact
-                    fontFactor={fontFactor}
-                    headerSize={headerSize}
-                    margin={margin}
-                    scrollRef={scrollRef}
-                />
-            </Suspense>
+            <Contact
+                fontFactor={fontFactor}
+                headerSize={headerSize}
+                margin={margin}
+                scrollRef={scrollRef}
+            />
         </KeyboardAvoidingView>
     );
 }

@@ -1,15 +1,12 @@
-import React, { useRef, lazy, Suspense } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { connect } from 'react-redux';
 import { useScrollToTop } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import SuspenseFallback from '../components/SuspenseFallback';
-const Forum = lazy(() => import('../components/Forum'));
+import Forum from '../components/Forum';
 
 function ForumScreen({ effectiveBodyHeight }) {
     const scrollRef = useRef(null);
-
-    //Variables & Fns
     useScrollToTop(scrollRef);
 
     const styles2 = StyleSheet.create({
@@ -20,9 +17,7 @@ function ForumScreen({ effectiveBodyHeight }) {
 
     return (
         <SafeAreaView style={[styles2.containerHeight, styles.container]}>
-            <Suspense fallback={<SuspenseFallback color="#1A91D7" />}>
-                <Forum scrollRef={scrollRef} />
-            </Suspense>
+            <Forum scrollRef={scrollRef} />
         </SafeAreaView>
     );
 }

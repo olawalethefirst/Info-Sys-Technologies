@@ -3,7 +3,7 @@ import {
     TOGGLE_CALL_TO_AUTH_MODAL,
     TOGGLE_OFF_USERNAME_MODAL,
     TOGGLE_ON_USERNAME_MODAL,
-    AUTH_WITH_EMAIL_INITIALIZED,
+    AUTH_INITIALIZED,
     POST_SUCCESSFUL,
     CLEAR_AUTH,
     CLEAR_POST_SUCCESSFUL,
@@ -42,7 +42,7 @@ export default function settingsTempReducer(state = initialState, action) {
             };
         case TOGGLE_OFF_USERNAME_MODAL:
             return { ...state, usernameModalVisible: false };
-        case AUTH_WITH_EMAIL_INITIALIZED:
+        case AUTH_INITIALIZED:
             return { ...state, authModalVisible: true };
         case CLEAR_AUTH:
             return { ...state, authModalVisible: false };

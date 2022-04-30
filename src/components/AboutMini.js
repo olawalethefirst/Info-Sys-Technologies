@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -13,22 +13,23 @@ import MarginVertical from './MarginVertical';
 import checkColumnMode from '../helperFunctions/checkColumnMode';
 import { About } from '../constants';
 
+const animatedValue = new Animated.Value(1);
+const onPressIn = (animatedValue) => () => {
+    Animated.timing(animatedValue, {
+        toValue: 0.9,
+        useNativeDriver: true,
+        duration: 150,
+    }).start();
+};
+const onPressOut = (animatedValue) => () => {
+    Animated.timing(animatedValue, {
+        toValue: 1,
+        useNativeDriver: true,
+        duration: 150,
+    }).start();
+};
+
 function AboutMini({ fontFactor, margin, deviceWidthClass, navigate }) {
-    const animatedValue = useRef(new Animated.Value(1)).current;
-    const onPressIn = useCallback(() => {
-        Animated.timing(animatedValue, {
-            toValue: 0.9,
-            useNativeDriver: true,
-            duration: 150,
-        }).start();
-    }, [animatedValue]);
-    const onPressOut = useCallback(() => {
-        Animated.timing(animatedValue, {
-            toValue: 1,
-            useNativeDriver: true,
-            duration: 150,
-        }).start();
-    }, [animatedValue]);
     const onPress = useCallback(() => navigate(About), [navigate]);
     const columnMode = checkColumnMode(deviceWidthClass);
 
@@ -88,8 +89,8 @@ function AboutMini({ fontFactor, margin, deviceWidthClass, navigate }) {
                 </Text>
                 <MarginVertical size={2} />
                 <TouchableWithoutFeedback
-                    onPressIn={onPressIn}
-                    onPressOut={onPressOut}
+                    onPressIn={onPressIn(animatedValue)}
+                    onPressOut={onPressOut(animatedValue)}
                     onPress={onPress}
                 >
                     <Animated.View

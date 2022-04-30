@@ -1,8 +1,7 @@
-import React, { useRef, lazy, Suspense } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { useScrollToTop } from '@react-navigation/native';
-const About = lazy(() => import('../components/About'));
-import SuspenseFallback from '../components/SuspenseFallback';
+import About from '../components/About';
 
 function AboutScreen() {
     const scrollRef = useRef(null);
@@ -10,9 +9,7 @@ function AboutScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Suspense fallback={<SuspenseFallback color={'black'} />}>
-                <About />
-            </Suspense>
+            <About />
         </SafeAreaView>
     );
 }

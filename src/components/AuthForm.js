@@ -21,11 +21,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import AuthSwitch from './AuthSwitch';
 import PropTypes from 'prop-types';
+import { email } from '../constants';
 
 const AuthForm = ({
     fontFactor,
     createAccount,
-    authUserWithEmail,
+    authUser,
     toggleAuthView,
     authSuccessful,
 }) => {
@@ -182,7 +183,7 @@ const AuthForm = ({
     }, []);
     const submitButtonDisabled = !!Object.keys(errors).length;
     const onPressSubmitButton = handleSubmit((data) => {
-        authUserWithEmail({ ...data, createAccount });
+        authUser(email, { ...data, createAccount });
     }, onSubmitFailed);
 
     const styles2 = StyleSheet.create({
@@ -430,7 +431,7 @@ const AuthForm = ({
 AuthForm.propTypes = {
     fontFactor: PropTypes.number,
     createAccount: PropTypes.bool,
-    authUserWithEmail: PropTypes.func,
+    authUser: PropTypes.func,
     toggleAuthView: PropTypes.func,
     authSuccessful: PropTypes.bool,
 };

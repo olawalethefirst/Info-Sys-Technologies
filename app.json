@@ -1,7 +1,8 @@
 {
     "expo": {
-        "name": "Info-sysTechnologies",
-        "slug": "Info-sysTechnologies",
+        "name": "InfoSys-Technologies",
+        "slug": "infosystechnologies",
+        "scheme": "com.technologies.infosys",   
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./assets/images/icon.png",
@@ -10,7 +11,6 @@
             "resizeMode": "contain",
             "backgroundColor": "#1A91D7"
         },
-        "scheme": "com.technologies.infosys",
         "updates": {
             "fallbackToCacheTimeout": 0
         },
@@ -18,13 +18,7 @@
         "ios": {
             "supportsTablet": true,
             "bundleIdentifier": "com.technologies.infosys",
-            "buildNumber": "1.0.0",
-            "googleServicesFile": "./GoogleService-Info.plist",
-            "config": {
-                "googleSignIn": {
-                    "reservedClientId": "com.googleusercontent.apps.173918698726-qo9peoeeleqdg53j6mf0ftvd247r9gh0"
-                }
-            }
+            "buildNumber": "1.0.0"
         },
         "android": {
             "adaptiveIcon": {
@@ -33,7 +27,6 @@
             },
             "package": "com.technologies.infosys",
             "versionCode": 1,
-            "googleServicesFile": "./google-services.json",
             "softwareKeyboardLayoutMode": "resize"
         },
         "web": {

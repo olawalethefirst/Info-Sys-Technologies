@@ -1,14 +1,21 @@
-import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import React, { useCallback } from 'react';
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-    interpolateColor,
-} from 'react-native-reanimated';
+import { StyleSheet, TouchableWithoutFeedback, Animated } from 'react-native';
+import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
+
+const onPressIn = (val) => () =>
+    Animated.timing(val, {
+        toValue: 1,
+        duration: 50,
+        useNativeDriver: false,
+    }).start();
+const onPressOut = (val) => () =>
+    Animated.timing(val, {
+        toValue: 0,
+        duration: 50,
+        useNativeDriver: false,
+    }).start();
 
 const ForumAuthButton = ({
     text,
@@ -20,59 +27,41 @@ const ForumAuthButton = ({
     onPress,
     fontFactor,
 }) => {
+    const animatedB = useRef(new Animated.Value(0)).current;
+    const animatedBBC = animatedB.interpolate({
+        inputRange: [0, 1],
+        outputRange: [backgroundColor, activeBackgroundColor],
+        extrapolate: 'clamp',
+    });
+    const animatedBFC = animatedB.interpolate({
+        inputRange: [0, 1],
+        outputRange: [textColor, activeTextColor],
+        extrapolate: 'clamp',
+    });
+
     const styles2 = {
         buttonText: {
             fontSize: fontFactor * wp(4),
             lineHeight: fontFactor * wp(5.13),
+            color: animatedBFC,
         },
         button: {
-            width: fontFactor * wp(20),
-            height: fontFactor * wp(10),
+            width: fontFactor * wp(25),
+            height: fontFactor * wp(12.5),
             borderWidth: wp(0.2) * fontFactor,
             borderColor: borderColor,
+            backgroundColor: animatedBBC,
         },
     };
-    const animatedButton = useSharedValue(0);
-    const onPressIn = useCallback(() => {
-        'worklet';
-        animatedButton.value = withTiming(1, { duration: 150 });
-    }, [animatedButton]);
-    const onPressOut = useCallback(() => {
-        'worklet';
-        animatedButton.value = withTiming(0, { duration: 150 });
-    }, [animatedButton]);
-
-    const animatedButonStyle = useAnimatedStyle(() => ({
-        backgroundColor: interpolateColor(
-            animatedButton.value,
-            [0, 1],
-            [backgroundColor, activeBackgroundColor]
-        ),
-    }));
-    const animatedButtonTextStyle = useAnimatedStyle(() => ({
-        color: interpolateColor(
-            animatedButton.value,
-            [0, 1],
-            [textColor, activeTextColor]
-        ),
-    }));
 
     return (
         <TouchableWithoutFeedback
             onPress={onPress}
-            onPressIn={onPressIn}
-            onPressOut={onPressOut}
+            onPressIn={onPressIn(animatedB)}
+            onPressOut={onPressOut(animatedB)}
         >
-            <Animated.View
-                style={[styles.button, styles2.button, animatedButonStyle]}
-            >
-                <Animated.Text
-                    style={[
-                        styles.buttonText,
-                        styles2.buttonText,
-                        animatedButtonTextStyle,
-                    ]}
-                >
+            <Animated.View style={[styles.button, styles2.button]}>
+                <Animated.Text style={[styles.buttonText, styles2.buttonText]}>
                     {text}
                 </Animated.Text>
             </Animated.View>

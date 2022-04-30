@@ -296,7 +296,7 @@ export default function usePostDetails(initialPostData) {
         return {
             commentID,
             ...data,
-            likedTimestamp: data.likes[auth.currentUser.uid] ?? Date.now(),
+            likedTimestamp: data.likes[auth.currentUser?.uid] ?? Date.now(),
         };
     }, []);
     const _updateLoadError = useCallback((payload) => {
@@ -469,9 +469,9 @@ export default function usePostDetails(initialPostData) {
                 const docObj = {
                     comment,
                     parentPostID: postID,
-                    owner: auth.currentUser.uid,
+                    owner: auth.currentUser?.uid,
                     createdAt: Date.now(),
-                    username: auth.currentUser.displayName,
+                    username: auth.currentUser?.displayName,
                     likes: {},
                 };
                 await createDocAsync(docObj, ['comments', commentID]);

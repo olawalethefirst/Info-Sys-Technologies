@@ -52,8 +52,10 @@ export const comment = 'comment';
 export const Post = 'Post';
 export const Auth = 'Auth';
 export const Forum = 'Forum';
-export const postsLimit = 20
-export const commentsLimit = 5
+export const postsLimit = 20;
+export const commentsLimit = 5;
+export const email = 'email';
+export const google = 'google';
 
 export const serviceDetails = [
     {

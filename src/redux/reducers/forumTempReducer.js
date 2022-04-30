@@ -14,11 +14,11 @@ import {
     SEARCH_POSTS_SUCCESSFUL,
     SEARCH_POSTS_FAILED,
     UPDATE_USERNAME,
-    AUTH_WITH_EMAIL_INITIALIZED,
-    AUTH_WITH_EMAIL_SUCCESSFUL,
+    AUTH_INITIALIZED,
+    AUTH_SUCCESSFUL,
     CLEAR_AUTH,
-    AUTH_WITH_EMAIL_FAILED,
-    RETRY_AUTH_WITH_EMAIL,
+    AUTH_FAILED,
+    RETRY_AUTH,
     INITIATE_POST,
     POST_SUCCESSFUL,
     POST_FAILED,
@@ -39,10 +39,10 @@ const initialState = {
     showFooter: false,
     searchString: '',
     username: null,
-    authData: null,
+    authDetails: null,
     authorizing: false,
     authSuccessful: false,
-    authError: null,
+    authError: '',
     postData: null,
     postSuccessful: false,
     postFailed: false,
@@ -133,25 +133,25 @@ const forumTempReducer = (state = initialState, action) => {
             };
         case UPDATE_USERNAME:
             return { ...state, username: action.payload };
-        case AUTH_WITH_EMAIL_INITIALIZED:
-            return { ...state, authData: action.payload, authorizing: true };
-        case AUTH_WITH_EMAIL_SUCCESSFUL:
+        case AUTH_INITIALIZED:
+            return { ...state, authDetails: action.payload, authorizing: true };
+        case AUTH_SUCCESSFUL:
             return { ...state, authSuccessful: true, authorizing: false };
         case CLEAR_AUTH:
             return {
                 ...state,
-                authData: null,
+                authDetails: null,
                 authSuccessful: false,
-                authError: null,
+                authError: '',
             };
-        case AUTH_WITH_EMAIL_FAILED:
+        case AUTH_FAILED:
             return {
                 ...state,
                 authError: action.payload,
                 authorizing: false,
             };
-        case RETRY_AUTH_WITH_EMAIL:
-            return { ...state, authorizing: true, authError: null };
+        case RETRY_AUTH:
+            return { ...state, authorizing: true, authError: '' };
         case INITIATE_POST:
             return { ...state, posting: true };
         case POST_SUCCESSFUL:

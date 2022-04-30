@@ -1,27 +1,12 @@
-import React, { Suspense, lazy } from 'react';
-import {
-    StyleSheet,
-    SafeAreaView,
-    ActivityIndicator,
-} from 'react-native';
+import React from 'react';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import PropTypes from 'prop-types';
-const Services = lazy(() => import('../components/Services'));
-// import Services from '../components/Services'
+import Services from '../components/Services';
 
 function ServicesScreen() {
     return (
         <SafeAreaView style={styles.container}>
-            <Suspense
-                fallback={
-                    <ActivityIndicator
-                        style={{ marginTop: 10 }}
-                        color="#fff"
-                        size={'small'}
-                    />
-                }
-            >
-                <Services />
-            </Suspense>
+            <Services />
         </SafeAreaView>
     );
 }
